@@ -109,3 +109,30 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 }
+@media print {
+
+  .no-print {
+
+    display: none !important;
+  }
+
+  body {
+
+    background: white !important;
+  }
+
+  table {
+
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th,
+  td {
+
+    border: 1px solid black;
+    padding: 8px;
+    text-align: left;
+  }
+
+}

@@ -12,6 +12,10 @@ export default defineConfig({
 
       registerType: 'autoUpdate',
 
+      includeAssets: [
+        'favicon.ico',
+      ],
+
       manifest: {
 
         name: 'Club Furia',
@@ -26,8 +30,6 @@ export default defineConfig({
         background_color: '#011135',
 
         display: 'standalone',
-
-        orientation: 'portrait',
 
         start_url: '/',
 

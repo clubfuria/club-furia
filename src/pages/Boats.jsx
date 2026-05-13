@@ -231,6 +231,7 @@ export default function Boats() {
       {/* CABECERA */}
 
       <div
+        className="no-print"
         style={{
           display: "flex",
           justifyContent:
@@ -245,7 +246,7 @@ export default function Boats() {
             color: "#fe5d01",
           }}
         >
-          ⛵ BARCOS FURIA
+          ⛵ FLOTA FURIA
         </h1>
 
         <Link
@@ -268,6 +269,7 @@ export default function Boats() {
       {/* FORMULARIO */}
 
       <div
+        className="no-print"
         style={{
           backgroundColor:
             "#001b44",
@@ -422,6 +424,7 @@ export default function Boats() {
       {/* BUSCADOR */}
 
       <input
+        className="no-print"
         type="text"
         placeholder="Buscar por puerto..."
         value={boatSearch}
@@ -445,6 +448,7 @@ export default function Boats() {
       {/* IMPRIMIR */}
 
       <button
+        className="no-print"
         onClick={() =>
           window.print()
         }
@@ -466,6 +470,7 @@ export default function Boats() {
       {filteredBoats.length > 0 ? (
 
         <div
+          className="no-print"
           style={{
             backgroundColor:
               "#001b44",

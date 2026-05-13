@@ -26,6 +26,9 @@ export default function Boats() {
   const [boatCrew, setBoatCrew] =
     useState("");
 
+  const [boatContacto, setBoatContacto] =
+    useState("");
+
   const [boatImage, setBoatImage] =
     useState(null);
 
@@ -106,6 +109,7 @@ export default function Boats() {
             model: boatModel,
             port: boatPort,
             tripulacion: boatCrew,
+            contacto: boatContacto,
             image_url: imageUrl,
             user_id: user.id,
           },
@@ -122,6 +126,7 @@ export default function Boats() {
     setBoatModel("");
     setBoatPort("");
     setBoatCrew("");
+    setBoatContacto("");
     setBoatImage(null);
 
     fetchBoats();
@@ -344,6 +349,22 @@ export default function Boats() {
           }}
         />
 
+        <input
+          type="text"
+          placeholder="Contacto"
+          value={boatContacto}
+          onChange={(e) =>
+            setBoatContacto(
+              e.target.value
+            )
+          }
+          style={{
+            width: "100%",
+            padding: "10px",
+            marginBottom: "10px",
+          }}
+        />
+
         <label
           style={{
             display:
@@ -420,6 +441,25 @@ export default function Boats() {
           border: "none",
         }}
       />
+
+      {/* IMPRIMIR */}
+
+      <button
+        onClick={() =>
+          window.print()
+        }
+        style={{
+          marginBottom: "20px",
+          padding: "10px 20px",
+          backgroundColor: "#0d7a32",
+          color: "white",
+          border: "none",
+          borderRadius: "8px",
+          cursor: "pointer",
+        }}
+      >
+        IMPRIMIR LISTADO
+      </button>
 
       {/* CARRUSEL */}
 
@@ -521,6 +561,21 @@ export default function Boats() {
             }
           </p>
 
+          <p
+            style={{
+              color: "white",
+              fontSize: "18px",
+            }}
+          >
+            📞 Contacto:
+            {" "}
+            {
+              filteredBoats[
+                currentBoat
+              ]?.contacto
+            }
+          </p>
+
           {user?.id ===
             filteredBoats[
               currentBoat
@@ -599,8 +654,6 @@ export default function Boats() {
 
           </div>
 
-          {/* CONTADOR */}
-
           <p
             style={{
               textAlign: "center",
@@ -628,6 +681,80 @@ export default function Boats() {
         </div>
 
       )}
+
+      {/* TABLA */}
+
+      <div
+        style={{
+          backgroundColor: "white",
+          padding: "20px",
+          borderRadius: "12px",
+          marginTop: "40px",
+          overflowX: "auto",
+        }}
+      >
+
+        <h2>
+          LISTADO FLOTA FURIA
+        </h2>
+
+        <table
+          style={{
+            width: "100%",
+            borderCollapse:
+              "collapse",
+          }}
+        >
+
+          <thead>
+
+            <tr>
+
+              <th>Nombre</th>
+
+              <th>Modelo</th>
+
+              <th>Puerto</th>
+
+              <th>Tripulación</th>
+
+              <th>Contacto</th>
+
+            </tr>
+
+          </thead>
+
+          <tbody>
+
+            {filteredBoats.map(
+              (boat) => (
+
+                <tr key={boat.id}>
+
+                  <td>{boat.name}</td>
+
+                  <td>{boat.model}</td>
+
+                  <td>{boat.port}</td>
+
+                  <td>
+                    {boat.tripulacion}
+                  </td>
+
+                  <td>
+                    {boat.contacto}
+                  </td>
+
+                </tr>
+
+              )
+            )}
+
+          </tbody>
+
+        </table>
+
+      </div>
 
     </div>
 

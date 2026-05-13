@@ -126,7 +126,7 @@ export default function BottomNav() {
           "/recursos"
         )}
       >
-        <Folder size={22} />
+        
         <div>Recursos</div>
       </Link>
 

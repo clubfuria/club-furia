@@ -1,7 +1,14 @@
-import { Link } from "react-router-dom";
+import { useEffect, useState }
+from "react";
+
+import { Link }
+from "react-router-dom";
 
 import BottomNav
 from "../components/BottomNav";
+
+import { supabase }
+from "../supabase";
 
 import {
   Sailboat,
@@ -12,6 +19,20 @@ import {
 } from "lucide-react";
 
 export default function Home() {
+
+  const [user, setUser] =
+    useState(null);
+
+  useEffect(() => {
+
+    supabase.auth
+      .getUser()
+      .then(({ data }) => {
+
+        setUser(data.user);
+      });
+
+  }, []);
 
   return (
 
@@ -399,8 +420,9 @@ export default function Home() {
 
         Conectado como:
         {" "}
+
         {user?.user_metadata?.nombre ||
-    user?.email}
+          user?.email}
 
       </div>
 

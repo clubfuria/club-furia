@@ -1,3 +1,5 @@
+import BottomNav
+from "../components/BottomNav";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../supabase";
@@ -211,6 +213,7 @@ export default function Home() {
         fontFamily: "Arial",
         backgroundColor: "#011135",
         minHeight: "100vh",
+paddingBottom: "100px",
       }}
     >
 
@@ -721,7 +724,7 @@ export default function Home() {
         ))}
 
       </div>
-
+<BottomNav />
     </div>
 
   );

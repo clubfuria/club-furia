@@ -10,6 +10,9 @@ from "../components/BottomNav";
 import { supabase }
 from "../supabase";
 
+import logo
+from "../assets/logo.png";
+
 import {
   Sailboat,
   Users,
@@ -58,6 +61,17 @@ export default function Home() {
         }}
       >
 
+        <img
+          src={logo}
+          alt="Club Furia"
+          style={{
+            width: "250px",
+            marginBottom: "15px",
+            filter:
+              "drop-shadow(0 4px 10px rgba(0,0,0,0.4))",
+          }}
+        />
+
         <h1
           style={{
             color: "#fe5d01",
@@ -80,14 +94,13 @@ export default function Home() {
 
       </div>
 
-      {/* GRID MENU */}
+      {/* MENU PRINCIPAL */}
 
       <div
         style={{
-          display: "grid",
-          gridTemplateColumns:
-            "1fr 1fr",
-          gap: "20px",
+          display: "flex",
+          flexDirection: "column",
+          gap: "18px",
           marginTop: "30px",
         }}
       >
@@ -104,14 +117,13 @@ export default function Home() {
           <div
             style={{
               backgroundColor: "white",
-              borderRadius: "24px",
-              padding: "30px 20px",
-              textAlign: "center",
-              minHeight: "210px",
+              borderRadius: "22px",
+              padding: "20px 24px",
 
               display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
+              alignItems: "center",
+              justifyContent:
+                "space-between",
 
               boxShadow:
                 "0 4px 20px rgba(0,0,0,0.3)",
@@ -121,34 +133,49 @@ export default function Home() {
             <div
               style={{
                 display: "flex",
-                justifyContent:
-                  "center",
-                marginBottom: "10px",
-                color: "#0261e6",
+                alignItems: "center",
+                gap: "18px",
               }}
             >
-              <Sailboat size={56} />
+
+              <Sailboat
+                size={38}
+                color="#0261e6"
+              />
+
+              <div>
+
+                <h2
+                  style={{
+                    color: "#f20b2a",
+                    margin: 0,
+                  }}
+                >
+                  BARCOS
+                </h2>
+
+                <p
+                  style={{
+                    color: "#0261e6",
+                    margin: 0,
+                    marginTop: "4px",
+                  }}
+                >
+                  Registro de flota
+                </p>
+
+              </div>
+
             </div>
 
-            <h2
+            <div
               style={{
-                color: "#f20b2a",
-                marginBottom: "10px",
+                fontSize: "28px",
+                color: "#999",
               }}
             >
-              BARCOS
-            </h2>
-
-            <p
-              style={{
-                color: "#0261e6",
-                fontSize: "22px",
-                lineHeight: "32px",
-              }}
-            >
-              Registro de flota
-              Furia
-            </p>
+              ›
+            </div>
 
           </div>
 
@@ -166,14 +193,13 @@ export default function Home() {
           <div
             style={{
               backgroundColor: "white",
-              borderRadius: "24px",
-              padding: "30px 20px",
-              textAlign: "center",
-              minHeight: "210px",
+              borderRadius: "22px",
+              padding: "20px 24px",
 
               display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
+              alignItems: "center",
+              justifyContent:
+                "space-between",
 
               boxShadow:
                 "0 4px 20px rgba(0,0,0,0.3)",
@@ -183,34 +209,50 @@ export default function Home() {
             <div
               style={{
                 display: "flex",
-                justifyContent:
-                  "center",
-                marginBottom: "10px",
-                color: "#0261e6",
+                alignItems: "center",
+                gap: "18px",
               }}
             >
-              <Users size={56} />
+
+              <Users
+                size={38}
+                color="#0261e6"
+              />
+
+              <div>
+
+                <h2
+                  style={{
+                    color: "#f20b2a",
+                    margin: 0,
+                  }}
+                >
+                  TRIPULACION
+                </h2>
+
+                <p
+                  style={{
+                    color: "#0261e6",
+                    margin: 0,
+                    marginTop: "4px",
+                  }}
+                >
+                  Armadores y
+                  tripulantes
+                </p>
+
+              </div>
+
             </div>
 
-            <h2
+            <div
               style={{
-                color: "#f20b2a",
-                marginBottom: "10px",
+                fontSize: "28px",
+                color: "#999",
               }}
             >
-              TRIPULACION
-            </h2>
-
-            <p
-              style={{
-                color: "#0261e6",
-                fontSize: "22px",
-                lineHeight: "32px",
-              }}
-            >
-              Armadores y
-              tripulantes
-            </p>
+              ›
+            </div>
 
           </div>
 
@@ -228,14 +270,13 @@ export default function Home() {
           <div
             style={{
               backgroundColor: "white",
-              borderRadius: "24px",
-              padding: "30px 20px",
-              textAlign: "center",
-              minHeight: "210px",
+              borderRadius: "22px",
+              padding: "20px 24px",
 
               display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
+              alignItems: "center",
+              justifyContent:
+                "space-between",
 
               boxShadow:
                 "0 4px 20px rgba(0,0,0,0.3)",
@@ -245,35 +286,49 @@ export default function Home() {
             <div
               style={{
                 display: "flex",
-                justifyContent:
-                  "center",
-                marginBottom: "10px",
-                color: "#0261e6",
+                alignItems: "center",
+                gap: "18px",
               }}
             >
+
               <CalendarDays
-                size={56}
+                size={38}
+                color="#0261e6"
               />
+
+              <div>
+
+                <h2
+                  style={{
+                    color: "#f20b2a",
+                    margin: 0,
+                  }}
+                >
+                  ACTIVIDADES
+                </h2>
+
+                <p
+                  style={{
+                    color: "#0261e6",
+                    margin: 0,
+                    marginTop: "4px",
+                  }}
+                >
+                  Salidas y calendario
+                </p>
+
+              </div>
+
             </div>
 
-            <h2
+            <div
               style={{
-                color: "#f20b2a",
-                marginBottom: "10px",
+                fontSize: "28px",
+                color: "#999",
               }}
             >
-              ACTIVIDADES
-            </h2>
-
-            <p
-              style={{
-                color: "#0261e6",
-                fontSize: "22px",
-                lineHeight: "32px",
-              }}
-            >
-              Salidas y calendario
-            </p>
+              ›
+            </div>
 
           </div>
 
@@ -291,14 +346,13 @@ export default function Home() {
           <div
             style={{
               backgroundColor: "white",
-              borderRadius: "24px",
-              padding: "30px 20px",
-              textAlign: "center",
-              minHeight: "210px",
+              borderRadius: "22px",
+              padding: "20px 24px",
 
               display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
+              alignItems: "center",
+              justifyContent:
+                "space-between",
 
               boxShadow:
                 "0 4px 20px rgba(0,0,0,0.3)",
@@ -308,36 +362,49 @@ export default function Home() {
             <div
               style={{
                 display: "flex",
-                justifyContent:
-                  "center",
-                marginBottom: "10px",
-                color: "#0261e6",
+                alignItems: "center",
+                gap: "18px",
               }}
             >
+
               <FolderOpen
-                size={56}
+                size={38}
+                color="#0261e6"
               />
+
+              <div>
+
+                <h2
+                  style={{
+                    color: "#f20b2a",
+                    margin: 0,
+                  }}
+                >
+                  RECURSOS
+                </h2>
+
+                <p
+                  style={{
+                    color: "#0261e6",
+                    margin: 0,
+                    marginTop: "4px",
+                  }}
+                >
+                  Manuales y documentos
+                </p>
+
+              </div>
+
             </div>
 
-            <h2
+            <div
               style={{
-                color: "#f20b2a",
-                marginBottom: "10px",
+                fontSize: "28px",
+                color: "#999",
               }}
             >
-              RECURSOS
-            </h2>
-
-            <p
-              style={{
-                color: "#0261e6",
-                fontSize: "22px",
-                lineHeight: "32px",
-              }}
-            >
-              Fichas, manuales
-              y logos
-            </p>
+              ›
+            </div>
 
           </div>
 
@@ -355,14 +422,13 @@ export default function Home() {
           <div
             style={{
               backgroundColor: "white",
-              borderRadius: "24px",
-              padding: "30px 20px",
-              textAlign: "center",
-              minHeight: "210px",
+              borderRadius: "22px",
+              padding: "20px 24px",
 
               display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
+              alignItems: "center",
+              justifyContent:
+                "space-between",
 
               boxShadow:
                 "0 4px 20px rgba(0,0,0,0.3)",
@@ -372,34 +438,49 @@ export default function Home() {
             <div
               style={{
                 display: "flex",
-                justifyContent:
-                  "center",
-                marginBottom: "10px",
-                color: "#0261e6",
+                alignItems: "center",
+                gap: "18px",
               }}
             >
-              <Wrench size={56} />
+
+              <Wrench
+                size={38}
+                color="#0261e6"
+              />
+
+              <div>
+
+                <h2
+                  style={{
+                    color: "#f20b2a",
+                    margin: 0,
+                  }}
+                >
+                  BRICOS
+                </h2>
+
+                <p
+                  style={{
+                    color: "#0261e6",
+                    margin: 0,
+                    marginTop: "4px",
+                  }}
+                >
+                  Reparaciones y mejoras
+                </p>
+
+              </div>
+
             </div>
 
-            <h2
+            <div
               style={{
-                color: "#f20b2a",
-                marginBottom: "10px",
+                fontSize: "28px",
+                color: "#999",
               }}
             >
-              BRICOS
-            </h2>
-
-            <p
-              style={{
-                color: "#0261e6",
-                fontSize: "22px",
-                lineHeight: "32px",
-              }}
-            >
-              Reparaciones y
-              mejoras
-            </p>
+              ›
+            </div>
 
           </div>
 

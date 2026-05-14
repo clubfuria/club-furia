@@ -1,136 +1,104 @@
-import { Link, useLocation }
-from "react-router-dom";
-
-import {
-  House,
-  Sailboat,
-  Users,
-  Calendar,
-  Wrench,
-  Folder,
-} from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export default function BottomNav() {
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  const location =
-    useLocation();
+  const items = [
+    {
+      label: "HOME",
+      path: "/",
+    },
 
-  const isActive = (path) =>
-    location.pathname === path;
+    {
+      label: "BOATS",
+      path: "/barcos",
+    },
 
-  const buttonStyle = (path) => ({
+    {
+      label: "TRIPULACIÓN",
+      path: "/tripulacion",
+    },
 
-    flex: 1,
+    {
+      label: "ACTIVIDADES",
+      path: "/actividades",
+    },
 
-    textAlign: "center",
+    {
+      label: "RECURSOS",
+      path: "/recursos",
+    },
 
-    color: isActive(path)
-      ? "#e7eb0f"
-      : "white",
+    {
+      label: "BRICOS",
+      path: "/bricos",
+    },
 
-    textDecoration: "none",
-
-    fontSize: "13px",
-
-    fontWeight: "bold",
-
-    display: "flex",
-
-    flexDirection: "column",
-
-    alignItems: "center",
-
-    justifyContent: "center",
-
-  });
+    {
+      label: "COMPRAVENTA",
+      path: "/compraventa",
+    },
+  ];
 
   return (
-
     <div
       style={{
-
         position: "fixed",
-
         bottom: 0,
-
         left: 0,
+        right: 0,
 
-        width: "100%",
+        background: "rgba(2,18,36,0.96)",
 
-        height: "70px",
+        backdropFilter: "blur(10px)",
 
-        backgroundColor:
-          "#001b44",
+        borderTop: "1px solid rgba(255,255,255,0.12)",
 
         display: "flex",
 
-        borderTop:
-          "2px solid #333",
+        justifyContent: "space-around",
 
-        zIndex: 9999,
+        alignItems: "center",
 
+        padding: "12px 8px",
+
+        zIndex: 999,
       }}
     >
+      {items.map((item) => {
+        const active = location.pathname === item.path;
 
-      <Link
-        to="/"
-        style={buttonStyle("/")}
-      >
-        <House size={22} />
-        <div>Inicio</div>
-      </Link>
+        return (
+          <button
+            key={item.path}
+            onClick={() => navigate(item.path)}
+            style={{
+              background: "none",
 
-      <Link
-        to="/barcos"
-        style={buttonStyle(
-          "/barcos"
-        )}
-      >
-        <Sailboat size={22} />
-        <div>Barcos</div>
-      </Link>
+              border: "none",
 
-      <Link
-        to="/tripulacion"
-        style={buttonStyle(
-          "/tripulacion"
-        )}
-      >
-        <Users size={22} />
-        <div>Tripulación</div>
-      </Link>
+              color: active ? "#fe5d01" : "white",
 
-      <Link
-        to="/actividades"
-        style={buttonStyle(
-          "/actividades"
-        )}
-      >
-        <Calendar size={22} />
-        <div>Actividades</div>
-      </Link>
+              fontSize: window.innerWidth < 768
+                ? "11px"
+                : "14px",
 
-      <Link
-        to="/bricos"
-        style={buttonStyle(
-          "/bricos"
-        )}
-      >
-        <Wrench size={22} />
-        <div>Bricos</div>
-      </Link>
+              fontWeight: active ? "bold" : "normal",
 
-      <Link
-        to="/recursos"
-        style={buttonStyle(
-          "/recursos"
-        )}
-      >
-        
-        <div>Recursos</div>
-      </Link>
+              cursor: "pointer",
 
+              padding: "6px 8px",
+
+              transition: "0.25s",
+
+              letterSpacing: "0.5px",
+            }}
+          >
+            {item.label}
+          </button>
+        );
+      })}
     </div>
-
   );
 }

@@ -10,6 +10,7 @@ import Tripulacion from "./pages/Tripulacion";
 import Actividades from "./pages/Actividades";
 import Recursos from "./pages/Recursos";
 import Bricos from "./pages/Bricos";
+import Compraventa from "./pages/Compraventa";
 
 export default function App() {
 
@@ -43,7 +44,10 @@ export default function App() {
           path="/recursos"
           element={<Recursos />}
         />
-
+<Route
+  path="/compraventa"
+  element={<Compraventa />}
+/>
         <Route
           path="/bricos"
           element={<Bricos />}

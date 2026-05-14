@@ -10,9 +10,6 @@ from "../components/BottomNav";
 import { supabase }
 from "../supabase";
 
-import logo
-from "../assets/logo.png";
-
 import {
   Sailboat,
   Users,
@@ -62,7 +59,7 @@ export default function Home() {
       >
 
         <img
-          src={logo}
+          src="/logo.jpeg"
           alt="Club Furia"
           style={{
             width: "250px",

@@ -1,43 +1,55 @@
+import {
+  Ship,
+  Users,
+  CalendarDays,
+  FileText,
+  Wrench,
+  ShoppingBag,
+} from "lucide-react";
+
 import { useNavigate, useLocation } from "react-router-dom";
 
 export default function BottomNav() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const items = [
-    {
-      label: "HOME",
-      path: "/",
-    },
+  const isMobile = window.innerWidth < 768;
 
+  const items = [
     {
       label: "BOATS",
       path: "/barcos",
+      icon: Ship,
     },
 
     {
-      label: "TRIPULACIÓN",
+      label: "TRIPU",
       path: "/tripulacion",
+      icon: Users,
     },
 
     {
-      label: "ACTIVIDADES",
+      label: "ACTIV",
       path: "/actividades",
+      icon: CalendarDays,
     },
 
     {
-      label: "RECURSOS",
+      label: "RECUR",
       path: "/recursos",
+      icon: FileText,
     },
 
     {
       label: "BRICOS",
       path: "/bricos",
+      icon: Wrench,
     },
 
     {
-      label: "COMPRAVENTA",
+      label: "COMPRA",
       path: "/compraventa",
+      icon: ShoppingBag,
     },
   ];
 
@@ -45,13 +57,14 @@ export default function BottomNav() {
     <div
       style={{
         position: "fixed",
+
         bottom: 0,
         left: 0,
         right: 0,
 
         background: "rgba(2,18,36,0.96)",
 
-        backdropFilter: "blur(10px)",
+        backdropFilter: "blur(12px)",
 
         borderTop: "1px solid rgba(255,255,255,0.12)",
 
@@ -61,7 +74,7 @@ export default function BottomNav() {
 
         alignItems: "center",
 
-        padding: "12px 8px",
+        padding: isMobile ? "10px 4px 8px" : "12px 10px",
 
         zIndex: 999,
       }}
@@ -69,34 +82,85 @@ export default function BottomNav() {
       {items.map((item) => {
         const active = location.pathname === item.path;
 
+        const Icon = item.icon;
+
         return (
-          <button
+          <div
             key={item.path}
             onClick={() => navigate(item.path)}
             style={{
-              background: "none",
+              display: "flex",
 
-              border: "none",
+              flexDirection: "column",
 
-              color: active ? "#fe5d01" : "white",
+              alignItems: "center",
 
-              fontSize: window.innerWidth < 768
-                ? "11px"
-                : "14px",
-
-              fontWeight: active ? "bold" : "normal",
+              justifyContent: "center",
 
               cursor: "pointer",
 
-              padding: "6px 8px",
-
-              transition: "0.25s",
-
-              letterSpacing: "0.5px",
+              width: isMobile ? "16%" : "100px",
             }}
           >
-            {item.label}
-          </button>
+            {/* ICONO */}
+
+            <div
+              style={{
+                width: isMobile ? "48px" : "56px",
+
+                height: isMobile ? "48px" : "56px",
+
+                borderRadius: "18px",
+
+                display: "flex",
+
+                alignItems: "center",
+
+                justifyContent: "center",
+
+                marginTop: active ? "-24px" : "-16px",
+
+                background: active
+                  ? "#fe5d01"
+                  : "rgba(255,255,255,0.08)",
+
+                border: active
+                  ? "2px solid white"
+                  : "1px solid rgba(255,255,255,0.12)",
+
+                boxShadow: active
+                  ? "0 0 18px rgba(254,93,1,0.55)"
+                  : "0 4px 10px rgba(0,0,0,0.35)",
+
+                transition: "0.25s",
+              }}
+            >
+              <Icon
+                size={isMobile ? 24 : 28}
+                color="white"
+              />
+            </div>
+
+            {/* TEXTO */}
+
+            <div
+              style={{
+                marginTop: "8px",
+
+                color: active ? "#fe5d01" : "white",
+
+                fontSize: isMobile ? "10px" : "13px",
+
+                fontWeight: active ? "bold" : "normal",
+
+                textAlign: "center",
+
+                letterSpacing: "0.5px",
+              }}
+            >
+              {item.label}
+            </div>
+          </div>
         );
       })}
     </div>

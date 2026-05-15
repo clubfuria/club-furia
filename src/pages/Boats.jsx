@@ -1,5 +1,4 @@
-import BottomNav
-from "../components/BottomNav";
+import BottomNav from "../components/BottomNav";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../supabase";
@@ -34,6 +33,9 @@ export default function Boats() {
   const [boatImage, setBoatImage] =
     useState(null);
 
+  const isMobile =
+    window.innerWidth < 768;
+
   useEffect(() => {
 
     fetchBoats();
@@ -46,7 +48,11 @@ export default function Boats() {
 
   }, []);
 
-  // FETCH
+  /*
+    ==========================================
+    FETCH
+    ==========================================
+  */
 
   async function fetchBoats() {
 
@@ -63,7 +69,11 @@ export default function Boats() {
     }
   }
 
-  // ADD BOAT
+  /*
+    ==========================================
+    ADD BOAT
+    ==========================================
+  */
 
   const addBoat = async () => {
 
@@ -134,7 +144,11 @@ export default function Boats() {
     fetchBoats();
   };
 
-  // DELETE
+  /*
+    ==========================================
+    DELETE
+    ==========================================
+  */
 
   const deleteBoat = async (
     id,
@@ -169,7 +183,11 @@ export default function Boats() {
     }
   };
 
-  // FILTRO
+  /*
+    ==========================================
+    FILTRO
+    ==========================================
+  */
 
   const filteredBoats =
     boats.filter((boat) =>
@@ -180,7 +198,11 @@ export default function Boats() {
         )
     );
 
-  // NEXT
+  /*
+    ==========================================
+    NEXT
+    ==========================================
+  */
 
   const nextBoat = () => {
 
@@ -199,7 +221,11 @@ export default function Boats() {
     }
   };
 
-  // PREV
+  /*
+    ==========================================
+    PREV
+    ==========================================
+  */
 
   const prevBoat = () => {
 
@@ -221,13 +247,26 @@ export default function Boats() {
 
     <div
       style={{
+        width: "100%",
         maxWidth: "900px",
-        margin: "40px auto",
-        padding: "20px",
+
+        margin: "0 auto",
+
+        padding: isMobile
+          ? "16px"
+          : "20px",
+
+        boxSizing: "border-box",
+
+        overflowX: "hidden",
+
         fontFamily: "Arial",
+
         backgroundColor: "#011135",
+
         minHeight: "100vh",
-paddingBottom: "100px",
+
+        paddingBottom: "100px",
       }}
     >
 
@@ -237,16 +276,29 @@ paddingBottom: "100px",
         className="no-print"
         style={{
           display: "flex",
+
           justifyContent:
             "space-between",
+
           alignItems: "center",
-          marginBottom: "30px",
+
+          marginBottom: "24px",
+
+          gap: "12px",
+
+          flexWrap: "wrap",
         }}
       >
 
         <h1
           style={{
             color: "#fe5d01",
+
+            fontSize: isMobile
+              ? "34px"
+              : "42px",
+
+            margin: 0,
           }}
         >
           ⛵ FLOTA FURIA
@@ -256,11 +308,15 @@ paddingBottom: "100px",
           to="/"
           style={{
             color: "white",
+
             textDecoration: "none",
+
             backgroundColor:
               "#720792",
+
             padding:
               "10px 20px",
+
             borderRadius: "8px",
           }}
         >
@@ -276,8 +332,11 @@ paddingBottom: "100px",
         style={{
           backgroundColor:
             "#001b44",
+
           padding: "20px",
+
           borderRadius: "12px",
+
           marginBottom: "30px",
         }}
       >
@@ -303,6 +362,7 @@ paddingBottom: "100px",
             width: "100%",
             padding: "10px",
             marginBottom: "10px",
+            boxSizing: "border-box",
           }}
         />
 
@@ -319,6 +379,7 @@ paddingBottom: "100px",
             width: "100%",
             padding: "10px",
             marginBottom: "10px",
+            boxSizing: "border-box",
           }}
         />
 
@@ -335,6 +396,7 @@ paddingBottom: "100px",
             width: "100%",
             padding: "10px",
             marginBottom: "10px",
+            boxSizing: "border-box",
           }}
         />
 
@@ -351,6 +413,7 @@ paddingBottom: "100px",
             width: "100%",
             padding: "10px",
             marginBottom: "10px",
+            boxSizing: "border-box",
           }}
         />
 
@@ -367,23 +430,35 @@ paddingBottom: "100px",
             width: "100%",
             padding: "10px",
             marginBottom: "10px",
+            boxSizing: "border-box",
           }}
         />
+
+        {/* FOTO */}
 
         <label
           style={{
             display:
               "inline-block",
+
             marginTop: "10px",
+
             padding:
               "10px 20px",
+
             backgroundColor:
               "#720792",
+
             color: "white",
+
             border:
               "white solid 2px",
+
             borderRadius: "8px",
+
             cursor: "pointer",
+
+            marginBottom: "12px",
           }}
         >
 
@@ -404,18 +479,24 @@ paddingBottom: "100px",
 
         </label>
 
+        <br />
+
         <button
           onClick={addBoat}
           style={{
-            marginLeft: "10px",
             padding:
               "10px 20px",
+
             backgroundColor:
               "#720792",
+
             color: "white",
+
             border:
               "white solid 2px",
+
             borderRadius: "8px",
+
             cursor: "pointer",
           }}
         >
@@ -441,10 +522,16 @@ paddingBottom: "100px",
         }}
         style={{
           width: "100%",
+
           padding: "12px",
+
           marginBottom: "20px",
+
           borderRadius: "8px",
+
           border: "none",
+
+          boxSizing: "border-box",
         }}
       />
 
@@ -457,11 +544,18 @@ paddingBottom: "100px",
         }
         style={{
           marginBottom: "20px",
+
           padding: "10px 20px",
-          backgroundColor: "#0d7a32",
+
+          backgroundColor:
+            "#0d7a32",
+
           color: "white",
+
           border: "none",
+
           borderRadius: "8px",
+
           cursor: "pointer",
         }}
       >
@@ -477,11 +571,15 @@ paddingBottom: "100px",
           style={{
             backgroundColor:
               "#001b44",
+
             border:
               "2px solid #ddd",
+
             borderRadius:
               "12px",
+
             padding: "15px",
+
             marginBottom: "20px",
           }}
         >
@@ -498,12 +596,18 @@ paddingBottom: "100px",
               alt=""
               style={{
                 width: "100%",
+
+                maxWidth: "100%",
+
                 borderRadius:
                   "10px",
+
                 marginBottom:
                   "10px",
+
                 maxHeight:
                   "500px",
+
                 objectFit:
                   "cover",
               }}
@@ -514,7 +618,10 @@ paddingBottom: "100px",
           <h2
             style={{
               color: "#e7eb0f",
-              fontSize: "32px",
+
+              fontSize: isMobile
+                ? "28px"
+                : "32px",
             }}
           >
             {
@@ -527,6 +634,7 @@ paddingBottom: "100px",
           <p
             style={{
               color: "white",
+
               fontSize: "18px",
             }}
           >
@@ -542,6 +650,7 @@ paddingBottom: "100px",
           <p
             style={{
               color: "white",
+
               fontSize: "18px",
             }}
           >
@@ -557,6 +666,7 @@ paddingBottom: "100px",
           <p
             style={{
               color: "white",
+
               fontSize: "18px",
             }}
           >
@@ -572,7 +682,9 @@ paddingBottom: "100px",
           <p
             style={{
               color: "white",
+
               fontSize: "18px",
+              wordBreak: "break-word",
             }}
           >
             📞 Contacto:
@@ -583,6 +695,8 @@ paddingBottom: "100px",
               ]?.contacto
             }
           </p>
+
+          {/* BORRAR */}
 
           {user?.id ===
             filteredBoats[
@@ -603,14 +717,20 @@ paddingBottom: "100px",
               }
               style={{
                 marginTop: "15px",
+
                 backgroundColor:
                   "#aa2222",
+
                 color: "white",
+
                 border: "none",
+
                 padding:
                   "10px 20px",
+
                 borderRadius:
                   "8px",
+
                 cursor: "pointer",
               }}
             >
@@ -624,21 +744,33 @@ paddingBottom: "100px",
           <div
             style={{
               display: "flex",
+
               justifyContent:
                 "space-between",
+
               marginTop: "30px",
+
+              gap: "10px",
             }}
           >
 
             <button
               onClick={prevBoat}
               style={{
+                flex: 1,
+
                 padding:
                   "12px 20px",
-                fontSize: "18px",
+
+                fontSize: isMobile
+                  ? "15px"
+                  : "18px",
+
                 borderRadius:
                   "8px",
+
                 border: "none",
+
                 cursor: "pointer",
               }}
             >
@@ -648,12 +780,20 @@ paddingBottom: "100px",
             <button
               onClick={nextBoat}
               style={{
+                flex: 1,
+
                 padding:
                   "12px 20px",
-                fontSize: "18px",
+
+                fontSize: isMobile
+                  ? "15px"
+                  : "18px",
+
                 borderRadius:
                   "8px",
+
                 border: "none",
+
                 cursor: "pointer",
               }}
             >
@@ -665,7 +805,9 @@ paddingBottom: "100px",
           <p
             style={{
               textAlign: "center",
+
               marginTop: "15px",
+
               color: "white",
             }}
           >
@@ -681,7 +823,9 @@ paddingBottom: "100px",
         <div
           style={{
             color: "white",
+
             textAlign: "center",
+
             marginTop: "40px",
           }}
         >
@@ -695,9 +839,13 @@ paddingBottom: "100px",
       <div
         style={{
           backgroundColor: "white",
+
           padding: "20px",
+
           borderRadius: "12px",
+
           marginTop: "40px",
+
           overflowX: "auto",
         }}
       >
@@ -709,8 +857,17 @@ paddingBottom: "100px",
         <table
           style={{
             width: "100%",
+
+            maxWidth: "100%",
+
             borderCollapse:
               "collapse",
+
+            tableLayout:
+              "fixed",
+
+            wordWrap:
+              "break-word",
           }}
         >
 
@@ -763,7 +920,9 @@ paddingBottom: "100px",
         </table>
 
       </div>
-<BottomNav />
+
+      <BottomNav />
+
     </div>
 
   );

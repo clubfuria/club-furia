@@ -58,7 +58,7 @@ useEffect(() => {
 
   const buttons = [
     {
-      title: "BOATS",
+      title: "BARCOS",
       description: "Modelos, fichas y fotos de la flota Furia",
       path: "/barcos",
       image: "/buttons/boats.png",
@@ -276,7 +276,97 @@ useEffect(() => {
     </div>
   )}
 </div>
-      
+  {/* ==========================================
+    ENLACES COMUNIDAD
+========================================== */}
+
+<div
+  style={{
+    display: "flex",
+
+    justifyContent: "center",
+
+    gap: isMobile ? "12px" : "18px",
+
+    flexWrap: "wrap",
+
+    marginBottom: "35px",
+  }}
+>
+  {/* WHATSAPP */}
+
+  <a
+    href="https://chat.whatsapp.com/CQf8P8UpgUwCjPkLra0uei?mode=gi_t"
+    target="_blank"
+    rel="noopener noreferrer"
+    style={{
+      textDecoration: "none",
+    }}
+  >
+    <div
+      style={{
+        background: "#25D366",
+
+        color: "white",
+
+        padding: isMobile
+          ? "14px 18px"
+          : "16px 24px",
+
+        borderRadius: "18px",
+
+        fontWeight: "bold",
+
+        fontSize: isMobile ? "15px" : "17px",
+
+        boxShadow: "0 6px 16px rgba(0,0,0,0.25)",
+
+        cursor: "pointer",
+
+        transition: "0.25s",
+      }}
+    >
+      ⚓ Canal WhatsApp
+    </div>
+  </a>
+
+  {/* TAVERNA */}
+
+  <a
+    href="https://foro.latabernadelpuerto.com/showthread.php?t=52634"
+    target="_blank"
+    rel="noopener noreferrer"
+    style={{
+      textDecoration: "none",
+    }}
+  >
+    <div
+      style={{
+        background: "#fe5d01",
+
+        color: "white",
+
+        padding: isMobile
+          ? "14px 18px"
+          : "16px 24px",
+
+        borderRadius: "18px",
+
+        fontWeight: "bold",
+
+        fontSize: isMobile ? "15px" : "17px",
+
+        boxShadow: "0 6px 16px rgba(0,0,0,0.25)",
+
+        cursor: "pointer",
+
+        transition: "0.25s",
+      }}
+    >
+      🍺 La Taverna del Puerto
+    </div>
+  </a>
+</div>    
 
       {/* ==========================================
           BOTONES RESPONSIVE

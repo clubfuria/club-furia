@@ -174,16 +174,13 @@ export default function Tripulacion() {
       {/* CABECERA */}
 
       <div
-        style={{
-          display: "flex",
-          justifyContent:
-            "space-between",
-          alignItems: "center",
-          marginBottom: "30px",
-          minHeight: "100vh",
-paddingBottom: "100px",
-        }}
-      >
+  style={{
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "18px",
+  }}
+>
 
         <h1
           style={{

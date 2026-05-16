@@ -21,6 +21,18 @@ export default function Home() {
   const [password, setPassword] =
     useState("");
 
+  /*
+    ==========================================
+    POSTS
+    ==========================================
+  */
+
+  const [posts, setPosts] =
+    useState([]);
+
+  const [nuevoPost, setNuevoPost] =
+    useState("");
+
   useEffect(() => {
 
     supabase.auth
@@ -31,6 +43,8 @@ export default function Home() {
           data.session
         );
       });
+
+    cargarPosts();
 
     const {
       data: { subscription },
@@ -138,6 +152,85 @@ export default function Home() {
 
   /*
     ==========================================
+    POSTS
+    ==========================================
+  */
+
+  async function cargarPosts() {
+
+    const { data } =
+      await supabase
+        .from("posts")
+        .select("*")
+        .order("created_at", {
+          ascending: false,
+        });
+
+    if (data) {
+
+      setPosts(data);
+    }
+  }
+
+  async function publicarPost() {
+
+    if (!session) {
+
+      alert(
+        "Debes iniciar sesión"
+      );
+
+      return;
+    }
+
+    if (!nuevoPost.trim()) {
+
+      return;
+    }
+
+    const { error } =
+      await supabase
+        .from("posts")
+        .insert([
+          {
+            texto: nuevoPost,
+
+            usuario:
+              session.user.email,
+          },
+        ]);
+
+    if (error) {
+
+      alert(error.message);
+
+      return;
+    }
+
+    setNuevoPost("");
+
+    cargarPosts();
+  }
+
+  async function borrarPost(id) {
+
+    const confirmar =
+      window.confirm(
+        "¿Eliminar comentario?"
+      );
+
+    if (!confirmar) return;
+
+    await supabase
+      .from("posts")
+      .delete()
+      .eq("id", id);
+
+    cargarPosts();
+  }
+
+  /*
+    ==========================================
     RESPONSIVE
     ==========================================
   */
@@ -147,11 +240,10 @@ export default function Home() {
 
   /*
     ==========================================
-    PERSONALIZACIÓN RÁPIDA
+    PERSONALIZACIÓN
     ==========================================
   */
 
-  // COLORES
   const TITLE_COLOR = "#fe5d01";
 
   const TEXT_COLOR = "#e0f406";
@@ -165,7 +257,6 @@ export default function Home() {
   const BACKGROUND_BOTTOM =
     "#0c3157";
 
-  // TAMAÑOS
   const HEADER_TITLE_SIZE =
     isMobile
       ? "42px"
@@ -186,7 +277,6 @@ export default function Home() {
       ? "16px"
       : "18px";
 
-  // LOGO
   const LOGO_WIDTH =
     isMobile
       ? "280px"
@@ -201,80 +291,53 @@ export default function Home() {
   const buttons = [
     {
       title: "BARCOS",
-
       description:
         "Modelos, fichas y fotos de la flota Furia",
-
       path: "/barcos",
-
-      image:
-        "/buttons/boats.png",
+      image: "/buttons/boats.png",
     },
 
     {
-      title:
-        "TRIPULACIÓN",
-
+      title: "TRIPULACIÓN",
       description:
         "Armadores y tripulantes",
-
-      path:
-        "/tripulacion",
-
+      path: "/tripulacion",
       image:
         "/buttons/tripulacion.png",
     },
 
     {
-      title:
-        "ACTIVIDADES",
-
+      title: "ACTIVIDADES",
       description:
         "Regatas, encuentros y navegación",
-
-      path:
-        "/actividades",
-
+      path: "/actividades",
       image:
         "/buttons/actividades.png",
     },
 
     {
-      title:
-        "RECURSOS",
-
+      title: "RECURSOS",
       description:
         "Manuales, documentación y enlaces útiles",
-
-      path:
-        "/recursos",
-
+      path: "/recursos",
       image:
         "/buttons/recursos.png",
     },
 
     {
-      title:
-        "COMPRAVENTA",
-
+      title: "COMPRAVENTA",
       description:
         "Compra y venta de material náutico",
-
-      path:
-        "/compraventa",
-
+      path: "/compraventa",
       image:
         "/buttons/compraventa.png",
     },
 
     {
       title: "BRICOS",
-
       description:
         "Mejoras, reparaciones y proyectos DIY",
-
       path: "/bricos",
-
       image:
         "/buttons/bricos.png",
     },
@@ -303,9 +366,7 @@ export default function Home() {
       }}
     >
 
-      {/* ==========================================
-          CABECERA
-      ========================================== */}
+      {/* CABECERA */}
 
       <div
         style={{
@@ -390,9 +451,7 @@ export default function Home() {
 
       </div>
 
-      {/* ==========================================
-          LOGIN
-      ========================================== */}
+      {/* LOGIN */}
 
       <div
         style={{
@@ -429,122 +488,74 @@ export default function Home() {
             }}
           >
 
-            {/* EMAIL */}
-
             <input
               type="email"
-
               placeholder="Correo electrónico"
-
               value={email}
-
               onChange={(e) =>
                 setEmail(
                   e.target.value
                 )
               }
-
               style={{
                 width: "100%",
-
-                padding:
-                  "14px",
-
+                padding: "14px",
                 marginBottom:
                   "14px",
-
                 borderRadius:
                   "12px",
-
                 border: "none",
-
-                outline:
-                  "none",
-
-                fontSize:
-                  "16px",
-
+                outline: "none",
+                fontSize: "16px",
                 background:
                   "rgba(255,255,255,0.92)",
-
                 boxSizing:
                   "border-box",
               }}
             />
 
-            {/* PASSWORD */}
-
             <input
               type="password"
-
               placeholder="Contraseña"
-
               value={password}
-
               onChange={(e) =>
                 setPassword(
                   e.target.value
                 )
               }
-
               style={{
                 width: "100%",
-
-                padding:
-                  "14px",
-
+                padding: "14px",
                 marginBottom:
                   "18px",
-
                 borderRadius:
                   "12px",
-
                 border: "none",
-
-                outline:
-                  "none",
-
-                fontSize:
-                  "16px",
-
+                outline: "none",
+                fontSize: "16px",
                 background:
                   "rgba(255,255,255,0.92)",
-
                 boxSizing:
                   "border-box",
               }}
             />
 
-            {/* ENTRAR */}
-
             <button
               onClick={login}
-
               style={{
                 width: "100%",
-
-                padding:
-                  "15px",
-
+                padding: "15px",
                 borderRadius:
                   "14px",
-
                 border: "none",
-
                 background:
                   TITLE_COLOR,
-
                 color: "white",
-
-                fontSize:
-                  "18px",
-
+                fontSize: "18px",
                 fontWeight:
                   "bold",
-
                 cursor:
                   "pointer",
-
                 marginBottom:
                   "12px",
               }}
@@ -552,35 +563,22 @@ export default function Home() {
               ENTRAR
             </button>
 
-            {/* REGISTRO */}
-
             <button
               onClick={
                 registrarse
               }
-
               style={{
                 width: "100%",
-
-                padding:
-                  "15px",
-
+                padding: "15px",
                 borderRadius:
                   "14px",
-
                 border: "none",
-
                 background:
                   "#720792",
-
                 color: "white",
-
-                fontSize:
-                  "18px",
-
+                fontSize: "18px",
                 fontWeight:
                   "bold",
-
                 cursor:
                   "pointer",
               }}
@@ -637,9 +635,6 @@ export default function Home() {
 
                 fontWeight:
                   "bold",
-
-                wordBreak:
-                  "break-word",
               }}
             >
               Conectado:
@@ -651,26 +646,19 @@ export default function Home() {
               onClick={() =>
                 supabase.auth.signOut()
               }
-
               style={{
                 padding:
                   "10px 18px",
-
                 borderRadius:
                   "12px",
-
                 border:
                   "none",
-
                 background:
                   "#fe5d01",
-
                 color:
                   "white",
-
                 fontWeight:
                   "bold",
-
                 cursor:
                   "pointer",
               }}
@@ -684,147 +672,15 @@ export default function Home() {
 
       </div>
 
-      {/* ==========================================
-          ENLACES COMUNIDAD
-      ========================================== */}
-
-      <div
-        style={{
-          display: "flex",
-
-          justifyContent:
-            "center",
-
-          gap:
-            isMobile
-              ? "12px"
-              : "18px",
-
-          flexWrap:
-            "wrap",
-
-          marginBottom:
-            "35px",
-        }}
-      >
-
-        {/* WHATSAPP */}
-
-        <a
-          href="https://chat.whatsapp.com/CQf8P8UpgUwCjPkLra0uei?mode=gi_t"
-
-          target="_blank"
-
-          rel="noopener noreferrer"
-
-          style={{
-            textDecoration:
-              "none",
-          }}
-        >
-
-          <div
-            style={{
-              background:
-                "#25D366",
-
-              color: "white",
-
-              padding:
-                isMobile
-                  ? "14px 18px"
-                  : "16px 24px",
-
-              borderRadius:
-                "18px",
-
-              fontWeight:
-                "bold",
-
-              fontSize:
-                isMobile
-                  ? "15px"
-                  : "17px",
-
-              boxShadow:
-                "0 6px 16px rgba(0,0,0,0.25)",
-
-              cursor:
-                "pointer",
-            }}
-          >
-            ⚓ Canal WhatsApp
-          </div>
-
-        </a>
-
-        {/* TAVERNA */}
-
-        <a
-          href="https://foro.latabernadelpuerto.com/showthread.php?t=52634"
-
-          target="_blank"
-
-          rel="noopener noreferrer"
-
-          style={{
-            textDecoration:
-              "none",
-          }}
-        >
-
-          <div
-            style={{
-              background:
-                "#fe5d01",
-
-              color: "white",
-
-              padding:
-                isMobile
-                  ? "14px 18px"
-                  : "16px 24px",
-
-              borderRadius:
-                "18px",
-
-              fontWeight:
-                "bold",
-
-              fontSize:
-                isMobile
-                  ? "15px"
-                  : "17px",
-
-              boxShadow:
-                "0 6px 16px rgba(0,0,0,0.25)",
-
-              cursor:
-                "pointer",
-            }}
-          >
-            🍺 La Taverna del Puerto
-          </div>
-
-        </a>
-
-      </div>
-
-      {/* ==========================================
-          BOTONES RESPONSIVE
-      ========================================== */}
+      {/* BOTONES */}
 
       <div
         style={{
           maxWidth: "1100px",
-
           margin: "0 auto",
-
           display: "flex",
-
           flexDirection:
             "column",
-
           gap: "20px",
         }}
       >
@@ -834,23 +690,18 @@ export default function Home() {
 
             <div
               key={index}
-
               onClick={() =>
                 navigate(
                   button.path
                 )
               }
-
               style={{
                 borderRadius:
                   "24px",
-
                 overflow:
                   "hidden",
-
                 cursor:
                   "pointer",
-
                 border:
                   "1px solid rgba(255,255,255,0.25)",
 
@@ -872,9 +723,6 @@ export default function Home() {
                   isMobile
                     ? "320px"
                     : "190px",
-
-                transition:
-                  "0.25s",
               }}
             >
 
@@ -903,17 +751,13 @@ export default function Home() {
                   src={
                     button.image
                   }
-
                   alt={
                     button.title
                   }
-
                   style={{
                     width: "100%",
-
                     height:
                       "100%",
-
                     objectFit:
                       "cover",
                   }}
@@ -1009,7 +853,262 @@ export default function Home() {
 
       </div>
 
-    </div>
+      {/* POSTS COMUNIDAD */}
 
+      <div
+        style={{
+          maxWidth: "1100px",
+
+          margin:
+            "60px auto 0 auto",
+        }}
+      >
+
+        <h2
+          style={{
+            color:
+              TITLE_COLOR,
+
+            fontSize:
+              isMobile
+                ? "34px"
+                : "42px",
+
+            marginBottom:
+              "25px",
+
+            textAlign:
+              "center",
+          }}
+        >
+          COMUNIDAD
+        </h2>
+
+        {/* NUEVO POST */}
+
+        {session && (
+
+          <div
+            style={{
+              background:
+                "rgba(255,255,255,0.08)",
+
+              border:
+                "1px solid rgba(255,255,255,0.12)",
+
+              borderRadius:
+                "22px",
+
+              padding:
+                isMobile
+                  ? "18px"
+                  : "24px",
+
+              marginBottom:
+                "28px",
+            }}
+          >
+
+            <textarea
+              placeholder="Escribe un comentario..."
+
+              value={nuevoPost}
+
+              onChange={(e) =>
+                setNuevoPost(
+                  e.target.value
+                )
+              }
+
+              style={{
+                width: "100%",
+
+                minHeight:
+                  "120px",
+
+                padding:
+                  "16px",
+
+                borderRadius:
+                  "16px",
+
+                border:
+                  "none",
+
+                resize:
+                  "vertical",
+
+                fontSize:
+                  "16px",
+
+                marginBottom:
+                  "18px",
+
+                boxSizing:
+                  "border-box",
+              }}
+            />
+
+            <button
+              onClick={
+                publicarPost
+              }
+
+              style={{
+                background:
+                  TITLE_COLOR,
+
+                color:
+                  "white",
+
+                border:
+                  "none",
+
+                padding:
+                  "14px 24px",
+
+                borderRadius:
+                  "14px",
+
+                fontWeight:
+                  "bold",
+
+                cursor:
+                  "pointer",
+
+                fontSize:
+                  "16px",
+              }}
+            >
+              PUBLICAR
+            </button>
+
+          </div>
+
+        )}
+
+        {/* POSTS */}
+
+        <div
+          style={{
+            display: "flex",
+
+            flexDirection:
+              "column",
+
+            gap: "22px",
+          }}
+        >
+
+          {posts.map((post) => (
+
+            <div
+              key={post.id}
+
+              style={{
+                background:
+                  "rgba(255,255,255,0.08)",
+
+                border:
+                  "1px solid rgba(255,255,255,0.12)",
+
+                borderRadius:
+                  "22px",
+
+                padding:
+                  isMobile
+                    ? "18px"
+                    : "24px",
+              }}
+            >
+
+              <div
+                style={{
+                  color:
+                    TITLE_COLOR,
+
+                  fontWeight:
+                    "bold",
+
+                  marginBottom:
+                    "14px",
+
+                  fontSize:
+                    "17px",
+                }}
+              >
+                {post.usuario}
+              </div>
+
+              <div
+                style={{
+                  color:
+                    "white",
+
+                  lineHeight:
+                    1.7,
+
+                  fontSize:
+                    isMobile
+                      ? "16px"
+                      : "18px",
+
+                  whiteSpace:
+                    "pre-wrap",
+                }}
+              >
+                {post.texto}
+              </div>
+
+              {session?.user?.email ===
+                post.usuario && (
+
+                <button
+                  onClick={() =>
+                    borrarPost(
+                      post.id
+                    )
+                  }
+
+                  style={{
+                    marginTop:
+                      "18px",
+
+                    background:
+                      "#b3261e",
+
+                    border:
+                      "none",
+
+                    color:
+                      "white",
+
+                    padding:
+                      "10px 16px",
+
+                    borderRadius:
+                      "12px",
+
+                    cursor:
+                      "pointer",
+
+                    fontWeight:
+                      "bold",
+                  }}
+                >
+                  BORRAR
+                </button>
+
+              )}
+
+            </div>
+
+          ))}
+
+        </div>
+
+      </div>
+
+    </div>
   );
 }

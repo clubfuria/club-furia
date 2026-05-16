@@ -33,6 +33,10 @@ export default function Boats() {
   const [boatImage, setBoatImage] =
     useState(null);
 
+  // EDITAR
+  const [editingBoatId, setEditingBoatId] =
+    useState(null);
+
   const isMobile =
     window.innerWidth < 768;
 
@@ -71,7 +75,7 @@ export default function Boats() {
 
   /*
     ==========================================
-    ADD BOAT
+    ADD / EDIT BOAT
     ==========================================
   */
 
@@ -87,6 +91,8 @@ export default function Boats() {
     }
 
     let imageUrl = "";
+
+    // SUBIR FOTO
 
     if (boatImage) {
 
@@ -112,27 +118,92 @@ export default function Boats() {
         `https://cqfxomvrkkaegtfkboun.supabase.co/storage/v1/object/public/boats/${fileName}`;
     }
 
-    const { error } =
-      await supabase
-        .from("boats")
-        .insert([
-          {
-            name: boatName,
-            model: boatModel,
-            port: boatPort,
-            tripulacion: boatCrew,
-            contacto: boatContacto,
-            image_url: imageUrl,
-            user_id: user.id,
-          },
-        ]);
+    // EDITAR
 
-    if (error) {
+    if (editingBoatId) {
 
-      alert(error.message);
+      const updateData = {
 
-      return;
+        name: boatName,
+
+        model: boatModel,
+
+        port: boatPort,
+
+        tripulacion: boatCrew,
+
+        contacto: boatContacto,
+      };
+
+      // SOLO CAMBIA FOTO
+      // SI HAY NUEVA
+
+      if (imageUrl) {
+
+        updateData.image_url =
+          imageUrl;
+      }
+
+      const { error } =
+        await supabase
+          .from("boats")
+          .update(updateData)
+          .eq(
+            "id",
+            editingBoatId
+          );
+
+      if (error) {
+
+        alert(error.message);
+
+        return;
+      }
+
+      alert(
+        "Barco actualizado"
+      );
+
+      setEditingBoatId(null);
+
+    } else {
+
+      // NUEVO BARCO
+
+      const { error } =
+        await supabase
+          .from("boats")
+          .insert([
+            {
+              name: boatName,
+
+              model: boatModel,
+
+              port: boatPort,
+
+              tripulacion: boatCrew,
+
+              contacto: boatContacto,
+
+              image_url: imageUrl,
+
+              user_id: user.id,
+            },
+          ]);
+
+      if (error) {
+
+        alert(error.message);
+
+        return;
+      }
+
+      alert(
+        "Barco añadido"
+      );
     }
+
+    // LIMPIAR
 
     setBoatName("");
     setBoatModel("");
@@ -185,19 +256,79 @@ export default function Boats() {
 
   /*
     ==========================================
+    EDITAR
+    ==========================================
+  */
+
+  const editBoat = (boat) => {
+
+    setEditingBoatId(boat.id);
+
+    setBoatName(
+      boat.name || ""
+    );
+
+    setBoatModel(
+      boat.model || ""
+    );
+
+    setBoatPort(
+      boat.port || ""
+    );
+
+    setBoatCrew(
+      boat.tripulacion || ""
+    );
+
+    setBoatContacto(
+      boat.contacto || ""
+    );
+  };
+
+  /*
+    ==========================================
     FILTRO
     ==========================================
   */
 
-  const filteredBoats =
-    boats.filter((boat) =>
-      boat.port
-        ?.toLowerCase()
-        .includes(
-          boatSearch.toLowerCase()
-        )
-    );
+ const normalizeText = (text) => {
 
+  return text
+    ?.toLowerCase()
+    .normalize("NFD")
+    .replace(
+      /[\u0300-\u036f]/g,
+      ""
+    );
+};
+
+const filteredBoats =
+  boats.filter((boat) => {
+
+    const search =
+      normalizeText(
+        boatSearch
+      );
+
+    return (
+
+      normalizeText(
+        boat.name
+      )?.includes(search)
+
+      ||
+
+      normalizeText(
+        boat.model
+      )?.includes(search)
+
+      ||
+
+      normalizeText(
+        boat.port
+      )?.includes(search)
+    );
+  });
   /*
     ==========================================
     NEXT
@@ -346,7 +477,11 @@ export default function Boats() {
             color: "white",
           }}
         >
-          Registrar barco
+          {
+            editingBoatId
+              ? "Editar barco"
+              : "Registrar barco"
+          }
         </h2>
 
         <input
@@ -500,7 +635,11 @@ export default function Boats() {
             cursor: "pointer",
           }}
         >
-          Guardar barco
+          {
+            editingBoatId
+              ? "Actualizar barco"
+              : "Guardar barco"
+          }
         </button>
 
       </div>
@@ -684,6 +823,7 @@ export default function Boats() {
               color: "white",
 
               fontSize: "18px",
+
               wordBreak: "break-word",
             }}
           >
@@ -696,46 +836,83 @@ export default function Boats() {
             }
           </p>
 
-          {/* BORRAR */}
+          {/* BOTONES */}
 
           {user?.id ===
             filteredBoats[
               currentBoat
             ]?.user_id && (
 
-            <button
-              onClick={() =>
-                deleteBoat(
-                  filteredBoats[
-                    currentBoat
-                  ].id,
-
-                  filteredBoats[
-                    currentBoat
-                  ].image_url
-                )
-              }
+            <div
               style={{
+                display: "flex",
+                gap: "10px",
                 marginTop: "15px",
-
-                backgroundColor:
-                  "#aa2222",
-
-                color: "white",
-
-                border: "none",
-
-                padding:
-                  "10px 20px",
-
-                borderRadius:
-                  "8px",
-
-                cursor: "pointer",
+                flexWrap: "wrap",
               }}
             >
-              Borrar barco
-            </button>
+
+              <button
+                onClick={() =>
+                  deleteBoat(
+                    filteredBoats[
+                      currentBoat
+                    ].id,
+
+                    filteredBoats[
+                      currentBoat
+                    ].image_url
+                  )
+                }
+                style={{
+                  backgroundColor:
+                    "#aa2222",
+
+                  color: "white",
+
+                  border: "none",
+
+                  padding:
+                    "10px 20px",
+
+                  borderRadius:
+                    "8px",
+
+                  cursor: "pointer",
+                }}
+              >
+                Borrar barco
+              </button>
+
+              <button
+                onClick={() =>
+                  editBoat(
+                    filteredBoats[
+                      currentBoat
+                    ]
+                  )
+                }
+                style={{
+                  backgroundColor:
+                    "#0d7a32",
+
+                  color: "white",
+
+                  border: "none",
+
+                  padding:
+                    "10px 20px",
+
+                  borderRadius:
+                    "8px",
+
+                  cursor: "pointer",
+                }}
+              >
+                Editar barco
+              </button>
+
+            </div>
 
           )}
 

@@ -1,30 +1,149 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "../supabase";
+
 export default function Home() {
+
   const navigate = useNavigate();
-const [session, setSession] = useState(null);
 
-useEffect(() => {
-  supabase.auth.getSession().then(({ data }) => {
-    setSession(data.session);
-  });
+  /*
+    ==========================================
+    AUTH
+    ==========================================
+  */
 
-  const {
-    data: { subscription },
-  } = supabase.auth.onAuthStateChange((_event, session) => {
-    setSession(session);
-  });
+  const [session, setSession] =
+    useState(null);
 
-  return () => subscription.unsubscribe();
-}, []);
+  const [email, setEmail] =
+    useState("");
+
+  const [password, setPassword] =
+    useState("");
+
+  useEffect(() => {
+
+    supabase.auth
+      .getSession()
+      .then(({ data }) => {
+
+        setSession(
+          data.session
+        );
+      });
+
+    const {
+      data: { subscription },
+    } =
+      supabase.auth.onAuthStateChange(
+        (_event, session) => {
+
+          setSession(session);
+        }
+      );
+
+    return () =>
+      subscription.unsubscribe();
+
+  }, []);
+
+  /*
+    ==========================================
+    LOGIN
+    ==========================================
+  */
+
+  async function login() {
+
+    if (!email || !password) {
+
+      alert(
+        "Introduce email y contraseña"
+      );
+
+      return;
+    }
+
+    const { error } =
+      await supabase.auth.signInWithPassword({
+
+        email,
+
+        password,
+      });
+
+    if (error) {
+
+      alert(error.message);
+
+      return;
+    }
+
+    alert(
+      "Sesión iniciada"
+    );
+  }
+
+  /*
+    ==========================================
+    REGISTRO
+    ==========================================
+  */
+
+  async function registrarse() {
+
+    if (!email || !password) {
+
+      alert(
+        "Introduce email y contraseña"
+      );
+
+      return;
+    }
+
+    if (password.length < 6) {
+
+      alert(
+        "La contraseña debe tener mínimo 6 caracteres"
+      );
+
+      return;
+    }
+
+    const { error } =
+      await supabase.auth.signUp({
+
+        email,
+
+        password,
+
+        options: {
+
+          emailRedirectTo:
+            window.location.origin,
+        },
+      });
+
+    if (error) {
+
+      alert(error.message);
+
+      return;
+    }
+
+    alert(
+      "Cuenta creada correctamente. Revisa tu correo para confirmar el registro."
+    );
+  }
+
   /*
     ==========================================
     RESPONSIVE
     ==========================================
   */
 
-  const isMobile = window.innerWidth < 768;
+  const isMobile =
+    window.innerWidth < 768;
 
   /*
     ==========================================
@@ -34,21 +153,44 @@ useEffect(() => {
 
   // COLORES
   const TITLE_COLOR = "#fe5d01";
+
   const TEXT_COLOR = "#e0f406";
 
-  const BACKGROUND_TOP = "#021224";
-  const BACKGROUND_MIDDLE = "#08203b";
-  const BACKGROUND_BOTTOM = "#0c3157";
+  const BACKGROUND_TOP =
+    "#021224";
+
+  const BACKGROUND_MIDDLE =
+    "#08203b";
+
+  const BACKGROUND_BOTTOM =
+    "#0c3157";
 
   // TAMAÑOS
-  const HEADER_TITLE_SIZE = isMobile ? "42px" : "64px";
-  const HEADER_SUBTITLE_SIZE = isMobile ? "16px" : "20px";
+  const HEADER_TITLE_SIZE =
+    isMobile
+      ? "42px"
+      : "64px";
 
-  const BUTTON_TITLE_SIZE = isMobile ? "28px" : "36px";
-  const BUTTON_DESCRIPTION_SIZE = isMobile ? "16px" : "18px";
+  const HEADER_SUBTITLE_SIZE =
+    isMobile
+      ? "16px"
+      : "20px";
+
+  const BUTTON_TITLE_SIZE =
+    isMobile
+      ? "28px"
+      : "36px";
+
+  const BUTTON_DESCRIPTION_SIZE =
+    isMobile
+      ? "16px"
+      : "18px";
 
   // LOGO
-  const LOGO_WIDTH = isMobile ? "280px" : "280px";
+  const LOGO_WIDTH =
+    isMobile
+      ? "280px"
+      : "280px";
 
   /*
     ==========================================
@@ -59,46 +201,87 @@ useEffect(() => {
   const buttons = [
     {
       title: "BARCOS",
-      description: "Modelos, fichas y fotos de la flota Furia",
+
+      description:
+        "Modelos, fichas y fotos de la flota Furia",
+
       path: "/barcos",
-      image: "/buttons/boats.png",
+
+      image:
+        "/buttons/boats.png",
     },
 
     {
-      title: "TRIPULACIÓN",
-      description: "Armadores y tripulantes",
-      path: "/tripulacion",
-      image: "/buttons/tripulacion.png",
+      title:
+        "TRIPULACIÓN",
+
+      description:
+        "Armadores y tripulantes",
+
+      path:
+        "/tripulacion",
+
+      image:
+        "/buttons/tripulacion.png",
     },
 
     {
-      title: "ACTIVIDADES",
-      description: "Regatas, encuentros y navegación",
-      path: "/actividades",
-      image: "/buttons/actividades.png",
+      title:
+        "ACTIVIDADES",
+
+      description:
+        "Regatas, encuentros y navegación",
+
+      path:
+        "/actividades",
+
+      image:
+        "/buttons/actividades.png",
     },
 
     {
-      title: "RECURSOS",
-      description: "Manuales, documentación y enlaces útiles",
-      path: "/recursos",
-      image: "/buttons/recursos.png",
+      title:
+        "RECURSOS",
+
+      description:
+        "Manuales, documentación y enlaces útiles",
+
+      path:
+        "/recursos",
+
+      image:
+        "/buttons/recursos.png",
     },
-{
-  title: "COMPRAVENTA",
-  description: "Compra y venta de material náutico",
-  path: "/compraventa",
-  image: "/buttons/compraventa.png",
-},
+
+    {
+      title:
+        "COMPRAVENTA",
+
+      description:
+        "Compra y venta de material náutico",
+
+      path:
+        "/compraventa",
+
+      image:
+        "/buttons/compraventa.png",
+    },
+
     {
       title: "BRICOS",
-      description: "Mejoras, reparaciones y proyectos DIY",
+
+      description:
+        "Mejoras, reparaciones y proyectos DIY",
+
       path: "/bricos",
-      image: "/buttons/bricos.png",
+
+      image:
+        "/buttons/bricos.png",
     },
   ];
 
   return (
+
     <div
       style={{
         minHeight: "100vh",
@@ -110,11 +293,16 @@ useEffect(() => {
           ${BACKGROUND_BOTTOM} 100%
         )`,
 
-        padding: isMobile ? "20px 14px 40px" : "25px 20px 50px",
+        padding:
+          isMobile
+            ? "20px 14px 40px"
+            : "25px 20px 50px",
 
-        fontFamily: "Arial, sans-serif",
+        fontFamily:
+          "Arial, sans-serif",
       }}
     >
+
       {/* ==========================================
           CABECERA
       ========================================== */}
@@ -122,29 +310,52 @@ useEffect(() => {
       <div
         style={{
           textAlign: "center",
-          marginBottom: isMobile ? "35px" : "45px",
+
+          marginBottom:
+            isMobile
+              ? "35px"
+              : "45px",
         }}
       >
+
         <img
           src="/logo.jpeg"
           alt="Club Furia"
           style={{
             width: LOGO_WIDTH,
-            marginBottom: "18px",
-            filter: "drop-shadow(0 4px 12px rgba(0,0,0,0.5))",
+
+            marginBottom:
+              "18px",
+
+            filter:
+              "drop-shadow(0 4px 12px rgba(0,0,0,0.5))",
           }}
         />
 
         <h1
           style={{
-            color: TITLE_COLOR,
-            fontSize: HEADER_TITLE_SIZE,
-            fontWeight: "bold",
+            color:
+              TITLE_COLOR,
+
+            fontSize:
+              HEADER_TITLE_SIZE,
+
+            fontWeight:
+              "bold",
+
             margin: 0,
-            letterSpacing: "4px",
-            lineHeight: "1.2",
-            marginBottom: "24px",
-            textShadow: "0 4px 12px rgba(0,0,0,0.5)",
+
+            letterSpacing:
+              "4px",
+
+            lineHeight:
+              "1.2",
+
+            marginBottom:
+              "24px",
+
+            textShadow:
+              "0 4px 12px rgba(0,0,0,0.5)",
           }}
         >
           CLUB FURIA
@@ -152,221 +363,452 @@ useEffect(() => {
 
         <p
           style={{
-            color: TEXT_COLOR,
-            fontSize: HEADER_SUBTITLE_SIZE,
+            color:
+              TEXT_COLOR,
+
+            fontSize:
+              HEADER_SUBTITLE_SIZE,
+
             opacity: 0.95,
+
             margin: 0,
-            lineHeight: "1.8",
-            letterSpacing: "0.5px",
-            padding: isMobile ? "0 10px" : 0,
+
+            lineHeight:
+              "1.8",
+
+            letterSpacing:
+              "0.5px",
+
+            padding:
+              isMobile
+                ? "0 10px"
+                : 0,
           }}
         >
           Comunidad de armadores y amantes de los veleros Furia
         </p>
+
       </div>
 
       {/* ==========================================
           LOGIN
       ========================================== */}
-<div
-  style={{
-    maxWidth: "420px",
-    margin: "0 auto 40px auto",
-  }}
->
-  {!session ? (
-    <div
-      style={{
-        background: "rgba(255,255,255,0.08)",
-        backdropFilter: "blur(10px)",
-        border: "1px solid rgba(255,255,255,0.12)",
-        borderRadius: "20px",
-        padding: isMobile ? "18px" : "24px",
-        boxShadow: "0 8px 20px rgba(0,0,0,0.25)",
-      }}
-    >
-      <input
-        type="email"
-        placeholder="Correo electrónico"
-        style={{
-          width: "100%",
-          padding: "14px",
-          marginBottom: "14px",
-          borderRadius: "12px",
-          border: "none",
-          outline: "none",
-          fontSize: "16px",
-          background: "rgba(255,255,255,0.92)",
-          boxSizing: "border-box",
-        }}
-      />
 
-      <input
-        type="password"
-        placeholder="Contraseña"
-        style={{
-          width: "100%",
-          padding: "14px",
-          marginBottom: "18px",
-          borderRadius: "12px",
-          border: "none",
-          outline: "none",
-          fontSize: "16px",
-          background: "rgba(255,255,255,0.92)",
-          boxSizing: "border-box",
-        }}
-      />
-
-      <button
-        style={{
-          width: "100%",
-          padding: "15px",
-          borderRadius: "14px",
-          border: "none",
-          background: TITLE_COLOR,
-          color: "white",
-          fontSize: "18px",
-          fontWeight: "bold",
-          cursor: "pointer",
-        }}
-      >
-        ENTRAR
-      </button>
-    </div>
-  ) : (
-    <div
-      style={{
-        background: "rgba(255,255,255,0.08)",
-        backdropFilter: "blur(10px)",
-        border: "1px solid rgba(255,255,255,0.12)",
-        borderRadius: "20px",
-        padding: "20px",
-        boxShadow: "0 8px 20px rgba(0,0,0,0.25)",
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-      }}
-    >
       <div
         style={{
-          color: "white",
-          fontSize: "18px",
-          fontWeight: "bold",
+          maxWidth: "420px",
+
+          margin:
+            "0 auto 40px auto",
         }}
       >
-        Conectado:
-        {" "}
-        {session.user.email}
+
+        {!session ? (
+
+          <div
+            style={{
+              background:
+                "rgba(255,255,255,0.08)",
+
+              backdropFilter:
+                "blur(10px)",
+
+              border:
+                "1px solid rgba(255,255,255,0.12)",
+
+              borderRadius:
+                "20px",
+
+              padding:
+                isMobile
+                  ? "18px"
+                  : "24px",
+
+              boxShadow:
+                "0 8px 20px rgba(0,0,0,0.25)",
+            }}
+          >
+
+            {/* EMAIL */}
+
+            <input
+              type="email"
+
+              placeholder="Correo electrónico"
+
+              value={email}
+
+              onChange={(e) =>
+                setEmail(
+                  e.target.value
+                )
+              }
+
+              style={{
+                width: "100%",
+
+                padding:
+                  "14px",
+
+                marginBottom:
+                  "14px",
+
+                borderRadius:
+                  "12px",
+
+                border: "none",
+
+                outline:
+                  "none",
+
+                fontSize:
+                  "16px",
+
+                background:
+                  "rgba(255,255,255,0.92)",
+
+                boxSizing:
+                  "border-box",
+              }}
+            />
+
+            {/* PASSWORD */}
+
+            <input
+              type="password"
+
+              placeholder="Contraseña"
+
+              value={password}
+
+              onChange={(e) =>
+                setPassword(
+                  e.target.value
+                )
+              }
+
+              style={{
+                width: "100%",
+
+                padding:
+                  "14px",
+
+                marginBottom:
+                  "18px",
+
+                borderRadius:
+                  "12px",
+
+                border: "none",
+
+                outline:
+                  "none",
+
+                fontSize:
+                  "16px",
+
+                background:
+                  "rgba(255,255,255,0.92)",
+
+                boxSizing:
+                  "border-box",
+              }}
+            />
+
+            {/* ENTRAR */}
+
+            <button
+              onClick={login}
+
+              style={{
+                width: "100%",
+
+                padding:
+                  "15px",
+
+                borderRadius:
+                  "14px",
+
+                border: "none",
+
+                background:
+                  TITLE_COLOR,
+
+                color: "white",
+
+                fontSize:
+                  "18px",
+
+                fontWeight:
+                  "bold",
+
+                cursor:
+                  "pointer",
+
+                marginBottom:
+                  "12px",
+              }}
+            >
+              ENTRAR
+            </button>
+
+            {/* REGISTRO */}
+
+            <button
+              onClick={
+                registrarse
+              }
+
+              style={{
+                width: "100%",
+
+                padding:
+                  "15px",
+
+                borderRadius:
+                  "14px",
+
+                border: "none",
+
+                background:
+                  "#720792",
+
+                color: "white",
+
+                fontSize:
+                  "18px",
+
+                fontWeight:
+                  "bold",
+
+                cursor:
+                  "pointer",
+              }}
+            >
+              REGISTRARSE
+            </button>
+
+          </div>
+
+        ) : (
+
+          <div
+            style={{
+              background:
+                "rgba(255,255,255,0.08)",
+
+              backdropFilter:
+                "blur(10px)",
+
+              border:
+                "1px solid rgba(255,255,255,0.12)",
+
+              borderRadius:
+                "20px",
+
+              padding:
+                "20px",
+
+              boxShadow:
+                "0 8px 20px rgba(0,0,0,0.25)",
+
+              display:
+                "flex",
+
+              justifyContent:
+                "space-between",
+
+              alignItems:
+                "center",
+
+              gap: "12px",
+
+              flexWrap:
+                "wrap",
+            }}
+          >
+
+            <div
+              style={{
+                color: "white",
+
+                fontSize:
+                  "18px",
+
+                fontWeight:
+                  "bold",
+
+                wordBreak:
+                  "break-word",
+              }}
+            >
+              Conectado:
+              {" "}
+              {session.user.email}
+            </div>
+
+            <button
+              onClick={() =>
+                supabase.auth.signOut()
+              }
+
+              style={{
+                padding:
+                  "10px 18px",
+
+                borderRadius:
+                  "12px",
+
+                border:
+                  "none",
+
+                background:
+                  "#fe5d01",
+
+                color:
+                  "white",
+
+                fontWeight:
+                  "bold",
+
+                cursor:
+                  "pointer",
+              }}
+            >
+              SALIR
+            </button>
+
+          </div>
+
+        )}
+
       </div>
 
-      <button
-        onClick={() => supabase.auth.signOut()}
+      {/* ==========================================
+          ENLACES COMUNIDAD
+      ========================================== */}
+
+      <div
         style={{
-          padding: "10px 18px",
-          borderRadius: "12px",
-          border: "none",
-          background: "#fe5d01",
-          color: "white",
-          fontWeight: "bold",
-          cursor: "pointer",
+          display: "flex",
+
+          justifyContent:
+            "center",
+
+          gap:
+            isMobile
+              ? "12px"
+              : "18px",
+
+          flexWrap:
+            "wrap",
+
+          marginBottom:
+            "35px",
         }}
       >
-        SALIR
-      </button>
-    </div>
-  )}
-</div>
-  {/* ==========================================
-    ENLACES COMUNIDAD
-========================================== */}
 
-<div
-  style={{
-    display: "flex",
+        {/* WHATSAPP */}
 
-    justifyContent: "center",
+        <a
+          href="https://chat.whatsapp.com/CQf8P8UpgUwCjPkLra0uei?mode=gi_t"
 
-    gap: isMobile ? "12px" : "18px",
+          target="_blank"
 
-    flexWrap: "wrap",
+          rel="noopener noreferrer"
 
-    marginBottom: "35px",
-  }}
->
-  {/* WHATSAPP */}
+          style={{
+            textDecoration:
+              "none",
+          }}
+        >
 
-  <a
-    href="https://chat.whatsapp.com/CQf8P8UpgUwCjPkLra0uei?mode=gi_t"
-    target="_blank"
-    rel="noopener noreferrer"
-    style={{
-      textDecoration: "none",
-    }}
-  >
-    <div
-      style={{
-        background: "#25D366",
+          <div
+            style={{
+              background:
+                "#25D366",
 
-        color: "white",
+              color: "white",
 
-        padding: isMobile
-          ? "14px 18px"
-          : "16px 24px",
+              padding:
+                isMobile
+                  ? "14px 18px"
+                  : "16px 24px",
 
-        borderRadius: "18px",
+              borderRadius:
+                "18px",
 
-        fontWeight: "bold",
+              fontWeight:
+                "bold",
 
-        fontSize: isMobile ? "15px" : "17px",
+              fontSize:
+                isMobile
+                  ? "15px"
+                  : "17px",
 
-        boxShadow: "0 6px 16px rgba(0,0,0,0.25)",
+              boxShadow:
+                "0 6px 16px rgba(0,0,0,0.25)",
 
-        cursor: "pointer",
+              cursor:
+                "pointer",
+            }}
+          >
+            ⚓ Canal WhatsApp
+          </div>
 
-        transition: "0.25s",
-      }}
-    >
-      ⚓ Canal WhatsApp
-    </div>
-  </a>
+        </a>
 
-  {/* TAVERNA */}
+        {/* TAVERNA */}
 
-  <a
-    href="https://foro.latabernadelpuerto.com/showthread.php?t=52634"
-    target="_blank"
-    rel="noopener noreferrer"
-    style={{
-      textDecoration: "none",
-    }}
-  >
-    <div
-      style={{
-        background: "#fe5d01",
+        <a
+          href="https://foro.latabernadelpuerto.com/showthread.php?t=52634"
 
-        color: "white",
+          target="_blank"
 
-        padding: isMobile
-          ? "14px 18px"
-          : "16px 24px",
+          rel="noopener noreferrer"
 
-        borderRadius: "18px",
+          style={{
+            textDecoration:
+              "none",
+          }}
+        >
 
-        fontWeight: "bold",
+          <div
+            style={{
+              background:
+                "#fe5d01",
 
-        fontSize: isMobile ? "15px" : "17px",
+              color: "white",
 
-        boxShadow: "0 6px 16px rgba(0,0,0,0.25)",
+              padding:
+                isMobile
+                  ? "14px 18px"
+                  : "16px 24px",
 
-        cursor: "pointer",
+              borderRadius:
+                "18px",
 
-        transition: "0.25s",
-      }}
-    >
-      🍺 La Taverna del Puerto
-    </div>
-  </a>
-</div>    
+              fontWeight:
+                "bold",
+
+              fontSize:
+                isMobile
+                  ? "15px"
+                  : "17px",
+
+              boxShadow:
+                "0 6px 16px rgba(0,0,0,0.25)",
+
+              cursor:
+                "pointer",
+            }}
+          >
+            🍺 La Taverna del Puerto
+          </div>
+
+        </a>
+
+      </div>
 
       {/* ==========================================
           BOTONES RESPONSIVE
@@ -375,106 +817,199 @@ useEffect(() => {
       <div
         style={{
           maxWidth: "1100px",
+
           margin: "0 auto",
+
           display: "flex",
-          flexDirection: "column",
+
+          flexDirection:
+            "column",
+
           gap: "20px",
         }}
       >
-        {buttons.map((button, index) => (
-          <div
-            key={index}
-            onClick={() => navigate(button.path)}
-            style={{
-              borderRadius: "24px",
-              overflow: "hidden",
-              cursor: "pointer",
-              border: "1px solid rgba(255,255,255,0.25)",
 
-              background:
-                "linear-gradient(to right, #08203b 0%, #06192d 60%, #03101d 100%)",
-
-              boxShadow: "0 10px 25px rgba(0,0,0,0.35)",
-
-              display: "flex",
-
-              flexDirection: isMobile ? "column" : "row",
-
-              minHeight: isMobile ? "320px" : "190px",
-
-              transition: "0.25s",
-            }}
-          >
-            {/* IMAGEN */}
+        {buttons.map(
+          (button, index) => (
 
             <div
+              key={index}
+
+              onClick={() =>
+                navigate(
+                  button.path
+                )
+              }
+
               style={{
-                width: isMobile ? "100%" : "42%",
-                height: isMobile ? "190px" : "auto",
-                overflow: "hidden",
-                flexShrink: 0,
-              }}
-            >
-              <img
-                src={button.image}
-                alt={button.title}
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                }}
-              />
-            </div>
+                borderRadius:
+                  "24px",
 
-            {/* TEXTO */}
+                overflow:
+                  "hidden",
 
-            <div
-              style={{
-                flex: 1,
+                cursor:
+                  "pointer",
 
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-
-                padding: isMobile
-                  ? "24px 22px 30px"
-                  : "0 40px",
+                border:
+                  "1px solid rgba(255,255,255,0.25)",
 
                 background:
-                  "linear-gradient(to right, rgba(8,32,59,0.15), rgba(2,12,25,0.92))",
+                  "linear-gradient(to right, #08203b 0%, #06192d 60%, #03101d 100%)",
+
+                boxShadow:
+                  "0 10px 25px rgba(0,0,0,0.35)",
+
+                display:
+                  "flex",
+
+                flexDirection:
+                  isMobile
+                    ? "column"
+                    : "row",
+
+                minHeight:
+                  isMobile
+                    ? "320px"
+                    : "190px",
+
+                transition:
+                  "0.25s",
               }}
             >
-              <div
-                style={{
-                  color: TITLE_COLOR,
-                  fontSize: BUTTON_TITLE_SIZE,
-                  fontWeight: "bold",
-                  marginBottom: "14px",
-                  textShadow: "0 3px 10px rgba(0,0,0,0.7)",
-                  letterSpacing: "1px",
 
-                  textAlign: isMobile ? "center" : "left",
-                }}
-              >
-                {button.title}
-              </div>
+              {/* IMAGEN */}
 
               <div
                 style={{
-                  color: TEXT_COLOR,
-                  fontSize: BUTTON_DESCRIPTION_SIZE,
-                  lineHeight: 1.5,
-                  textShadow: "0 2px 8px rgba(0,0,0,0.7)",
+                  width:
+                    isMobile
+                      ? "100%"
+                      : "42%",
 
-                  textAlign: isMobile ? "center" : "left",
+                  height:
+                    isMobile
+                      ? "190px"
+                      : "auto",
+
+                  overflow:
+                    "hidden",
+
+                  flexShrink: 0,
                 }}
               >
-                {button.description}
+
+                <img
+                  src={
+                    button.image
+                  }
+
+                  alt={
+                    button.title
+                  }
+
+                  style={{
+                    width: "100%",
+
+                    height:
+                      "100%",
+
+                    objectFit:
+                      "cover",
+                  }}
+                />
+
               </div>
+
+              {/* TEXTO */}
+
+              <div
+                style={{
+                  flex: 1,
+
+                  display:
+                    "flex",
+
+                  flexDirection:
+                    "column",
+
+                  justifyContent:
+                    "center",
+
+                  padding:
+                    isMobile
+                      ? "24px 22px 30px"
+                      : "0 40px",
+
+                  background:
+                    "linear-gradient(to right, rgba(8,32,59,0.15), rgba(2,12,25,0.92))",
+                }}
+              >
+
+                <div
+                  style={{
+                    color:
+                      TITLE_COLOR,
+
+                    fontSize:
+                      BUTTON_TITLE_SIZE,
+
+                    fontWeight:
+                      "bold",
+
+                    marginBottom:
+                      "14px",
+
+                    textShadow:
+                      "0 3px 10px rgba(0,0,0,0.7)",
+
+                    letterSpacing:
+                      "1px",
+
+                    textAlign:
+                      isMobile
+                        ? "center"
+                        : "left",
+                  }}
+                >
+                  {button.title}
+                </div>
+
+                <div
+                  style={{
+                    color:
+                      TEXT_COLOR,
+
+                    fontSize:
+                      BUTTON_DESCRIPTION_SIZE,
+
+                    lineHeight:
+                      1.5,
+
+                    textShadow:
+                      "0 2px 8px rgba(0,0,0,0.7)",
+
+                    textAlign:
+                      isMobile
+                        ? "center"
+                        : "left",
+                  }}
+                >
+                  {
+                    button.description
+                  }
+                </div>
+
+              </div>
+
             </div>
-          </div>
-        ))}
+
+          )
+        )}
+
       </div>
+
     </div>
+
   );
 }

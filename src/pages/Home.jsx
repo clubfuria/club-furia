@@ -386,7 +386,7 @@ export default function Home() {
             width: LOGO_WIDTH,
 
             marginBottom:
-              "18px",
+              "19px",
 
             filter:
               "drop-shadow(0 4px 12px rgba(0,0,0,0.5))",

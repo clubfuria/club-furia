@@ -537,9 +537,6 @@ export default function Home() {
                 isMobile
                   ? "18px"
                   : "24px",
-
-              boxShadow:
-                "0 8px 20px rgba(0,0,0,0.25)",
             }}
           >
 
@@ -560,12 +557,6 @@ export default function Home() {
                 borderRadius:
                   "12px",
                 border: "none",
-                outline: "none",
-                fontSize: "16px",
-                background:
-                  "rgba(255,255,255,0.92)",
-                boxSizing:
-                  "border-box",
               }}
             />
 
@@ -586,12 +577,6 @@ export default function Home() {
                 borderRadius:
                   "12px",
                 border: "none",
-                outline: "none",
-                fontSize: "16px",
-                background:
-                  "rgba(255,255,255,0.92)",
-                boxSizing:
-                  "border-box",
               }}
             />
 
@@ -606,11 +591,8 @@ export default function Home() {
                 background:
                   TITLE_COLOR,
                 color: "white",
-                fontSize: "18px",
                 fontWeight:
                   "bold",
-                cursor:
-                  "pointer",
                 marginBottom:
                   "12px",
               }}
@@ -631,11 +613,8 @@ export default function Home() {
                 background:
                   "#720792",
                 color: "white",
-                fontSize: "18px",
                 fontWeight:
                   "bold",
-                cursor:
-                  "pointer",
               }}
             >
               REGISTRARSE
@@ -650,20 +629,11 @@ export default function Home() {
               background:
                 "rgba(255,255,255,0.08)",
 
-              backdropFilter:
-                "blur(10px)",
-
-              border:
-                "1px solid rgba(255,255,255,0.12)",
-
               borderRadius:
                 "20px",
 
               padding:
                 "20px",
-
-              boxShadow:
-                "0 8px 20px rgba(0,0,0,0.25)",
 
               display:
                 "flex",
@@ -685,9 +655,6 @@ export default function Home() {
               style={{
                 color: "white",
 
-                fontSize:
-                  "18px",
-
                 fontWeight:
                   "bold",
               }}
@@ -704,18 +671,21 @@ export default function Home() {
               style={{
                 padding:
                   "10px 18px",
+
                 borderRadius:
                   "12px",
+
                 border:
                   "none",
+
                 background:
                   "#fe5d01",
+
                 color:
                   "white",
+
                 fontWeight:
                   "bold",
-                cursor:
-                  "pointer",
               }}
             >
               SALIR
@@ -724,149 +694,6 @@ export default function Home() {
           </div>
 
         )}
-
-      </div>
-
-      {/* NOTIFICACIONES */}
-
-      {session && (
-
-        <div
-          style={{
-            maxWidth: "900px",
-
-            margin:
-              "0 auto 30px auto",
-          }}
-        >
-
-          <div
-            style={{
-              background:
-                "rgba(255,255,255,0.08)",
-
-              padding: "18px",
-
-              borderRadius:
-                "18px",
-
-              color: "white",
-            }}
-          >
-
-            <h3>
-              🔔 Notificaciones
-            </h3>
-
-            {notifications.length === 0 ? (
-
-              <p>
-                No hay notificaciones
-              </p>
-
-            ) : (
-
-              notifications.map((n) => (
-
-                <div
-                  key={n.id}
-                  style={{
-                    marginBottom:
-                      "12px",
-
-                    padding:
-                      "10px",
-
-                    background:
-                      "rgba(255,255,255,0.08)",
-
-                    borderRadius:
-                      "10px",
-                  }}
-                >
-                  {n.mensaje}
-                </div>
-
-              ))
-
-            )}
-
-          </div>
-
-        </div>
-
-      )}
-
-      {/* ENLACES */}
-
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          gap:
-            isMobile
-              ? "12px"
-              : "18px",
-          flexWrap: "wrap",
-          marginBottom: "35px",
-        }}
-      >
-
-        <a
-          href="https://chat.whatsapp.com/CQf8P8UpgUwCjPkLra0uei?mode=gi_t"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            textDecoration:
-              "none",
-          }}
-        >
-          <div
-            style={{
-              background:
-                "#25D366",
-              color: "white",
-              padding:
-                isMobile
-                  ? "14px 18px"
-                  : "16px 24px",
-              borderRadius:
-                "18px",
-              fontWeight:
-                "bold",
-            }}
-          >
-            ⚓ Canal WhatsApp
-          </div>
-        </a>
-
-        <a
-          href="https://foro.latabernadelpuerto.com/showthread.php?t=52634"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            textDecoration:
-              "none",
-          }}
-        >
-          <div
-            style={{
-              background:
-                "#fe5d01",
-              color: "white",
-              padding:
-                isMobile
-                  ? "14px 18px"
-                  : "16px 24px",
-              borderRadius:
-                "18px",
-              fontWeight:
-                "bold",
-            }}
-          >
-            🍺 La Taberna del Puerto
-          </div>
-        </a>
 
       </div>
 
@@ -900,14 +727,9 @@ export default function Home() {
                   "hidden",
                 cursor:
                   "pointer",
-                border:
-                  "1px solid rgba(255,255,255,0.25)",
 
                 background:
                   "linear-gradient(to right, #08203b 0%, #06192d 60%, #03101d 100%)",
-
-                boxShadow:
-                  "0 10px 25px rgba(0,0,0,0.35)",
 
                 display:
                   "flex",
@@ -916,11 +738,6 @@ export default function Home() {
                   isMobile
                     ? "column"
                     : "row",
-
-                minHeight:
-                  isMobile
-                    ? "320px"
-                    : "190px",
               }}
             >
 
@@ -930,16 +747,6 @@ export default function Home() {
                     isMobile
                       ? "100%"
                       : "42%",
-
-                  height:
-                    isMobile
-                      ? "190px"
-                      : "auto",
-
-                  overflow:
-                    "hidden",
-
-                  flexShrink: 0,
                 }}
               >
 
@@ -978,9 +785,6 @@ export default function Home() {
                     isMobile
                       ? "24px 22px 30px"
                       : "0 40px",
-
-                  background:
-                    "linear-gradient(to right, rgba(8,32,59,0.15), rgba(2,12,25,0.92))",
                 }}
               >
 
@@ -997,11 +801,6 @@ export default function Home() {
 
                     marginBottom:
                       "14px",
-
-                    textAlign:
-                      isMobile
-                        ? "center"
-                        : "left",
                   }}
                 >
                   {button.title}
@@ -1017,11 +816,6 @@ export default function Home() {
 
                     lineHeight:
                       1.5,
-
-                    textAlign:
-                      isMobile
-                        ? "center"
-                        : "left",
                   }}
                 >
                   {
@@ -1035,6 +829,214 @@ export default function Home() {
 
           )
         )}
+
+      </div>
+
+      {/* POSTS / CHAT */}
+
+      <div
+        style={{
+          maxWidth: "1100px",
+
+          margin:
+            "50px auto 0 auto",
+
+          background:
+            "rgba(255,255,255,0.08)",
+
+          borderRadius:
+            "24px",
+
+          padding:
+            isMobile
+              ? "20px"
+              : "28px",
+        }}
+      >
+
+        <h2
+          style={{
+            color: "#fe5d01",
+
+            marginBottom:
+              "20px",
+          }}
+        >
+          💬 Comunidad Furia
+        </h2>
+
+        {session && (
+
+          <div
+            style={{
+              marginBottom:
+                "30px",
+            }}
+          >
+
+            <textarea
+              value={nuevoPost}
+              onChange={(e) =>
+                setNuevoPost(
+                  e.target.value
+                )
+              }
+              placeholder="Escribe un comentario..."
+              style={{
+                width: "100%",
+
+                minHeight:
+                  "110px",
+
+                padding:
+                  "16px",
+
+                borderRadius:
+                  "14px",
+
+                border:
+                  "none",
+
+                resize:
+                  "vertical",
+
+                boxSizing:
+                  "border-box",
+
+                marginBottom:
+                  "14px",
+              }}
+            />
+
+            <button
+              onClick={
+                publicarPost
+              }
+              style={{
+                background:
+                  "#fe5d01",
+
+                color:
+                  "white",
+
+                border:
+                  "none",
+
+                padding:
+                  "14px 24px",
+
+                borderRadius:
+                  "14px",
+
+                fontWeight:
+                  "bold",
+              }}
+            >
+              PUBLICAR
+            </button>
+
+          </div>
+
+        )}
+
+        <div
+          style={{
+            display:
+              "flex",
+
+            flexDirection:
+              "column",
+
+            gap: "18px",
+          }}
+        >
+
+          {posts.map((post) => (
+
+            <div
+              key={post.id}
+              style={{
+                background:
+                  "rgba(0,0,0,0.25)",
+
+                borderRadius:
+                  "16px",
+
+                padding:
+                  "18px",
+              }}
+            >
+
+              <div
+                style={{
+                  color:
+                    "#e7eb0f",
+
+                  marginBottom:
+                    "10px",
+
+                  fontWeight:
+                    "bold",
+                }}
+              >
+                {post.usuario}
+              </div>
+
+              <div
+                style={{
+                  color:
+                    "white",
+
+                  lineHeight:
+                    1.6,
+
+                  whiteSpace:
+                    "pre-wrap",
+
+                  marginBottom:
+                    "12px",
+                }}
+              >
+                {post.texto}
+              </div>
+
+              {session?.user
+                ?.email ===
+                post.usuario && (
+
+                <button
+                  onClick={() =>
+                    borrarPost(
+                      post.id
+                    )
+                  }
+                  style={{
+                    background:
+                      "#aa2222",
+
+                    color:
+                      "white",
+
+                    border:
+                      "none",
+
+                    padding:
+                      "8px 14px",
+
+                    borderRadius:
+                      "10px",
+                  }}
+                >
+                  Borrar
+                </button>
+
+              )}
+
+            </div>
+
+          ))}
+
+        </div>
 
       </div>
 

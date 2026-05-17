@@ -189,6 +189,9 @@ export default function Actividades() {
 
               user_id:
                 user.id,
+
+              user_email:
+                user.email,
             },
           ]);
 
@@ -660,6 +663,22 @@ export default function Actividades() {
             }}
           >
             {salida.descripcion}
+          </p>
+
+          {/* ORGANIZA */}
+
+          <p
+            style={{
+              color: "#cccccc",
+
+              fontSize: "14px",
+
+              marginTop: "10px",
+            }}
+          >
+            Organiza:
+            {" "}
+            {salida.user_email}
           </p>
 
           {/* APUNTARSE */}

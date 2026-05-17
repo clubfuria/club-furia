@@ -1,5 +1,4 @@
-import BottomNav
-from "../components/BottomNav";
+import BottomNav from "../components/BottomNav";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../supabase";
@@ -31,6 +30,13 @@ export default function Actividades() {
     setSalidaDescripcion,
   ] = useState("");
 
+  // EDITAR
+
+  const [
+    editingSalidaId,
+    setEditingSalidaId,
+  ] = useState(null);
+
   useEffect(() => {
 
     fetchSalidas();
@@ -45,24 +51,44 @@ export default function Actividades() {
 
   }, []);
 
-  // FETCH SALIDAS
+  /*
+    ==========================================
+    FETCH SALIDAS
+    ==========================================
+  */
 
   async function fetchSalidas() {
+
+    const hoy =
+      new Date()
+        .toISOString();
 
     const { data, error } =
       await supabase
         .from("salidas")
         .select("*")
-        .order("created_at", {
-          ascending: false,
-        });
+        .gte(
+          "fecha",
+          hoy
+        )
+        .order(
+          "fecha",
+          {
+            ascending: true,
+          }
+        );
 
     if (!error && data) {
+
       setSalidas(data);
     }
   }
 
-  // FETCH TRIPULANTES
+  /*
+    ==========================================
+    FETCH TRIPULANTES
+    ==========================================
+  */
 
   async function fetchTripulantes() {
 
@@ -72,11 +98,16 @@ export default function Actividades() {
         .select("*");
 
     if (!error && data) {
+
       setTripulantes(data);
     }
   }
 
-  // CREAR SALIDA
+  /*
+    ==========================================
+    CREAR / EDITAR
+    ==========================================
+  */
 
   const addSalida = async () => {
 
@@ -89,38 +120,110 @@ export default function Actividades() {
       return;
     }
 
-    const { error } =
-      await supabase
-        .from("salidas")
-        .insert([
-          {
-            titulo: salidaTitulo,
-            puerto: salidaPuerto,
-            fecha: salidaFecha,
-            plazas: salidaPlazas,
+    // EDITAR
+
+    if (editingSalidaId) {
+
+      const { error } =
+        await supabase
+          .from("salidas")
+          .update({
+            titulo:
+              salidaTitulo,
+
+            puerto:
+              salidaPuerto,
+
+            fecha:
+              salidaFecha,
+
+            plazas:
+              salidaPlazas,
+
             descripcion:
               salidaDescripcion,
-            user_id: user.id,
-          },
-        ]);
+          })
+          .eq(
+            "id",
+            editingSalidaId
+          );
 
-    if (error) {
+      if (error) {
 
-      alert(error.message);
+        alert(error.message);
 
-      return;
+        return;
+      }
+
+      alert(
+        "Actividad actualizada"
+      );
+
+      setEditingSalidaId(
+        null
+      );
+
+    } else {
+
+      // NUEVA
+
+      const { error } =
+        await supabase
+          .from("salidas")
+          .insert([
+            {
+              titulo:
+                salidaTitulo,
+
+              puerto:
+                salidaPuerto,
+
+              fecha:
+                salidaFecha,
+
+              plazas:
+                salidaPlazas,
+
+              descripcion:
+                salidaDescripcion,
+
+              user_id:
+                user.id,
+            },
+          ]);
+
+      if (error) {
+
+        alert(error.message);
+
+        return;
+      }
+
+      alert(
+        "Actividad creada"
+      );
     }
 
+    // LIMPIAR
+
     setSalidaTitulo("");
+
     setSalidaPuerto("");
+
     setSalidaFecha("");
+
     setSalidaPlazas("");
+
     setSalidaDescripcion("");
 
     fetchSalidas();
   };
 
-  // APUNTARSE
+  /*
+    ==========================================
+    APUNTARSE
+    ==========================================
+  */
 
   const apuntarseSalida = async (
     salidaId
@@ -159,8 +262,12 @@ export default function Actividades() {
         )
         .insert([
           {
-            salida_id: salidaId,
-            user_id: user.id,
+            salida_id:
+              salidaId,
+
+            user_id:
+              user.id,
+
             user_name:
               user.user_metadata
                 ?.nombre ||
@@ -175,6 +282,38 @@ export default function Actividades() {
       return;
     }
 
+    /*
+      ==========================================
+      NOTIFICACIÓN
+      ==========================================
+    */
+
+    const salida =
+      salidas.find(
+        (s) =>
+          s.id === salidaId
+      );
+
+    if (
+      salida?.user_id &&
+      salida.user_id !== user.id
+    ) {
+
+      await supabase
+        .from(
+          "notificaciones"
+        )
+        .insert([
+          {
+            user_id:
+              salida.user_id,
+
+            mensaje:
+              `${user.email} se ha apuntado a ${salida.titulo}`,
+          },
+        ]);
+    }
+
     fetchTripulantes();
 
     alert(
@@ -182,17 +321,85 @@ export default function Actividades() {
     );
   };
 
+  /*
+    ==========================================
+    EDITAR
+    ==========================================
+  */
+
+  const editarSalida = (
+    salida
+  ) => {
+
+    setEditingSalidaId(
+      salida.id
+    );
+
+    setSalidaTitulo(
+      salida.titulo || ""
+    );
+
+    setSalidaPuerto(
+      salida.puerto || ""
+    );
+
+    setSalidaFecha(
+      salida.fecha || ""
+    );
+
+    setSalidaPlazas(
+      salida.plazas || ""
+    );
+
+    setSalidaDescripcion(
+      salida.descripcion || ""
+    );
+  };
+
+  /*
+    ==========================================
+    BORRAR
+    ==========================================
+  */
+
+  const borrarSalida =
+    async (id) => {
+
+      const confirmar =
+        window.confirm(
+          "¿Eliminar actividad?"
+        );
+
+      if (!confirmar)
+        return;
+
+      await supabase
+        .from("salidas")
+        .delete()
+        .eq("id", id);
+
+      fetchSalidas();
+    };
+
   return (
 
     <div
       style={{
         maxWidth: "900px",
+
         margin: "40px auto",
+
         padding: "20px",
+
         fontFamily: "Arial",
-        backgroundColor: "#011135",
+
+        backgroundColor:
+          "#011135",
+
         minHeight: "100vh",
-paddingBottom: "100px",
+
+        paddingBottom:
+          "100px",
       }}
     >
 
@@ -201,10 +408,15 @@ paddingBottom: "100px",
       <div
         style={{
           display: "flex",
+
           justifyContent:
             "space-between",
-          alignItems: "center",
-          marginBottom: "30px",
+
+          alignItems:
+            "center",
+
+          marginBottom:
+            "30px",
         }}
       >
 
@@ -220,12 +432,18 @@ paddingBottom: "100px",
           to="/"
           style={{
             color: "white",
-            textDecoration: "none",
+
+            textDecoration:
+              "none",
+
             backgroundColor:
               "#720792",
+
             padding:
               "10px 20px",
-            borderRadius: "8px",
+
+            borderRadius:
+              "8px",
           }}
         >
           INICIO
@@ -239,9 +457,14 @@ paddingBottom: "100px",
         style={{
           backgroundColor:
             "#001b44",
+
           padding: "20px",
-          borderRadius: "12px",
-          marginBottom: "30px",
+
+          borderRadius:
+            "12px",
+
+          marginBottom:
+            "30px",
         }}
       >
 
@@ -250,7 +473,11 @@ paddingBottom: "100px",
             color: "white",
           }}
         >
-          Crear salida
+          {
+            editingSalidaId
+              ? "Editar actividad"
+              : "Crear salida"
+          }
         </h2>
 
         <input
@@ -265,7 +492,8 @@ paddingBottom: "100px",
           style={{
             width: "100%",
             padding: "10px",
-            marginBottom: "10px",
+            marginBottom:
+              "10px",
           }}
         />
 
@@ -281,7 +509,8 @@ paddingBottom: "100px",
           style={{
             width: "100%",
             padding: "10px",
-            marginBottom: "10px",
+            marginBottom:
+              "10px",
           }}
         />
 
@@ -296,7 +525,8 @@ paddingBottom: "100px",
           style={{
             width: "100%",
             padding: "10px",
-            marginBottom: "10px",
+            marginBottom:
+              "10px",
           }}
         />
 
@@ -312,7 +542,8 @@ paddingBottom: "100px",
           style={{
             width: "100%",
             padding: "10px",
-            marginBottom: "10px",
+            marginBottom:
+              "10px",
           }}
         />
 
@@ -330,7 +561,8 @@ paddingBottom: "100px",
             width: "100%",
             height: "120px",
             padding: "10px",
-            marginBottom: "10px",
+            marginBottom:
+              "10px",
           }}
         />
 
@@ -339,16 +571,27 @@ paddingBottom: "100px",
           style={{
             padding:
               "10px 20px",
+
             backgroundColor:
               "#720792",
+
             color: "white",
+
             border:
               "white solid 2px",
-            borderRadius: "8px",
-            cursor: "pointer",
+
+            borderRadius:
+              "8px",
+
+            cursor:
+              "pointer",
           }}
         >
-          Crear salida
+          {
+            editingSalidaId
+              ? "Actualizar actividad"
+              : "Crear salida"
+          }
         </button>
 
       </div>
@@ -362,9 +605,14 @@ paddingBottom: "100px",
           style={{
             backgroundColor:
               "#02235c",
+
             padding: "15px",
-            borderRadius: "10px",
-            marginBottom: "15px",
+
+            borderRadius:
+              "10px",
+
+            marginBottom:
+              "15px",
           }}
         >
 
@@ -414,6 +662,8 @@ paddingBottom: "100px",
             {salida.descripcion}
           </p>
 
+          {/* APUNTARSE */}
+
           <button
             onClick={() =>
               apuntarseSalida(
@@ -421,24 +671,117 @@ paddingBottom: "100px",
               )
             }
             style={{
-              marginTop: "10px",
+              marginTop:
+                "10px",
+
               padding:
                 "10px 20px",
+
               backgroundColor:
                 "#0d7a32",
+
               color: "white",
+
               border: "none",
+
               borderRadius:
                 "8px",
-              cursor: "pointer",
+
+              cursor:
+                "pointer",
             }}
           >
             Apuntarme
           </button>
 
+          {/* EDITAR / BORRAR */}
+
+          {user?.id ===
+            salida.user_id && (
+
+            <div
+              style={{
+                display:
+                  "flex",
+
+                gap: "10px",
+
+                marginTop:
+                  "12px",
+
+                flexWrap:
+                  "wrap",
+              }}
+            >
+
+              <button
+                onClick={() =>
+                  editarSalida(
+                    salida
+                  )
+                }
+                style={{
+                  padding:
+                    "10px 18px",
+
+                  backgroundColor:
+                    "#0d7a32",
+
+                  color:
+                    "white",
+
+                  border:
+                    "none",
+
+                  borderRadius:
+                    "8px",
+
+                  cursor:
+                    "pointer",
+                }}
+              >
+                Editar
+              </button>
+
+              <button
+                onClick={() =>
+                  borrarSalida(
+                    salida.id
+                  )
+                }
+                style={{
+                  padding:
+                    "10px 18px",
+
+                  backgroundColor:
+                    "#aa2222",
+
+                  color:
+                    "white",
+
+                  border:
+                    "none",
+
+                  borderRadius:
+                    "8px",
+
+                  cursor:
+                    "pointer",
+                }}
+              >
+                Borrar
+              </button>
+
+            </div>
+
+          )}
+
+          {/* TRIPULANTES */}
+
           <div
             style={{
-              marginTop: "15px",
+              marginTop:
+                "15px",
             }}
           >
 
@@ -461,7 +804,9 @@ paddingBottom: "100px",
                 <p
                   key={t.id}
                   style={{
-                    color: "white",
+                    color:
+                      "white",
+
                     marginLeft:
                       "10px",
                   }}
@@ -478,7 +823,9 @@ paddingBottom: "100px",
         </div>
 
       ))}
-<BottomNav />
+
+      <BottomNav />
+
     </div>
 
   );

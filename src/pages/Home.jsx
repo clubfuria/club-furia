@@ -8,6 +8,15 @@ export default function Home() {
 
   /*
     ==========================================
+    RESPONSIVE
+    ==========================================
+  */
+
+  const isMobile =
+    window.innerWidth < 768;
+
+  /*
+    ==========================================
     AUTH
     ==========================================
   */
@@ -33,6 +42,17 @@ export default function Home() {
   const [nuevoPost, setNuevoPost] =
     useState("");
 
+  /*
+    ==========================================
+    NOTIFICACIONES
+    ==========================================
+  */
+
+  const [
+    notifications,
+    setNotifications,
+  ] = useState([]);
+
   useEffect(() => {
 
     supabase.auth
@@ -42,6 +62,11 @@ export default function Home() {
         setSession(
           data.session
         );
+
+        if (data.session) {
+
+          cargarNotificaciones();
+        }
       });
 
     cargarPosts();
@@ -53,6 +78,15 @@ export default function Home() {
         (_event, session) => {
 
           setSession(session);
+
+          if (session) {
+
+            cargarNotificaciones();
+
+          } else {
+
+            setNotifications([]);
+          }
         }
       );
 
@@ -130,12 +164,6 @@ export default function Home() {
         email,
 
         password,
-
-        options: {
-
-          emailRedirectTo:
-            window.location.origin,
-        },
       });
 
     if (error) {
@@ -146,7 +174,7 @@ export default function Home() {
     }
 
     alert(
-      "Cuenta creada correctamente. Revisa tu correo para confirmar el registro."
+      "Cuenta creada correctamente"
     );
   }
 
@@ -231,12 +259,39 @@ export default function Home() {
 
   /*
     ==========================================
-    RESPONSIVE
+    NOTIFICACIONES
     ==========================================
   */
 
-  const isMobile =
-    window.innerWidth < 768;
+  async function cargarNotificaciones() {
+
+    const {
+      data: { user },
+    } =
+      await supabase.auth.getUser();
+
+    if (!user) return;
+
+    const { data } =
+      await supabase
+        .from("notificaciones")
+        .select("*")
+        .eq(
+          "user_id",
+          user.id
+        )
+        .order(
+          "created_at",
+          {
+            ascending: false,
+          }
+        );
+
+    if (data) {
+
+      setNotifications(data);
+    }
+  }
 
   /*
     ==========================================
@@ -672,6 +727,149 @@ export default function Home() {
 
       </div>
 
+      {/* NOTIFICACIONES */}
+
+      {session && (
+
+        <div
+          style={{
+            maxWidth: "900px",
+
+            margin:
+              "0 auto 30px auto",
+          }}
+        >
+
+          <div
+            style={{
+              background:
+                "rgba(255,255,255,0.08)",
+
+              padding: "18px",
+
+              borderRadius:
+                "18px",
+
+              color: "white",
+            }}
+          >
+
+            <h3>
+              🔔 Notificaciones
+            </h3>
+
+            {notifications.length === 0 ? (
+
+              <p>
+                No hay notificaciones
+              </p>
+
+            ) : (
+
+              notifications.map((n) => (
+
+                <div
+                  key={n.id}
+                  style={{
+                    marginBottom:
+                      "12px",
+
+                    padding:
+                      "10px",
+
+                    background:
+                      "rgba(255,255,255,0.08)",
+
+                    borderRadius:
+                      "10px",
+                  }}
+                >
+                  {n.mensaje}
+                </div>
+
+              ))
+
+            )}
+
+          </div>
+
+        </div>
+
+      )}
+
+      {/* ENLACES */}
+
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          gap:
+            isMobile
+              ? "12px"
+              : "18px",
+          flexWrap: "wrap",
+          marginBottom: "35px",
+        }}
+      >
+
+        <a
+          href="https://chat.whatsapp.com/CQf8P8UpgUwCjPkLra0uei?mode=gi_t"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            textDecoration:
+              "none",
+          }}
+        >
+          <div
+            style={{
+              background:
+                "#25D366",
+              color: "white",
+              padding:
+                isMobile
+                  ? "14px 18px"
+                  : "16px 24px",
+              borderRadius:
+                "18px",
+              fontWeight:
+                "bold",
+            }}
+          >
+            ⚓ Canal WhatsApp
+          </div>
+        </a>
+
+        <a
+          href="https://foro.latabernadelpuerto.com/showthread.php?t=52634"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            textDecoration:
+              "none",
+          }}
+        >
+          <div
+            style={{
+              background:
+                "#fe5d01",
+              color: "white",
+              padding:
+                isMobile
+                  ? "14px 18px"
+                  : "16px 24px",
+              borderRadius:
+                "18px",
+              fontWeight:
+                "bold",
+            }}
+          >
+            🍺 La Taberna del Puerto
+          </div>
+        </a>
+
+      </div>
+
       {/* BOTONES */}
 
       <div
@@ -726,8 +924,6 @@ export default function Home() {
               }}
             >
 
-              {/* IMAGEN */}
-
               <div
                 style={{
                   width:
@@ -764,8 +960,6 @@ export default function Home() {
                 />
 
               </div>
-
-              {/* TEXTO */}
 
               <div
                 style={{
@@ -804,12 +998,6 @@ export default function Home() {
                     marginBottom:
                       "14px",
 
-                    textShadow:
-                      "0 3px 10px rgba(0,0,0,0.7)",
-
-                    letterSpacing:
-                      "1px",
-
                     textAlign:
                       isMobile
                         ? "center"
@@ -830,9 +1018,6 @@ export default function Home() {
                     lineHeight:
                       1.5,
 
-                    textShadow:
-                      "0 2px 8px rgba(0,0,0,0.7)",
-
                     textAlign:
                       isMobile
                         ? "center"
@@ -850,262 +1035,6 @@ export default function Home() {
 
           )
         )}
-
-      </div>
-
-      {/* POSTS COMUNIDAD */}
-
-      <div
-        style={{
-          maxWidth: "1100px",
-
-          margin:
-            "60px auto 0 auto",
-        }}
-      >
-
-        <h2
-          style={{
-            color:
-              TITLE_COLOR,
-
-            fontSize:
-              isMobile
-                ? "34px"
-                : "42px",
-
-            marginBottom:
-              "25px",
-
-            textAlign:
-              "center",
-          }}
-        >
-          COMUNIDAD
-        </h2>
-
-        {/* NUEVO POST */}
-
-        {session && (
-
-          <div
-            style={{
-              background:
-                "rgba(255,255,255,0.08)",
-
-              border:
-                "1px solid rgba(255,255,255,0.12)",
-
-              borderRadius:
-                "22px",
-
-              padding:
-                isMobile
-                  ? "18px"
-                  : "24px",
-
-              marginBottom:
-                "28px",
-            }}
-          >
-
-            <textarea
-              placeholder="Escribe un comentario..."
-
-              value={nuevoPost}
-
-              onChange={(e) =>
-                setNuevoPost(
-                  e.target.value
-                )
-              }
-
-              style={{
-                width: "100%",
-
-                minHeight:
-                  "120px",
-
-                padding:
-                  "16px",
-
-                borderRadius:
-                  "16px",
-
-                border:
-                  "none",
-
-                resize:
-                  "vertical",
-
-                fontSize:
-                  "16px",
-
-                marginBottom:
-                  "18px",
-
-                boxSizing:
-                  "border-box",
-              }}
-            />
-
-            <button
-              onClick={
-                publicarPost
-              }
-
-              style={{
-                background:
-                  TITLE_COLOR,
-
-                color:
-                  "white",
-
-                border:
-                  "none",
-
-                padding:
-                  "14px 24px",
-
-                borderRadius:
-                  "14px",
-
-                fontWeight:
-                  "bold",
-
-                cursor:
-                  "pointer",
-
-                fontSize:
-                  "16px",
-              }}
-            >
-              PUBLICAR
-            </button>
-
-          </div>
-
-        )}
-
-        {/* POSTS */}
-
-        <div
-          style={{
-            display: "flex",
-
-            flexDirection:
-              "column",
-
-            gap: "22px",
-          }}
-        >
-
-          {posts.map((post) => (
-
-            <div
-              key={post.id}
-
-              style={{
-                background:
-                  "rgba(255,255,255,0.08)",
-
-                border:
-                  "1px solid rgba(255,255,255,0.12)",
-
-                borderRadius:
-                  "22px",
-
-                padding:
-                  isMobile
-                    ? "18px"
-                    : "24px",
-              }}
-            >
-
-              <div
-                style={{
-                  color:
-                    TITLE_COLOR,
-
-                  fontWeight:
-                    "bold",
-
-                  marginBottom:
-                    "14px",
-
-                  fontSize:
-                    "17px",
-                }}
-              >
-                {post.usuario}
-              </div>
-
-              <div
-                style={{
-                  color:
-                    "white",
-
-                  lineHeight:
-                    1.7,
-
-                  fontSize:
-                    isMobile
-                      ? "16px"
-                      : "18px",
-
-                  whiteSpace:
-                    "pre-wrap",
-                }}
-              >
-                {post.texto}
-              </div>
-
-              {session?.user?.email ===
-                post.usuario && (
-
-                <button
-                  onClick={() =>
-                    borrarPost(
-                      post.id
-                    )
-                  }
-
-                  style={{
-                    marginTop:
-                      "18px",
-
-                    background:
-                      "#b3261e",
-
-                    border:
-                      "none",
-
-                    color:
-                      "white",
-
-                    padding:
-                      "10px 16px",
-
-                    borderRadius:
-                      "12px",
-
-                    cursor:
-                      "pointer",
-
-                    fontWeight:
-                      "bold",
-                  }}
-                >
-                  BORRAR
-                </button>
-
-              )}
-
-            </div>
-
-          ))}
-
-        </div>
 
       </div>
 

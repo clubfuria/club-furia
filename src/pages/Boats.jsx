@@ -27,13 +27,21 @@ export default function Boats() {
   const [boatCrew, setBoatCrew] =
     useState("");
 
-  const [boatContacto, setBoatContacto] =
+  // EMAIL
+
+  const [boatEmail, setBoatEmail] =
+    useState("");
+
+  // TELEFONO
+
+  const [boatTelefono, setBoatTelefono] =
     useState("");
 
   const [boatImage, setBoatImage] =
     useState(null);
 
   // EDITAR
+
   const [editingBoatId, setEditingBoatId] =
     useState(null);
 
@@ -132,11 +140,12 @@ export default function Boats() {
 
         tripulacion: boatCrew,
 
-        contacto: boatContacto,
+        email: boatEmail,
+
+        telefono: boatTelefono,
       };
 
       // SOLO CAMBIA FOTO
-      // SI HAY NUEVA
 
       if (imageUrl) {
 
@@ -183,7 +192,9 @@ export default function Boats() {
 
               tripulacion: boatCrew,
 
-              contacto: boatContacto,
+              email: boatEmail,
+
+              telefono: boatTelefono,
 
               image_url: imageUrl,
 
@@ -209,7 +220,8 @@ export default function Boats() {
     setBoatModel("");
     setBoatPort("");
     setBoatCrew("");
-    setBoatContacto("");
+    setBoatEmail("");
+    setBoatTelefono("");
     setBoatImage(null);
 
     fetchBoats();
@@ -280,8 +292,12 @@ export default function Boats() {
       boat.tripulacion || ""
     );
 
-    setBoatContacto(
-      boat.contacto || ""
+    setBoatEmail(
+      boat.email || ""
+    );
+
+    setBoatTelefono(
+      boat.telefono || ""
     );
   };
 
@@ -291,44 +307,45 @@ export default function Boats() {
     ==========================================
   */
 
- const normalizeText = (text) => {
+  const normalizeText = (text) => {
 
-  return text
-    ?.toLowerCase()
-    .normalize("NFD")
-    .replace(
-      /[\u0300-\u036f]/g,
-      ""
-    );
-};
-
-const filteredBoats =
-  boats.filter((boat) => {
-
-    const search =
-      normalizeText(
-        boatSearch
+    return text
+      ?.toLowerCase()
+      .normalize("NFD")
+      .replace(
+        /[\u0300-\u036f]/g,
+        ""
       );
+  };
 
-    return (
+  const filteredBoats =
+    boats.filter((boat) => {
 
-      normalizeText(
-        boat.name
-      )?.includes(search)
+      const search =
+        normalizeText(
+          boatSearch
+        );
 
-      ||
+      return (
 
-      normalizeText(
-        boat.model
-      )?.includes(search)
+        normalizeText(
+          boat.name
+        )?.includes(search)
 
-      ||
+        ||
 
-      normalizeText(
-        boat.port
-      )?.includes(search)
-    );
-  });
+        normalizeText(
+          boat.model
+        )?.includes(search)
+
+        ||
+
+        normalizeText(
+          boat.port
+        )?.includes(search)
+      );
+    });
+
   /*
     ==========================================
     NEXT
@@ -380,23 +397,15 @@ const filteredBoats =
       style={{
         width: "100%",
         maxWidth: "900px",
-
         margin: "0 auto",
-
         padding: isMobile
           ? "16px"
           : "20px",
-
         boxSizing: "border-box",
-
         overflowX: "hidden",
-
         fontFamily: "Arial",
-
         backgroundColor: "#011135",
-
         minHeight: "100vh",
-
         paddingBottom: "100px",
       }}
     >
@@ -407,16 +416,11 @@ const filteredBoats =
         className="no-print"
         style={{
           display: "flex",
-
           justifyContent:
             "space-between",
-
           alignItems: "center",
-
           marginBottom: "24px",
-
           gap: "12px",
-
           flexWrap: "wrap",
         }}
       >
@@ -424,11 +428,9 @@ const filteredBoats =
         <h1
           style={{
             color: "#fe5d01",
-
             fontSize: isMobile
               ? "34px"
               : "42px",
-
             margin: 0,
           }}
         >
@@ -439,15 +441,11 @@ const filteredBoats =
           to="/"
           style={{
             color: "white",
-
             textDecoration: "none",
-
             backgroundColor:
               "#720792",
-
             padding:
               "10px 20px",
-
             borderRadius: "8px",
           }}
         >
@@ -463,11 +461,8 @@ const filteredBoats =
         style={{
           backgroundColor:
             "#001b44",
-
           padding: "20px",
-
           borderRadius: "12px",
-
           marginBottom: "30px",
         }}
       >
@@ -554,10 +549,27 @@ const filteredBoats =
 
         <input
           type="text"
-          placeholder="Contacto"
-          value={boatContacto}
+          placeholder="Email"
+          value={boatEmail}
           onChange={(e) =>
-            setBoatContacto(
+            setBoatEmail(
+              e.target.value
+            )
+          }
+          style={{
+            width: "100%",
+            padding: "10px",
+            marginBottom: "10px",
+            boxSizing: "border-box",
+          }}
+        />
+
+        <input
+          type="text"
+          placeholder="Teléfono"
+          value={boatTelefono}
+          onChange={(e) =>
+            setBoatTelefono(
               e.target.value
             )
           }
@@ -575,24 +587,16 @@ const filteredBoats =
           style={{
             display:
               "inline-block",
-
             marginTop: "10px",
-
             padding:
               "10px 20px",
-
             backgroundColor:
               "#720792",
-
             color: "white",
-
             border:
               "white solid 2px",
-
             borderRadius: "8px",
-
             cursor: "pointer",
-
             marginBottom: "12px",
           }}
         >
@@ -621,17 +625,12 @@ const filteredBoats =
           style={{
             padding:
               "10px 20px",
-
             backgroundColor:
               "#720792",
-
             color: "white",
-
             border:
               "white solid 2px",
-
             borderRadius: "8px",
-
             cursor: "pointer",
           }}
         >
@@ -649,7 +648,7 @@ const filteredBoats =
       <input
         className="no-print"
         type="text"
-        placeholder="Buscar por puerto..."
+        placeholder="Buscar barco, modelo o puerto..."
         value={boatSearch}
         onChange={(e) => {
 
@@ -661,45 +660,13 @@ const filteredBoats =
         }}
         style={{
           width: "100%",
-
           padding: "12px",
-
           marginBottom: "20px",
-
           borderRadius: "8px",
-
           border: "none",
-
           boxSizing: "border-box",
         }}
       />
-
-      {/* IMPRIMIR */}
-
-      <button
-        className="no-print"
-        onClick={() =>
-          window.print()
-        }
-        style={{
-          marginBottom: "20px",
-
-          padding: "10px 20px",
-
-          backgroundColor:
-            "#0d7a32",
-
-          color: "white",
-
-          border: "none",
-
-          borderRadius: "8px",
-
-          cursor: "pointer",
-        }}
-      >
-        IMPRIMIR LISTADO
-      </button>
 
       {/* CARRUSEL */}
 
@@ -710,15 +677,11 @@ const filteredBoats =
           style={{
             backgroundColor:
               "#001b44",
-
             border:
               "2px solid #ddd",
-
             borderRadius:
               "12px",
-
             padding: "15px",
-
             marginBottom: "20px",
           }}
         >
@@ -735,18 +698,12 @@ const filteredBoats =
               alt=""
               style={{
                 width: "100%",
-
-                maxWidth: "100%",
-
                 borderRadius:
                   "10px",
-
                 marginBottom:
                   "10px",
-
                 maxHeight:
                   "500px",
-
                 objectFit:
                   "cover",
               }}
@@ -757,10 +714,7 @@ const filteredBoats =
           <h2
             style={{
               color: "#e7eb0f",
-
-              fontSize: isMobile
-                ? "28px"
-                : "32px",
+              fontSize: "32px",
             }}
           >
             {
@@ -773,7 +727,6 @@ const filteredBoats =
           <p
             style={{
               color: "white",
-
               fontSize: "18px",
             }}
           >
@@ -789,7 +742,6 @@ const filteredBoats =
           <p
             style={{
               color: "white",
-
               fontSize: "18px",
             }}
           >
@@ -805,7 +757,6 @@ const filteredBoats =
           <p
             style={{
               color: "white",
-
               fontSize: "18px",
             }}
           >
@@ -818,23 +769,48 @@ const filteredBoats =
             }
           </p>
 
-          <p
-            style={{
-              color: "white",
+          {filteredBoats[
+            currentBoat
+          ]?.telefono && (
 
-              fontSize: "18px",
+            <p
+              style={{
+                color: "white",
+                fontSize: "18px",
+              }}
+            >
+              📞 Teléfono:
+              {" "}
+              {
+                filteredBoats[
+                  currentBoat
+                ]?.telefono
+              }
+            </p>
 
-              wordBreak: "break-word",
-            }}
-          >
-            📞 Contacto:
-            {" "}
-            {
-              filteredBoats[
-                currentBoat
-              ]?.contacto
-            }
-          </p>
+          )}
+
+          {filteredBoats[
+            currentBoat
+          ]?.email && (
+
+            <p
+              style={{
+                color: "white",
+                fontSize: "18px",
+                wordBreak: "break-word",
+              }}
+            >
+              ✉️ Email:
+              {" "}
+              {
+                filteredBoats[
+                  currentBoat
+                ]?.email
+              }
+            </p>
+
+          )}
 
           {/* BOTONES */}
 
@@ -867,17 +843,12 @@ const filteredBoats =
                 style={{
                   backgroundColor:
                     "#aa2222",
-
                   color: "white",
-
                   border: "none",
-
                   padding:
                     "10px 20px",
-
                   borderRadius:
                     "8px",
-
                   cursor: "pointer",
                 }}
               >
@@ -895,17 +866,12 @@ const filteredBoats =
                 style={{
                   backgroundColor:
                     "#0d7a32",
-
                   color: "white",
-
                   border: "none",
-
                   padding:
                     "10px 20px",
-
                   borderRadius:
                     "8px",
-
                   cursor: "pointer",
                 }}
               >
@@ -921,12 +887,9 @@ const filteredBoats =
           <div
             style={{
               display: "flex",
-
               justifyContent:
                 "space-between",
-
               marginTop: "30px",
-
               gap: "10px",
             }}
           >
@@ -935,19 +898,14 @@ const filteredBoats =
               onClick={prevBoat}
               style={{
                 flex: 1,
-
                 padding:
                   "12px 20px",
-
                 fontSize: isMobile
                   ? "15px"
                   : "18px",
-
                 borderRadius:
                   "8px",
-
                 border: "none",
-
                 cursor: "pointer",
               }}
             >
@@ -958,19 +916,14 @@ const filteredBoats =
               onClick={nextBoat}
               style={{
                 flex: 1,
-
                 padding:
                   "12px 20px",
-
                 fontSize: isMobile
                   ? "15px"
                   : "18px",
-
                 borderRadius:
                   "8px",
-
                 border: "none",
-
                 cursor: "pointer",
               }}
             >
@@ -979,20 +932,6 @@ const filteredBoats =
 
           </div>
 
-          <p
-            style={{
-              textAlign: "center",
-
-              marginTop: "15px",
-
-              color: "white",
-            }}
-          >
-            {currentBoat + 1}
-            {" / "}
-            {filteredBoats.length}
-          </p>
-
         </div>
 
       ) : (
@@ -1000,9 +939,7 @@ const filteredBoats =
         <div
           style={{
             color: "white",
-
             textAlign: "center",
-
             marginTop: "40px",
           }}
         >
@@ -1010,93 +947,6 @@ const filteredBoats =
         </div>
 
       )}
-
-      {/* TABLA */}
-
-      <div
-        style={{
-          backgroundColor: "white",
-
-          padding: "20px",
-
-          borderRadius: "12px",
-
-          marginTop: "40px",
-
-          overflowX: "auto",
-        }}
-      >
-
-        <h2>
-          LISTADO FLOTA FURIA
-        </h2>
-
-        <table
-          style={{
-            width: "100%",
-
-            maxWidth: "100%",
-
-            borderCollapse:
-              "collapse",
-
-            tableLayout:
-              "fixed",
-
-            wordWrap:
-              "break-word",
-          }}
-        >
-
-          <thead>
-
-            <tr>
-
-              <th>Nombre</th>
-
-              <th>Modelo</th>
-
-              <th>Puerto</th>
-
-              <th>Tripulación</th>
-
-              <th>Contacto</th>
-
-            </tr>
-
-          </thead>
-
-          <tbody>
-
-            {filteredBoats.map(
-              (boat) => (
-
-                <tr key={boat.id}>
-
-                  <td>{boat.name}</td>
-
-                  <td>{boat.model}</td>
-
-                  <td>{boat.port}</td>
-
-                  <td>
-                    {boat.tripulacion}
-                  </td>
-
-                  <td>
-                    {boat.contacto}
-                  </td>
-
-                </tr>
-
-              )
-            )}
-
-          </tbody>
-
-        </table>
-
-      </div>
 
       <BottomNav />
 

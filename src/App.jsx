@@ -53,6 +53,11 @@ export default function App() {
           element={<Bricos />}
         />
 
+        <Route
+  path="/privacidad"
+  element={<Privacidad />}
+/>
+
       </Routes>
 
     </BrowserRouter>

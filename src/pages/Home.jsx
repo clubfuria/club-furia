@@ -692,11 +692,11 @@ export default function Home() {
             <div
               style={{
                 fontWeight: "bold",
-                marginBottom: "10px",
+                marginBottom: "11px",
                 color: TEXT_COLOR,
               }}
             >
-              {post.usuario}
+              {post.usuario?.split("@")[0]}
             </div>
 
             <div>

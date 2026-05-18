@@ -4,14 +4,36 @@ import {
   Route,
 } from "react-router-dom";
 
-import Home from "./pages/Home";
-import Boats from "./pages/Boats";
-import Tripulacion from "./pages/Tripulacion";
-import Actividades from "./pages/Actividades";
-import Recursos from "./pages/Recursos";
-import Bricos from "./pages/Bricos";
-import Compraventa from "./pages/Compraventa";
-import Privacidad from "./pages/Privacidad";
+import Home
+from "./pages/Home";
+
+import Boats
+from "./pages/Boats";
+
+import Tripulacion
+from "./pages/Tripulacion";
+
+import Actividades
+from "./pages/Actividades";
+
+import Recursos
+from "./pages/Recursos";
+
+import Bricos
+from "./pages/Bricos";
+
+import Compraventa
+from "./pages/Compraventa";
+
+import Privacidad
+from "./pages/Privacidad";
+
+import ProtectedRoute
+from "./components/ProtectedRoute";
+
+import ChatActividad
+from "./pages/ChatActividad";
+
 export default function App() {
 
   return (
@@ -20,43 +42,85 @@ export default function App() {
 
       <Routes>
 
+        {/* HOME PUBLICA */}
+
         <Route
           path="/"
           element={<Home />}
         />
 
+        {/* PRIVACIDAD PUBLICA */}
+
+        <Route
+          path="/privacidad"
+          element={<Privacidad />}
+        />
+
+        {/* PAGINAS PRIVADAS */}
+
         <Route
           path="/barcos"
-          element={<Boats />}
+          element={
+            <ProtectedRoute>
+              <Boats />
+            </ProtectedRoute>
+          }
         />
 
         <Route
           path="/tripulacion"
-          element={<Tripulacion />}
+          element={
+            <ProtectedRoute>
+              <Tripulacion />
+            </ProtectedRoute>
+          }
         />
 
         <Route
           path="/actividades"
-          element={<Actividades />}
+          element={
+            <ProtectedRoute>
+              <Actividades />
+            </ProtectedRoute>
+          }
         />
 
         <Route
           path="/recursos"
-          element={<Recursos />}
-        />
-<Route
-  path="/compraventa"
-  element={<Compraventa />}
-/>
-        <Route
-          path="/bricos"
-          element={<Bricos />}
+          element={
+            <ProtectedRoute>
+              <Recursos />
+            </ProtectedRoute>
+          }
         />
 
         <Route
-  path="/privacidad"
-  element={<Privacidad />}
+          path="/compraventa"
+          element={
+            <ProtectedRoute>
+              <Compraventa />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/bricos"
+          element={
+            <ProtectedRoute>
+              <Bricos />
+            </ProtectedRoute>
+          }
+        />
+
+<Route
+  path="/chat/:actividadId/:userId"
+  element={
+    <ProtectedRoute>
+      <ChatActividad />
+    </ProtectedRoute>
+  }
 />
+
 
       </Routes>
 

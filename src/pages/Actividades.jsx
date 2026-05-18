@@ -1,10 +1,15 @@
 import BottomNav from "../components/BottomNav";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import {
+  Link,
+  useNavigate,
+} from "react-router-dom";
 import { supabase } from "../supabase";
 
 export default function Actividades() {
 
+const navigate =
+  useNavigate();
   const [user, setUser] = useState(null);
 
   const [salidas, setSalidas] =
@@ -302,19 +307,25 @@ export default function Actividades() {
       salida.user_id !== user.id
     ) {
 
-      await supabase
-        .from(
-          "notificaciones"
-        )
-        .insert([
-          {
-            user_id:
-              salida.user_id,
+     await supabase
+  .from(
+    "notificaciones"
+  )
+  .insert([
+    {
+      user_id:
+        salida.user_id,
 
-            mensaje:
-              `${user.email} se ha apuntado a ${salida.titulo}`,
-          },
-        ]);
+      from_user:
+        user.id,
+
+      actividad_id:
+        salida.id,
+
+      mensaje:
+        `${user.email} se ha apuntado a ${salida.titulo}`,
+    },
+  ]);
     }
 
     fetchTripulantes();
@@ -820,20 +831,91 @@ export default function Actividades() {
               )
               .map((t) => (
 
-                <p
-                  key={t.id}
-                  style={{
-                    color:
-                      "white",
+               <div
+  key={t.id}
 
-                    marginLeft:
-                      "10px",
-                  }}
-                >
-                  •
-                  {" "}
-                  {t.user_name}
-                </p>
+  style={{
+    display: "flex",
+
+    alignItems:
+      "center",
+
+    justifyContent:
+      "space-between",
+
+    gap: "10px",
+
+    background:
+      "rgba(255,255,255,0.06)",
+
+    padding:
+      "10px 14px",
+
+    borderRadius:
+      "10px",
+
+    marginBottom:
+      "8px",
+  }}
+>
+
+  <p
+    style={{
+      color: "white",
+
+      margin: 0,
+    }}
+  >
+    • {t.user_name}
+  </p>
+
+{(
+  user?.id ===
+    salida.user_id ||
+
+  tripulantes.some(
+    (trip) =>
+      trip.salida_id ===
+        salida.id &&
+      trip.user_id ===
+        user?.id
+  )
+) && (
+
+    <button
+      onClick={() =>
+        navigate(
+          `/chat/${salida.id}/${t.user_id}`
+        )
+      }
+
+      style={{
+        background:
+          "#720792",
+
+        color: "white",
+
+        border: "none",
+
+        borderRadius:
+          "8px",
+
+        padding:
+          "8px 14px",
+
+        cursor:
+          "pointer",
+
+        fontWeight:
+          "bold",
+      }}
+    >
+      💬 CHAT
+    </button>
+
+  )}
+
+</div> 
 
               ))}
 

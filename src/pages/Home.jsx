@@ -1,22 +1,39 @@
-import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { supabase } from "../supabase";
+import { useNavigate }
+from "react-router-dom";
+
+import {
+  useEffect,
+  useState,
+} from "react";
+
+import { supabase }
+from "../supabase";
 
 export default function Home() {
 
-  const navigate = useNavigate();
+  const navigate =
+    useNavigate();
+
+  /*
+  ==========================================
+  RESPONSIVE
+  ==========================================
+  */
 
   const isMobile =
     window.innerWidth < 768;
 
   /*
-    ==========================================
-    AUTH
-    ==========================================
+  ==========================================
+  AUTH
+  ==========================================
   */
 
   const [session, setSession] =
     useState(null);
+
+  const [loading, setLoading] =
+    useState(true);
 
   const [email, setEmail] =
     useState("");
@@ -30,9 +47,9 @@ export default function Home() {
   ] = useState(false);
 
   /*
-    ==========================================
-    POSTS
-    ==========================================
+  ==========================================
+  POSTS
+  ==========================================
   */
 
   const [posts, setPosts] =
@@ -42,9 +59,9 @@ export default function Home() {
     useState("");
 
   /*
-    ==========================================
-    NOTIFICACIONES
-    ==========================================
+  ==========================================
+  NOTIFICACIONES
+  ==========================================
   */
 
   const [
@@ -54,20 +71,26 @@ export default function Home() {
 
   useEffect(() => {
 
-    supabase.auth
-      .getSession()
-      .then(({ data }) => {
+    async function iniciar() {
 
-        setSession(
-          data.session
-        );
+      const { data } =
+        await supabase.auth.getSession();
 
-        if (data.session) {
-          cargarNotificaciones();
-        }
-      });
+      setSession(
+        data.session
+      );
 
-    cargarPosts();
+      setLoading(false);
+
+      if (data.session) {
+
+        cargarNotificaciones();
+      }
+
+      cargarPosts();
+    }
+
+    iniciar();
 
     const {
       data: { subscription },
@@ -78,8 +101,11 @@ export default function Home() {
           setSession(session);
 
           if (session) {
+
             cargarNotificaciones();
+
           } else {
+
             setNotifications([]);
           }
         }
@@ -91,14 +117,17 @@ export default function Home() {
   }, []);
 
   /*
-    ==========================================
-    LOGIN
-    ==========================================
+  ==========================================
+  LOGIN
+  ==========================================
   */
 
   async function login() {
 
-    if (!email || !password) {
+    if (
+      !email ||
+      !password
+    ) {
 
       alert(
         "Introduce email y contraseña"
@@ -128,14 +157,17 @@ export default function Home() {
   }
 
   /*
-    ==========================================
-    REGISTRO
-    ==========================================
+  ==========================================
+  REGISTRO
+  ==========================================
   */
 
   async function registrarse() {
 
-    if (!email || !password) {
+    if (
+      !email ||
+      !password
+    ) {
 
       alert(
         "Introduce email y contraseña"
@@ -144,7 +176,9 @@ export default function Home() {
       return;
     }
 
-    if (password.length < 6) {
+    if (
+      password.length < 6
+    ) {
 
       alert(
         "La contraseña debe tener mínimo 6 caracteres"
@@ -153,7 +187,9 @@ export default function Home() {
       return;
     }
 
-    if (!aceptaPrivacidad) {
+    if (
+      !aceptaPrivacidad
+    ) {
 
       alert(
         "Debes aceptar la política de privacidad"
@@ -183,9 +219,26 @@ export default function Home() {
   }
 
   /*
-    ==========================================
-    POSTS
-    ==========================================
+  ==========================================
+  LOGOUT
+  ==========================================
+  */
+
+  async function logout() {
+
+    await supabase.auth.signOut();
+
+    setSession(null);
+
+    localStorage.clear();
+
+    window.location.href = "/";
+  }
+
+  /*
+  ==========================================
+  POSTS
+  ==========================================
   */
 
   async function cargarPosts() {
@@ -194,11 +247,15 @@ export default function Home() {
       await supabase
         .from("posts")
         .select("*")
-        .order("created_at", {
-          ascending: false,
-        });
+        .order(
+          "created_at",
+          {
+            ascending: false,
+          }
+        );
 
     if (data) {
+
       setPosts(data);
     }
   }
@@ -214,7 +271,10 @@ export default function Home() {
       return;
     }
 
-    if (!nuevoPost.trim()) {
+    if (
+      !nuevoPost.trim()
+    ) {
+
       return;
     }
 
@@ -242,7 +302,9 @@ export default function Home() {
     cargarPosts();
   }
 
-  async function borrarPost(id) {
+  async function borrarPost(
+    id
+  ) {
 
     const confirmar =
       window.confirm(
@@ -260,9 +322,9 @@ export default function Home() {
   }
 
   /*
-    ==========================================
-    NOTIFICACIONES
-    ==========================================
+  ==========================================
+  NOTIFICACIONES
+  ==========================================
   */
 
   async function cargarNotificaciones() {
@@ -290,19 +352,22 @@ export default function Home() {
         );
 
     if (data) {
+
       setNotifications(data);
     }
   }
 
   /*
-    ==========================================
-    ESTILOS
-    ==========================================
+  ==========================================
+  ESTILOS
+  ==========================================
   */
 
-  const TITLE_COLOR = "#fe5d01";
+  const TITLE_COLOR =
+    "#fe5d01";
 
-  const TEXT_COLOR = "#e0f406";
+  const TEXT_COLOR =
+    "#e0f406";
 
   const BACKGROUND_TOP =
     "#021224";
@@ -314,65 +379,99 @@ export default function Home() {
     "#0c3157";
 
   /*
-    ==========================================
-    BOTONES
-    ==========================================
+  ==========================================
+  BOTONES
+  ==========================================
   */
 
   const buttons = [
     {
       title: "BARCOS",
+
       description:
         "Modelos, fichas y fotos",
+
       path: "/barcos",
-      image: "/buttons/boats.png",
+
+      image:
+        "/buttons/boats.png",
     },
 
     {
-      title: "TRIPULACIÓN",
+      title:
+        "TRIPULACIÓN",
+
       description:
         "Armadores y tripulantes",
-      path: "/tripulacion",
+
+      path:
+        "/tripulacion",
+
       image:
         "/buttons/tripulacion.png",
     },
 
     {
-      title: "ACTIVIDADES",
+      title:
+        "ACTIVIDADES",
+
       description:
         "Regatas y navegación",
-      path: "/actividades",
+
+      path:
+        "/actividades",
+
       image:
         "/buttons/actividades.png",
     },
 
     {
-      title: "RECURSOS",
+      title:
+        "RECURSOS",
+
       description:
         "Documentación útil",
-      path: "/recursos",
+
+      path:
+        "/recursos",
+
       image:
         "/buttons/recursos.png",
     },
 
     {
-      title: "COMPRAVENTA",
+      title:
+        "COMPRAVENTA",
+
       description:
         "Compra y venta",
-      path: "/compraventa",
+
+      path:
+        "/compraventa",
+
       image:
         "/buttons/compraventa.png",
     },
 
     {
-      title: "BRICOS",
+      title:
+        "BRICOS",
+
       description:
         "DIY y reparaciones",
-      path: "/bricos",
+
+      path:
+        "/bricos",
+
       image:
         "/buttons/bricos.png",
     },
   ];
+
+  if (loading) {
+
+    return null;
+  }
 
   return (
 
@@ -380,12 +479,13 @@ export default function Home() {
       style={{
         minHeight: "100vh",
 
-        background: `linear-gradient(
-          to bottom,
-          ${BACKGROUND_TOP},
-          ${BACKGROUND_MIDDLE},
-          ${BACKGROUND_BOTTOM}
-        )`,
+        background:
+          `linear-gradient(
+            to bottom,
+            ${BACKGROUND_TOP},
+            ${BACKGROUND_MIDDLE},
+            ${BACKGROUND_BOTTOM}
+          )`,
 
         padding: "20px",
 
@@ -398,29 +498,39 @@ export default function Home() {
 
       <div
         style={{
-          textAlign: "center",
-          marginBottom: "40px",
+          textAlign:
+            "center",
+
+          marginBottom:
+            "40px",
         }}
       >
 
         <img
           src="/logo.jpeg"
+
           alt="Club Furia"
+
           style={{
-            width: isMobile
-              ? "240px"
-              : "320px",
+            width:
+              isMobile
+                ? "240px"
+                : "320px",
           }}
         />
 
         <h1
           style={{
-            color: TITLE_COLOR,
+            color:
+              TITLE_COLOR,
+
             fontSize:
               isMobile
                 ? "42px"
                 : "64px",
-            marginTop: "10px",
+
+            marginTop:
+              "10px",
           }}
         >
           CLUB FURIA
@@ -434,7 +544,9 @@ export default function Home() {
 
         <div
           style={{
-            maxWidth: "400px",
+            maxWidth:
+              "400px",
+
             margin:
               "0 auto 40px auto",
           }}
@@ -442,66 +554,232 @@ export default function Home() {
 
           <input
             type="email"
+
             placeholder="Email"
+
             value={email}
+
             onChange={(e) =>
               setEmail(
                 e.target.value
               )
             }
+
             style={{
               width: "100%",
+
               padding: "14px",
-              marginBottom: "12px",
-              borderRadius: "10px",
+
+              marginBottom:
+                "12px",
+
+              borderRadius:
+                "10px",
+
               border: "none",
             }}
           />
 
           <input
             type="password"
+
             placeholder="Contraseña"
+
             value={password}
+
             onChange={(e) =>
               setPassword(
                 e.target.value
               )
             }
+
             style={{
               width: "100%",
+
               padding: "14px",
-              marginBottom: "12px",
-              borderRadius: "10px",
+
+              marginBottom:
+                "12px",
+
+              borderRadius:
+                "10px",
+
               border: "none",
             }}
           />
 
           <button
             onClick={login}
+
             style={{
               width: "100%",
+
               padding: "14px",
-              marginBottom: "10px",
+
+              marginBottom:
+                "10px",
+
               border: "none",
-              borderRadius: "10px",
-              background: TITLE_COLOR,
+
+              borderRadius:
+                "10px",
+
+              background:
+                TITLE_COLOR,
+
               color: "white",
-              fontWeight: "bold",
+
+              fontWeight:
+                "bold",
             }}
           >
             ENTRAR
           </button>
 
+          {/* PRIVACIDAD */}
+
+          <div
+            style={{
+              marginBottom:
+                "16px",
+
+              color: "white",
+
+              fontSize:
+                "14px",
+
+              background:
+                "rgba(255,255,255,0.08)",
+
+              padding: "14px",
+
+              borderRadius:
+                "12px",
+
+              border:
+                "1px solid rgba(255,255,255,0.15)",
+            }}
+          >
+
+            <label
+              style={{
+                display:
+                  "flex",
+
+                alignItems:
+                  "center",
+
+                gap: "12px",
+
+                lineHeight:
+                  1.5,
+
+                cursor:
+                  "pointer",
+              }}
+            >
+
+              <input
+                type="checkbox"
+
+                checked={
+                  aceptaPrivacidad
+                }
+
+                onChange={(e) =>
+                  setAceptaPrivacidad(
+                    e.target.checked
+                  )
+                }
+
+                style={{
+                  appearance:
+                    "auto",
+
+                  WebkitAppearance:
+                    "checkbox",
+
+                  width: "22px",
+
+                  height: "22px",
+
+                  minWidth:
+                    "22px",
+
+                  minHeight:
+                    "22px",
+
+                  display:
+                    "block",
+
+                  opacity: 1,
+
+                  visibility:
+                    "visible",
+
+                  cursor:
+                    "pointer",
+                }}
+              />
+
+              <span
+                style={{
+                  color:
+                    "white",
+                }}
+              >
+
+                Acepto la{" "}
+
+                <a
+                  href="/privacidad"
+
+                  target="_blank"
+
+                  rel="noreferrer"
+
+                  style={{
+                    color:
+                      "#e0f406",
+
+                    fontWeight:
+                      "bold",
+
+                    textDecoration:
+                      "underline",
+                  }}
+                >
+                  política de privacidad
+                </a>
+
+              </span>
+
+            </label>
+
+          </div>
+
           <button
-            onClick={registrarse}
+            onClick={
+              registrarse
+            }
+
             style={{
               width: "100%",
+
               padding: "14px",
+
               border: "none",
-              borderRadius: "10px",
-              background: "#720792",
+
+              borderRadius:
+                "10px",
+
+              background:
+                "#720792",
+
               color: "white",
-              fontWeight: "bold",
+
+              fontWeight:
+                "bold",
             }}
           >
             REGISTRARSE
@@ -513,17 +791,209 @@ export default function Home() {
 
         <div
           style={{
-            textAlign: "center",
-            color: "white",
-            marginBottom: "30px",
+            background:
+              "rgba(255,255,255,0.08)",
+
+            borderRadius:
+              "20px",
+
+            padding: "20px",
+
+            display: "flex",
+
+            justifyContent:
+              "space-between",
+
+            alignItems:
+              "center",
+
+            gap: "12px",
+
+            flexWrap:
+              "wrap",
+
+            marginBottom:
+              "30px",
           }}
         >
-          Conectado:
-          {" "}
-          {session.user.email}
+
+          <div
+            style={{
+              color:
+                "white",
+
+              fontWeight:
+                "bold",
+            }}
+          >
+            Conectado:
+            {" "}
+            {
+              session.user.email
+            }
+          </div>
+
+          <button
+            onClick={logout}
+
+            style={{
+              padding:
+                "10px 18px",
+
+              borderRadius:
+                "12px",
+
+              border:
+                "none",
+
+              background:
+                "#fe5d01",
+
+              color:
+                "white",
+
+              fontWeight:
+                "bold",
+
+              cursor:
+                "pointer",
+            }}
+          >
+            SALIR
+          </button>
+
         </div>
 
       )}
+
+{/* NOTIFICACIONES */}
+
+{session &&
+  notifications.length > 0 && (
+
+  <div
+    style={{
+      maxWidth:
+        "900px",
+
+      margin:
+        "0 auto 30px auto",
+
+      background:
+        "rgba(255,255,255,0.08)",
+
+      borderRadius:
+        "20px",
+
+      padding:
+        "20px",
+
+      border:
+        "1px solid rgba(255,255,255,0.12)",
+    }}
+  >
+
+    <h2
+      style={{
+        color:
+          "#fe5d01",
+
+        marginBottom:
+          "16px",
+      }}
+    >
+      🔔 NOTIFICACIONES
+    </h2>
+
+    {notifications.map(
+      (n) => (
+
+        <div
+          key={n.id}
+
+          style={{
+            background:
+              "rgba(255,255,255,0.06)",
+
+            padding:
+              "12px 16px",
+
+            borderRadius:
+              "12px",
+
+            marginBottom:
+              "10px",
+
+            color:
+              "white",
+          }}
+        >
+         <div
+  style={{
+    display: "flex",
+
+    justifyContent:
+      "space-between",
+
+    alignItems:
+      "center",
+
+    gap: "10px",
+
+    flexWrap:
+      "wrap",
+  }}
+>
+
+  <span>
+    {n.mensaje}
+  </span>
+
+  {n.from_user &&
+    n.actividad_id && (
+
+    <button
+      onClick={() =>
+        navigate(
+          `/chat/${n.actividad_id}/${n.from_user}`
+        )
+      }
+
+      style={{
+        background:
+          "#720792",
+
+        color: "white",
+
+        border: "none",
+
+        borderRadius:
+          "8px",
+
+        padding:
+          "8px 14px",
+
+        cursor:
+          "pointer",
+
+        fontWeight:
+          "bold",
+      }}
+    >
+      💬 RESPONDER
+    </button>
+
+  )}
+
+</div> 
+        </div>
+
+      )
+    )}
+
+  </div>
+
+)}
 
       {/* BOTONES */}
 
@@ -538,73 +1008,131 @@ export default function Home() {
 
           gap: "20px",
 
-          marginBottom: "50px",
+          marginBottom:
+            "50px",
         }}
       >
 
-        {buttons.map((button) => (
-
-          <div
-            key={button.title}
-
-            onClick={() =>
-              navigate(button.path)
-            }
-
-            style={{
-              background:
-                "rgba(255,255,255,0.08)",
-
-              borderRadius: "20px",
-
-              overflow: "hidden",
-
-              cursor: "pointer",
-
-              border:
-                "1px solid rgba(255,255,255,0.12)",
-            }}
-          >
-
-            <img
-              src={button.image}
-              alt={button.title}
-              style={{
-                width: "100%",
-                height: "220px",
-                objectFit: "cover",
-              }}
-            />
+        {buttons.map(
+          (button) => (
 
             <div
+              key={
+                button.title
+              }
+
+              onClick={(e) => {
+
+                e.preventDefault();
+
+                e.stopPropagation();
+
+                if (!session) {
+
+                  alert(
+                    "Debes iniciar sesión"
+                  );
+
+                  return false;
+                }
+
+                navigate(
+                  button.path
+                );
+
+              }}
+
               style={{
-                padding: "20px",
+                background:
+                  "rgba(255,255,255,0.08)",
+
+                borderRadius:
+                  "20px",
+
+                overflow:
+                  "hidden",
+
+                border:
+                  "1px solid rgba(255,255,255,0.12)",
+
+                cursor:
+                  session
+                    ? "pointer"
+                    : "not-allowed",
+
+                opacity:
+                  session
+                    ? 1
+                    : 0.45,
+
+                filter:
+                  session
+                    ? "none"
+                    : "grayscale(1)",
               }}
             >
 
-              <h2
-                style={{
-                  color: TITLE_COLOR,
-                  marginBottom: "10px",
-                }}
-              >
-                {button.title}
-              </h2>
+              <img
+                src={
+                  button.image
+                }
 
-              <p
+                alt={
+                  button.title
+                }
+
                 style={{
-                  color: "white",
-                  margin: 0,
+                  width:
+                    "100%",
+
+                  height:
+                    "220px",
+
+                  objectFit:
+                    "cover",
+                }}
+              />
+
+              <div
+                style={{
+                  padding:
+                    "20px",
                 }}
               >
-                {button.description}
-              </p>
+
+                <h2
+                  style={{
+                    color:
+                      TITLE_COLOR,
+
+                    marginBottom:
+                      "10px",
+                  }}
+                >
+                  {
+                    button.title
+                  }
+                </h2>
+
+                <p
+                  style={{
+                    color:
+                      "white",
+
+                    margin: 0,
+                  }}
+                >
+                  {
+                    button.description
+                  }
+                </p>
+
+              </div>
 
             </div>
 
-          </div>
-
-        ))}
+          )
+        )}
 
       </div>
 
@@ -612,15 +1140,21 @@ export default function Home() {
 
       <div
         style={{
-          maxWidth: "800px",
-          margin: "0 auto",
+          maxWidth:
+            "800px",
+
+          margin:
+            "0 auto",
         }}
       >
 
         <h2
           style={{
-            color: TITLE_COLOR,
-            marginBottom: "20px",
+            color:
+              TITLE_COLOR,
+
+            marginBottom:
+              "20px",
           }}
         >
           PUBLICACIONES
@@ -630,37 +1164,68 @@ export default function Home() {
 
           <div
             style={{
-              marginBottom: "30px",
+              marginBottom:
+                "30px",
             }}
           >
 
             <textarea
-              value={nuevoPost}
+              value={
+                nuevoPost
+              }
+
               onChange={(e) =>
                 setNuevoPost(
                   e.target.value
                 )
               }
+
               placeholder="Escribe algo..."
+
               style={{
-                width: "100%",
-                minHeight: "120px",
-                padding: "14px",
-                borderRadius: "12px",
-                border: "none",
-                marginBottom: "10px",
+                width:
+                  "100%",
+
+                minHeight:
+                  "120px",
+
+                padding:
+                  "14px",
+
+                borderRadius:
+                  "12px",
+
+                border:
+                  "none",
+
+                marginBottom:
+                  "10px",
               }}
             />
 
             <button
-              onClick={publicarPost}
+              onClick={
+                publicarPost
+              }
+
               style={{
-                padding: "14px 24px",
-                border: "none",
-                borderRadius: "12px",
-                background: TITLE_COLOR,
-                color: "white",
-                fontWeight: "bold",
+                padding:
+                  "14px 24px",
+
+                border:
+                  "none",
+
+                borderRadius:
+                  "12px",
+
+                background:
+                  TITLE_COLOR,
+
+                color:
+                  "white",
+
+                fontWeight:
+                  "bold",
               }}
             >
               PUBLICAR
@@ -679,45 +1244,71 @@ export default function Home() {
               background:
                 "rgba(255,255,255,0.08)",
 
-              borderRadius: "16px",
+              borderRadius:
+                "16px",
 
-              padding: "18px",
+              padding:
+                "18px",
 
-              marginBottom: "18px",
+              marginBottom:
+                "18px",
 
-              color: "white",
+              color:
+                "white",
             }}
           >
 
             <div
               style={{
-                fontWeight: "bold",
-                marginBottom: "11px",
-                color: TEXT_COLOR,
+                fontWeight:
+                  "bold",
+
+                marginBottom:
+                  "10px",
+
+                color:
+                  TEXT_COLOR,
               }}
             >
-              {post.usuario?.split("@")[0]}
+              {
+                post.usuario
+                  ?.split("@")[0]
+              }
             </div>
 
             <div>
               {post.texto}
             </div>
 
-            {session?.user?.email ===
+            {session?.user
+              ?.email ===
               post.usuario && (
 
               <button
                 onClick={() =>
-                  borrarPost(post.id)
+                  borrarPost(
+                    post.id
+                  )
                 }
+
                 style={{
-                  marginTop: "14px",
+                  marginTop:
+                    "14px",
+
                   padding:
                     "8px 14px",
-                  border: "none",
-                  borderRadius: "10px",
-                  background: "#aa0000",
-                  color: "white",
+
+                  border:
+                    "none",
+
+                  borderRadius:
+                    "10px",
+
+                  background:
+                    "#aa0000",
+
+                  color:
+                    "white",
                 }}
               >
                 ELIMINAR

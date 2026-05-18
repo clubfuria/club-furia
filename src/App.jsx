@@ -11,7 +11,7 @@ import Actividades from "./pages/Actividades";
 import Recursos from "./pages/Recursos";
 import Bricos from "./pages/Bricos";
 import Compraventa from "./pages/Compraventa";
-
+import Privacidad from "./pages/Privacidad";
 export default function App() {
 
   return (

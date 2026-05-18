@@ -6,12 +6,6 @@ export default function Home() {
 
   const navigate = useNavigate();
 
-  /*
-    ==========================================
-    RESPONSIVE
-    ==========================================
-  */
-
   const isMobile =
     window.innerWidth < 768;
 
@@ -29,6 +23,11 @@ export default function Home() {
 
   const [password, setPassword] =
     useState("");
+
+  const [
+    aceptaPrivacidad,
+    setAceptaPrivacidad,
+  ] = useState(false);
 
   /*
     ==========================================
@@ -64,7 +63,6 @@ export default function Home() {
         );
 
         if (data.session) {
-
           cargarNotificaciones();
         }
       });
@@ -80,11 +78,8 @@ export default function Home() {
           setSession(session);
 
           if (session) {
-
             cargarNotificaciones();
-
           } else {
-
             setNotifications([]);
           }
         }
@@ -158,6 +153,15 @@ export default function Home() {
       return;
     }
 
+    if (!aceptaPrivacidad) {
+
+      alert(
+        "Debes aceptar la política de privacidad"
+      );
+
+      return;
+    }
+
     const { error } =
       await supabase.auth.signUp({
 
@@ -195,7 +199,6 @@ export default function Home() {
         });
 
     if (data) {
-
       setPosts(data);
     }
   }
@@ -212,7 +215,6 @@ export default function Home() {
     }
 
     if (!nuevoPost.trim()) {
-
       return;
     }
 
@@ -288,14 +290,13 @@ export default function Home() {
         );
 
     if (data) {
-
       setNotifications(data);
     }
   }
 
   /*
     ==========================================
-    PERSONALIZACIÓN
+    ESTILOS
     ==========================================
   */
 
@@ -312,31 +313,6 @@ export default function Home() {
   const BACKGROUND_BOTTOM =
     "#0c3157";
 
-  const HEADER_TITLE_SIZE =
-    isMobile
-      ? "42px"
-      : "64px";
-
-  const HEADER_SUBTITLE_SIZE =
-    isMobile
-      ? "16px"
-      : "20px";
-
-  const BUTTON_TITLE_SIZE =
-    isMobile
-      ? "28px"
-      : "36px";
-
-  const BUTTON_DESCRIPTION_SIZE =
-    isMobile
-      ? "16px"
-      : "18px";
-
-  const LOGO_WIDTH =
-    isMobile
-      ? "280px"
-      : "280px";
-
   /*
     ==========================================
     BOTONES
@@ -347,7 +323,7 @@ export default function Home() {
     {
       title: "BARCOS",
       description:
-        "Modelos, fichas y fotos de la flota Furia",
+        "Modelos, fichas y fotos",
       path: "/barcos",
       image: "/buttons/boats.png",
     },
@@ -364,7 +340,7 @@ export default function Home() {
     {
       title: "ACTIVIDADES",
       description:
-        "Regatas, encuentros y navegación",
+        "Regatas y navegación",
       path: "/actividades",
       image:
         "/buttons/actividades.png",
@@ -373,7 +349,7 @@ export default function Home() {
     {
       title: "RECURSOS",
       description:
-        "Manuales, documentación y enlaces útiles",
+        "Documentación útil",
       path: "/recursos",
       image:
         "/buttons/recursos.png",
@@ -382,7 +358,7 @@ export default function Home() {
     {
       title: "COMPRAVENTA",
       description:
-        "Compra y venta de material náutico",
+        "Compra y venta",
       path: "/compraventa",
       image:
         "/buttons/compraventa.png",
@@ -391,7 +367,7 @@ export default function Home() {
     {
       title: "BRICOS",
       description:
-        "Mejoras, reparaciones y proyectos DIY",
+        "DIY y reparaciones",
       path: "/bricos",
       image:
         "/buttons/bricos.png",
@@ -406,15 +382,12 @@ export default function Home() {
 
         background: `linear-gradient(
           to bottom,
-          ${BACKGROUND_TOP} 0%,
-          ${BACKGROUND_MIDDLE} 45%,
-          ${BACKGROUND_BOTTOM} 100%
+          ${BACKGROUND_TOP},
+          ${BACKGROUND_MIDDLE},
+          ${BACKGROUND_BOTTOM}
         )`,
 
-        padding:
-          isMobile
-            ? "20px 14px 40px"
-            : "25px 20px 50px",
+        padding: "20px",
 
         fontFamily:
           "Arial, sans-serif",
@@ -426,11 +399,7 @@ export default function Home() {
       <div
         style={{
           textAlign: "center",
-
-          marginBottom:
-            isMobile
-              ? "35px"
-              : "45px",
+          marginBottom: "40px",
         }}
       >
 
@@ -438,439 +407,230 @@ export default function Home() {
           src="/logo.jpeg"
           alt="Club Furia"
           style={{
-            width: LOGO_WIDTH,
-
-            marginBottom:
-              "19px",
-
-            filter:
-              "drop-shadow(0 4px 12px rgba(0,0,0,0.5))",
+            width: isMobile
+              ? "240px"
+              : "320px",
           }}
         />
 
         <h1
           style={{
-            color:
-              TITLE_COLOR,
-
+            color: TITLE_COLOR,
             fontSize:
-              HEADER_TITLE_SIZE,
-
-            fontWeight:
-              "bold",
-
-            margin: 0,
-
-            letterSpacing:
-              "4px",
-
-            lineHeight:
-              "1.2",
-
-            marginBottom:
-              "24px",
-
-            textShadow:
-              "0 4px 12px rgba(0,0,0,0.5)",
+              isMobile
+                ? "42px"
+                : "64px",
+            marginTop: "10px",
           }}
         >
           CLUB FURIA
         </h1>
 
-        <p
-          style={{
-            color:
-              TEXT_COLOR,
-
-            fontSize:
-              HEADER_SUBTITLE_SIZE,
-
-            opacity: 0.95,
-
-            margin: 0,
-
-            lineHeight:
-              "1.8",
-
-            letterSpacing:
-              "0.5px",
-
-            padding:
-              isMobile
-                ? "0 10px"
-                : 0,
-          }}
-        >
-          Comunidad de armadores y amantes de los veleros Furia
-        </p>
-
       </div>
 
       {/* LOGIN */}
 
-      <div
-        style={{
-          maxWidth: "420px",
+      {!session ? (
 
-          margin:
-            "0 auto 40px auto",
-        }}
-      >
+        <div
+          style={{
+            maxWidth: "400px",
+            margin:
+              "0 auto 40px auto",
+          }}
+        >
 
-        {!session ? (
-
-          <div
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) =>
+              setEmail(
+                e.target.value
+              )
+            }
             style={{
-              background:
-                "rgba(255,255,255,0.08)",
+              width: "100%",
+              padding: "14px",
+              marginBottom: "12px",
+              borderRadius: "10px",
+              border: "none",
+            }}
+          />
 
-              backdropFilter:
-                "blur(10px)",
+          <input
+            type="password"
+            placeholder="Contraseña"
+            value={password}
+            onChange={(e) =>
+              setPassword(
+                e.target.value
+              )
+            }
+            style={{
+              width: "100%",
+              padding: "14px",
+              marginBottom: "12px",
+              borderRadius: "10px",
+              border: "none",
+            }}
+          />
 
-              border:
-                "1px solid rgba(255,255,255,0.12)",
-
-              borderRadius:
-                "20px",
-
-              padding:
-                isMobile
-                  ? "18px"
-                  : "24px",
+          <button
+            onClick={login}
+            style={{
+              width: "100%",
+              padding: "14px",
+              marginBottom: "10px",
+              border: "none",
+              borderRadius: "10px",
+              background: TITLE_COLOR,
+              color: "white",
+              fontWeight: "bold",
             }}
           >
+            ENTRAR
+          </button>
 
-            <input
-              type="email"
-              placeholder="Correo electrónico"
-              value={email}
-              onChange={(e) =>
-                setEmail(
-                  e.target.value
-                )
-              }
-              style={{
-                width: "100%",
-                padding: "14px",
-                marginBottom:
-                  "14px",
-                borderRadius:
-                  "12px",
-                border: "none",
-              }}
-            />
-
-            <input
-              type="password"
-              placeholder="Contraseña"
-              value={password}
-              onChange={(e) =>
-                setPassword(
-                  e.target.value
-                )
-              }
-              style={{
-                width: "100%",
-                padding: "14px",
-                marginBottom:
-                  "18px",
-                borderRadius:
-                  "12px",
-                border: "none",
-              }}
-            />
-
-            <button
-              onClick={login}
-              style={{
-                width: "100%",
-                padding: "15px",
-                borderRadius:
-                  "14px",
-                border: "none",
-                background:
-                  TITLE_COLOR,
-                color: "white",
-                fontWeight:
-                  "bold",
-                marginBottom:
-                  "12px",
-              }}
-            >
-              ENTRAR
-            </button>
-
-            <button
-              onClick={
-                registrarse
-              }
-              style={{
-                width: "100%",
-                padding: "15px",
-                borderRadius:
-                  "14px",
-                border: "none",
-                background:
-                  "#720792",
-                color: "white",
-                fontWeight:
-                  "bold",
-              }}
-            >
-              REGISTRARSE
-            </button>
-
-          </div>
-
-        ) : (
-
-          <div
+          <button
+            onClick={registrarse}
             style={{
-              background:
-                "rgba(255,255,255,0.08)",
-
-              borderRadius:
-                "20px",
-
-              padding:
-                "20px",
-
-              display:
-                "flex",
-
-              justifyContent:
-                "space-between",
-
-              alignItems:
-                "center",
-
-              gap: "12px",
-
-              flexWrap:
-                "wrap",
+              width: "100%",
+              padding: "14px",
+              border: "none",
+              borderRadius: "10px",
+              background: "#720792",
+              color: "white",
+              fontWeight: "bold",
             }}
           >
+            REGISTRARSE
+          </button>
 
-            <div
-              style={{
-                color: "white",
+        </div>
 
-                fontWeight:
-                  "bold",
-              }}
-            >
-              Conectado:
-              {" "}
-              {session.user.email}
-            </div>
+      ) : (
 
-            <button
-              onClick={() =>
-                supabase.auth.signOut()
-              }
-              style={{
-                padding:
-                  "10px 18px",
+        <div
+          style={{
+            textAlign: "center",
+            color: "white",
+            marginBottom: "30px",
+          }}
+        >
+          Conectado:
+          {" "}
+          {session.user.email}
+        </div>
 
-                borderRadius:
-                  "12px",
-
-                border:
-                  "none",
-
-                background:
-                  "#fe5d01",
-
-                color:
-                  "white",
-
-                fontWeight:
-                  "bold",
-              }}
-            >
-              SALIR
-            </button>
-
-          </div>
-
-        )}
-
-      </div>
+      )}
 
       {/* BOTONES */}
 
       <div
         style={{
-          maxWidth: "1100px",
-          margin: "0 auto",
-          display: "flex",
-          flexDirection:
-            "column",
+          display: "grid",
+
+          gridTemplateColumns:
+            isMobile
+              ? "1fr"
+              : "1fr 1fr",
+
           gap: "20px",
+
+          marginBottom: "50px",
         }}
       >
 
-        {buttons.map(
-          (button, index) => (
+        {buttons.map((button) => (
+
+          <div
+            key={button.title}
+
+            onClick={() =>
+              navigate(button.path)
+            }
+
+            style={{
+              background:
+                "rgba(255,255,255,0.08)",
+
+              borderRadius: "20px",
+
+              overflow: "hidden",
+
+              cursor: "pointer",
+
+              border:
+                "1px solid rgba(255,255,255,0.12)",
+            }}
+          >
+
+            <img
+              src={button.image}
+              alt={button.title}
+              style={{
+                width: "100%",
+                height: "220px",
+                objectFit: "cover",
+              }}
+            />
 
             <div
-              key={index}
-              onClick={() =>
-                navigate(
-                  button.path
-                )
-              }
               style={{
-                borderRadius:
-                  "24px",
-                overflow:
-                  "hidden",
-                cursor:
-                  "pointer",
-
-                background:
-                  "linear-gradient(to right, #08203b 0%, #06192d 60%, #03101d 100%)",
-
-                display:
-                  "flex",
-
-                flexDirection:
-                  isMobile
-                    ? "column"
-                    : "row",
+                padding: "20px",
               }}
             >
 
-              <div
+              <h2
                 style={{
-                  width:
-                    isMobile
-                      ? "100%"
-                      : "42%",
+                  color: TITLE_COLOR,
+                  marginBottom: "10px",
                 }}
               >
+                {button.title}
+              </h2>
 
-                <img
-                  src={
-                    button.image
-                  }
-                  alt={
-                    button.title
-                  }
-                  style={{
-                    width: "100%",
-                    height:
-                      "100%",
-                    objectFit:
-                      "cover",
-                  }}
-                />
-
-              </div>
-
-              <div
+              <p
                 style={{
-                  flex: 1,
-
-                  display:
-                    "flex",
-
-                  flexDirection:
-                    "column",
-
-                  justifyContent:
-                    "center",
-
-                  padding:
-                    isMobile
-                      ? "24px 22px 30px"
-                      : "0 40px",
+                  color: "white",
+                  margin: 0,
                 }}
               >
-
-                <div
-                  style={{
-                    color:
-                      TITLE_COLOR,
-
-                    fontSize:
-                      BUTTON_TITLE_SIZE,
-
-                    fontWeight:
-                      "bold",
-
-                    marginBottom:
-                      "14px",
-                  }}
-                >
-                  {button.title}
-                </div>
-
-                <div
-                  style={{
-                    color:
-                      TEXT_COLOR,
-
-                    fontSize:
-                      BUTTON_DESCRIPTION_SIZE,
-
-                    lineHeight:
-                      1.5,
-                  }}
-                >
-                  {
-                    button.description
-                  }
-                </div>
-
-              </div>
+                {button.description}
+              </p>
 
             </div>
 
-          )
-        )}
+          </div>
+
+        ))}
 
       </div>
 
-      {/* POSTS / CHAT */}
+      {/* POSTS */}
 
       <div
         style={{
-          maxWidth: "1100px",
-
-          margin:
-            "50px auto 0 auto",
-
-          background:
-            "rgba(255,255,255,0.08)",
-
-          borderRadius:
-            "24px",
-
-          padding:
-            isMobile
-              ? "20px"
-              : "28px",
+          maxWidth: "800px",
+          margin: "0 auto",
         }}
       >
 
         <h2
           style={{
-            color: "#fe5d01",
-
-            marginBottom:
-              "20px",
+            color: TITLE_COLOR,
+            marginBottom: "20px",
           }}
         >
-          💬 Comunidad Furia
+          PUBLICACIONES
         </h2>
 
         {session && (
 
           <div
             style={{
-              marginBottom:
-                "30px",
+              marginBottom: "30px",
             }}
           >
 
@@ -881,55 +641,26 @@ export default function Home() {
                   e.target.value
                 )
               }
-              placeholder="Escribe un comentario..."
+              placeholder="Escribe algo..."
               style={{
                 width: "100%",
-
-                minHeight:
-                  "110px",
-
-                padding:
-                  "16px",
-
-                borderRadius:
-                  "14px",
-
-                border:
-                  "none",
-
-                resize:
-                  "vertical",
-
-                boxSizing:
-                  "border-box",
-
-                marginBottom:
-                  "14px",
+                minHeight: "120px",
+                padding: "14px",
+                borderRadius: "12px",
+                border: "none",
+                marginBottom: "10px",
               }}
             />
 
             <button
-              onClick={
-                publicarPost
-              }
+              onClick={publicarPost}
               style={{
-                background:
-                  "#fe5d01",
-
-                color:
-                  "white",
-
-                border:
-                  "none",
-
-                padding:
-                  "14px 24px",
-
-                borderRadius:
-                  "14px",
-
-                fontWeight:
-                  "bold",
+                padding: "14px 24px",
+                border: "none",
+                borderRadius: "12px",
+                background: TITLE_COLOR,
+                color: "white",
+                fontWeight: "bold",
               }}
             >
               PUBLICAR
@@ -939,104 +670,64 @@ export default function Home() {
 
         )}
 
-        <div
-          style={{
-            display:
-              "flex",
+        {posts.map((post) => (
 
-            flexDirection:
-              "column",
+          <div
+            key={post.id}
 
-            gap: "18px",
-          }}
-        >
+            style={{
+              background:
+                "rgba(255,255,255,0.08)",
 
-          {posts.map((post) => (
+              borderRadius: "16px",
+
+              padding: "18px",
+
+              marginBottom: "18px",
+
+              color: "white",
+            }}
+          >
 
             <div
-              key={post.id}
               style={{
-                background:
-                  "rgba(0,0,0,0.25)",
-
-                borderRadius:
-                  "16px",
-
-                padding:
-                  "18px",
+                fontWeight: "bold",
+                marginBottom: "10px",
+                color: TEXT_COLOR,
               }}
             >
-
-              <div
-                style={{
-                  color:
-                    "#e7eb0f",
-
-                  marginBottom:
-                    "10px",
-
-                  fontWeight:
-                    "bold",
-                }}
-              >
-                {post.usuario}
-              </div>
-
-              <div
-                style={{
-                  color:
-                    "white",
-
-                  lineHeight:
-                    1.6,
-
-                  whiteSpace:
-                    "pre-wrap",
-
-                  marginBottom:
-                    "12px",
-                }}
-              >
-                {post.texto}
-              </div>
-
-              {session?.user
-                ?.email ===
-                post.usuario && (
-
-                <button
-                  onClick={() =>
-                    borrarPost(
-                      post.id
-                    )
-                  }
-                  style={{
-                    background:
-                      "#aa2222",
-
-                    color:
-                      "white",
-
-                    border:
-                      "none",
-
-                    padding:
-                      "8px 14px",
-
-                    borderRadius:
-                      "10px",
-                  }}
-                >
-                  Borrar
-                </button>
-
-              )}
-
+              {post.usuario}
             </div>
 
-          ))}
+            <div>
+              {post.texto}
+            </div>
 
-        </div>
+            {session?.user?.email ===
+              post.usuario && (
+
+              <button
+                onClick={() =>
+                  borrarPost(post.id)
+                }
+                style={{
+                  marginTop: "14px",
+                  padding:
+                    "8px 14px",
+                  border: "none",
+                  borderRadius: "10px",
+                  background: "#aa0000",
+                  color: "white",
+                }}
+              >
+                ELIMINAR
+              </button>
+
+            )}
+
+          </div>
+
+        ))}
 
       </div>
 

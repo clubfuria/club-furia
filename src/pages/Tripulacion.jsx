@@ -1,8 +1,14 @@
 import BottomNav
 from "../components/BottomNav";
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { supabase } from "../supabase";
+
+import { useEffect, useState }
+from "react";
+
+import { Link }
+from "react-router-dom";
+
+import { supabase }
+from "../supabase";
 
 export default function Tripulacion() {
 
@@ -47,6 +53,7 @@ export default function Tripulacion() {
         setUser(data.user);
 
         if (data.user) {
+
           fetchMyProfile(
             data.user.id
           );
@@ -56,7 +63,11 @@ export default function Tripulacion() {
 
   }, []);
 
-  // FETCH PROFILES
+  /*
+  =========================================
+  FETCH PROFILES
+  =========================================
+  */
 
   async function fetchProfiles() {
 
@@ -69,11 +80,16 @@ export default function Tripulacion() {
         });
 
     if (!error && data) {
+
       setProfiles(data);
     }
   }
 
-  // FETCH MY PROFILE
+  /*
+  =========================================
+  FETCH MY PROFILE
+  =========================================
+  */
 
   async function fetchMyProfile(
     userId
@@ -111,7 +127,11 @@ export default function Tripulacion() {
     }
   }
 
-  // SAVE PROFILE
+  /*
+  =========================================
+  SAVE PROFILE
+  =========================================
+  */
 
   const saveProfile =
     async () => {
@@ -131,14 +151,19 @@ export default function Tripulacion() {
           .upsert([
             {
               id: user.id,
+
               nombre:
                 profileNombre,
+
               puerto:
                 profilePuerto,
+
               experiencia:
                 profileExperiencia,
+
               disponibilidad:
                 profileDisponibilidad,
+
               descripcion:
                 profileDescripcion,
             },
@@ -158,15 +183,100 @@ export default function Tripulacion() {
       fetchProfiles();
     };
 
+  /*
+  =========================================
+  SOLICITAR CONTACTO
+  =========================================
+  */
+
+  const solicitarContacto =
+    async (profile) => {
+
+      if (!user) {
+
+        alert(
+          "Debes iniciar sesión"
+        );
+
+        return;
+      }
+
+      if (
+        user.id === profile.id
+      ) {
+
+        alert(
+          "Es tu propio perfil"
+        );
+
+        return;
+      }
+
+      const mensaje =
+        prompt(
+          "Mensaje para el tripulante:"
+        );
+
+      if (!mensaje) return;
+
+      const {
+        data: userData,
+      } =
+        await supabase.auth.getUser();
+
+      const email =
+        userData.user.email;
+
+      const { error } =
+        await supabase
+          .from(
+            "solicitudes_tripulacion"
+          )
+          .insert([
+            {
+              from_user:
+                user.id,
+
+              to_user:
+                profile.id,
+
+              from_nombre:
+                profileNombre,
+
+              from_email:
+                email,
+
+              mensaje,
+            },
+          ]);
+
+      if (error) {
+
+        alert(error.message);
+
+        return;
+      }
+
+      alert(
+        "Solicitud enviada"
+      );
+    };
+
   return (
 
     <div
       style={{
         maxWidth: "900px",
+
         margin: "40px auto",
+
         padding: "20px",
+
         fontFamily: "Arial",
-        backgroundColor: "#011135",
+
+        backgroundColor:
+          "#011135",
+
         minHeight: "100vh",
       }}
     >
@@ -174,13 +284,17 @@ export default function Tripulacion() {
       {/* CABECERA */}
 
       <div
-  style={{
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: "18px",
-  }}
->
+        style={{
+          display: "flex",
+
+          justifyContent:
+            "space-between",
+
+          alignItems: "center",
+
+          marginBottom: "18px",
+        }}
+      >
 
         <h1
           style={{
@@ -194,11 +308,16 @@ export default function Tripulacion() {
           to="/"
           style={{
             color: "white",
-            textDecoration: "none",
+
+            textDecoration:
+              "none",
+
             backgroundColor:
               "#720792",
+
             padding:
               "10px 20px",
+
             borderRadius: "8px",
           }}
         >
@@ -213,8 +332,11 @@ export default function Tripulacion() {
         style={{
           backgroundColor:
             "#001b44",
+
           padding: "20px",
+
           borderRadius: "12px",
+
           marginBottom: "30px",
         }}
       >
@@ -238,7 +360,9 @@ export default function Tripulacion() {
           }
           style={{
             width: "100%",
+
             padding: "10px",
+
             marginBottom: "10px",
           }}
         />
@@ -254,7 +378,9 @@ export default function Tripulacion() {
           }
           style={{
             width: "100%",
+
             padding: "10px",
+
             marginBottom: "10px",
           }}
         />
@@ -272,7 +398,9 @@ export default function Tripulacion() {
           }
           style={{
             width: "100%",
+
             padding: "10px",
+
             marginBottom: "10px",
           }}
         />
@@ -290,7 +418,9 @@ export default function Tripulacion() {
           }
           style={{
             width: "100%",
+
             padding: "10px",
+
             marginBottom: "10px",
           }}
         />
@@ -307,8 +437,11 @@ export default function Tripulacion() {
           }
           style={{
             width: "100%",
+
             height: "120px",
+
             padding: "10px",
+
             marginBottom: "10px",
           }}
         />
@@ -318,12 +451,17 @@ export default function Tripulacion() {
           style={{
             padding:
               "10px 20px",
+
             backgroundColor:
               "#720792",
+
             color: "white",
+
             border:
               "white solid 2px",
+
             borderRadius: "8px",
+
             cursor: "pointer",
           }}
         >
@@ -338,14 +476,19 @@ export default function Tripulacion() {
 
         <div
           key={profile.id}
+
           style={{
             backgroundColor:
               "#001b44",
+
             border:
               "2px solid #ddd",
+
             borderRadius:
               "12px",
+
             padding: "15px",
+
             marginBottom: "20px",
           }}
         >
@@ -404,11 +547,52 @@ export default function Tripulacion() {
             }
           </p>
 
+          {user?.id !==
+            profile.id && (
+
+            <button
+              onClick={() =>
+                solicitarContacto(
+                  profile
+                )
+              }
+              style={{
+                width: "100%",
+
+                marginTop: "16px",
+
+                padding: "14px",
+
+                backgroundColor:
+                  "#720792",
+
+                color: "white",
+
+                border: "none",
+
+                borderRadius:
+                  "10px",
+
+                cursor: "pointer",
+
+                fontWeight:
+                  "bold",
+
+                fontSize: "16px",
+              }}
+            >
+              ⛵ CONTACTAR
+              PARA NAVEGAR
+            </button>
+
+          )}
+
         </div>
 
       ))}
-<BottomNav />
-    </div>
 
+      <BottomNav />
+
+    </div>
   );
 }

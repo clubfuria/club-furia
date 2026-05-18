@@ -592,44 +592,119 @@ export default function Boats() {
             }
           </p>
 
-          {filteredBoats[
-            currentBoat
-          ]?.telefono && (
+         {/* CONTACTO PRIVADO */}
 
-            <p style={{ color: "white" }}>
-              📞 Teléfono:
-              {" "}
-              {
-                filteredBoats[
-                  currentBoat
-                ]?.telefono
-              }
-            </p>
+<div
+  style={{
+    display: "flex",
 
-          )}
+    justifyContent: "center",
 
-          {filteredBoats[
-            currentBoat
-          ]?.email && (
+    alignItems: "center",
 
-            <p
-              style={{
-                color: "white",
+    gap: "18px",
 
-                wordBreak:
-                  "break-word",
-              }}
-            >
-              ✉️ Email:
-              {" "}
-              {
-                filteredBoats[
-                  currentBoat
-                ]?.email
-              }
-            </p>
+    marginTop: "22px",
 
-          )}
+    width: "100%",
+
+    flexWrap: "wrap",
+  }}
+>
+
+  {filteredBoats[
+    currentBoat
+  ]?.email && (
+
+    <a
+      href={`mailto:${
+        filteredBoats[
+          currentBoat
+        ]?.email
+      }`}
+      style={{
+        display: "flex",
+
+        alignItems:
+          "center",
+
+        justifyContent:
+          "center",
+
+        width: "52px",
+
+        height: "52px",
+
+        borderRadius:
+          "50%",
+
+        background:
+          "#fe5d01",
+
+        color: "white",
+
+        textDecoration:
+          "none",
+
+        fontSize: "26px",
+
+        boxShadow:
+          "0 4px 10px rgba(0,0,0,0.3)",
+      }}
+      title="Enviar email"
+    >
+      ✉️
+    </a>
+
+  )}
+
+  {filteredBoats[
+    currentBoat
+  ]?.telefono && (
+
+    <a
+      href={`tel:${
+        filteredBoats[
+          currentBoat
+        ]?.telefono
+      }`}
+      style={{
+        display: "flex",
+
+        alignItems:
+          "center",
+
+        justifyContent:
+          "center",
+
+        width: "52px",
+
+        height: "52px",
+
+        borderRadius:
+          "50%",
+
+        background:
+          "#0d7a32",
+
+        color: "white",
+
+        textDecoration:
+          "none",
+
+        fontSize: "26px",
+
+        boxShadow:
+          "0 4px 10px rgba(0,0,0,0.3)",
+      }}
+      title="Llamar"
+    >
+      📞
+    </a>
+
+  )}
+
+</div>
 
           {/* BOTONES */}
 
@@ -1106,9 +1181,9 @@ export default function Boats() {
 
               <th>Tripulación</th>
 
-              <th>Teléfono</th>
+              
 
-              <th>Email</th>
+            
 
             </tr>
 
@@ -1131,14 +1206,7 @@ export default function Boats() {
                     {boat.tripulacion}
                   </td>
 
-                  <td>
-                    {boat.telefono}
-                  </td>
-
-                  <td>
-                    {boat.email}
-                  </td>
-
+                                    
                 </tr>
 
               )

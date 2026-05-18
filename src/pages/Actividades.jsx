@@ -395,6 +395,54 @@ const navigate =
       fetchSalidas();
     };
 
+/*
+    ==========================================
+    SALIR ACTIVIDAD
+    ==========================================
+  */
+
+  async function salirActividad(
+    salidaId
+  ) {
+
+    if (!user) return;
+
+    const confirmar =
+      window.confirm(
+        "¿Salir de esta actividad?"
+      );
+
+    if (!confirmar) return;
+
+    const { error } =
+      await supabase
+        .from(
+          "salida_tripulantes"
+        )
+        .delete()
+        .eq(
+          "salida_id",
+          salidaId
+        )
+        .eq(
+          "user_id",
+          user.id
+        );
+
+    if (error) {
+
+      alert(error.message);
+
+      return;
+    }
+
+    fetchTripulantes();
+
+    alert(
+      "Has salido de la actividad"
+    );
+  }
+
   return (
 
     <div
@@ -723,6 +771,54 @@ const navigate =
           >
             Apuntarme
           </button>
+
+
+{
+  tripulantes.some(
+    (t) =>
+      t.salida_id ===
+        salida.id &&
+      t.user_id ===
+        user?.id
+  ) && (
+
+    <button
+      onClick={() =>
+        salirActividad(
+          salida.id
+        )
+      }
+
+      style={{
+        marginTop:
+          "10px",
+
+        marginLeft:
+          "10px",
+
+        padding:
+          "10px 20px",
+
+        backgroundColor:
+          "#aa2222",
+
+        color:
+          "white",
+
+        border:
+          "none",
+
+        borderRadius:
+          "8px",
+
+        cursor:
+          "pointer",
+      }}
+    >
+      ❌ SALIR
+    </button>
+
+)}
 
           {/* EDITAR / BORRAR */}
 

@@ -329,20 +329,17 @@ export default function Home() {
 
   async function cargarNotificaciones() {
 
-    const {
-      data: { user },
-    } =
-      await supabase.auth.getUser();
-
-    if (!user) return;
+    if (!session) return;
 
     const { data } =
       await supabase
-        .from("notificaciones")
+        .from(
+          "notificaciones"
+        )
         .select("*")
         .eq(
           "user_id",
-          user.id
+          session.user.id
         )
         .order(
           "created_at",
@@ -356,6 +353,88 @@ export default function Home() {
       setNotifications(data);
     }
   }
+
+ /*
+==========================================
+NOTIFICACIONES
+==========================================
+*/
+
+async function cargarNotificaciones() {
+
+  const { data: authData } =
+    await supabase.auth.getSession();
+
+  const currentSession =
+    authData.session;
+
+  if (!currentSession)
+    return;
+
+  const { data, error } =
+    await supabase
+      .from(
+        "notificaciones"
+      )
+      .select("*")
+      .eq(
+        "user_id",
+        currentSession.user.id
+      )
+      .order(
+        "created_at",
+        {
+          ascending: false,
+        }
+      );
+
+  if (error) {
+
+    console.log(error);
+
+    return;
+  }
+
+  setNotifications(
+    data || []
+  );
+}
+
+async function borrarNotificacion(
+  id
+) {
+
+  const confirmar =
+    window.confirm(
+      "¿Borrar notificación?"
+    );
+
+  if (!confirmar)
+    return;
+
+  const { error } =
+    await supabase
+      .from(
+        "notificaciones"
+      )
+      .delete()
+      .eq("id", id);
+
+  if (error) {
+
+    console.log(error);
+
+    alert(error.message);
+
+    return;
+  }
+
+  setNotifications(
+    notifications.filter(
+      (n) => n.id !== id
+    )
+  );
+}
 
   /*
   ==========================================
@@ -636,8 +715,6 @@ export default function Home() {
             ENTRAR
           </button>
 
-          {/* PRIVACIDAD */}
-
           <div
             style={{
               marginBottom:
@@ -693,41 +770,16 @@ export default function Home() {
                 }
 
                 style={{
-                  appearance:
-                    "auto",
-
-                  WebkitAppearance:
-                    "checkbox",
-
                   width: "22px",
 
                   height: "22px",
-
-                  minWidth:
-                    "22px",
-
-                  minHeight:
-                    "22px",
-
-                  display:
-                    "block",
-
-                  opacity: 1,
-
-                  visibility:
-                    "visible",
 
                   cursor:
                     "pointer",
                 }}
               />
 
-              <span
-                style={{
-                  color:
-                    "white",
-                }}
-              >
+              <span>
 
                 Acepto la{" "}
 
@@ -744,9 +796,6 @@ export default function Home() {
 
                     fontWeight:
                       "bold",
-
-                    textDecoration:
-                      "underline",
                   }}
                 >
                   política de privacidad
@@ -866,134 +915,188 @@ export default function Home() {
 
       )}
 
-{/* NOTIFICACIONES */}
+      {/* NOTIFICACIONES */}
 
-{session &&
-  notifications.length > 0 && (
-
-  <div
-    style={{
-      maxWidth:
-        "900px",
-
-      margin:
-        "0 auto 30px auto",
-
-      background:
-        "rgba(255,255,255,0.08)",
-
-      borderRadius:
-        "20px",
-
-      padding:
-        "20px",
-
-      border:
-        "1px solid rgba(255,255,255,0.12)",
-    }}
-  >
-
-    <h2
-      style={{
-        color:
-          "#fe5d01",
-
-        marginBottom:
-          "16px",
-      }}
-    >
-      🔔 NOTIFICACIONES
-    </h2>
-
-    {notifications.map(
-      (n) => (
+      {session &&
+        notifications.length > 0 && (
 
         <div
-          key={n.id}
-
           style={{
-            background:
-              "rgba(255,255,255,0.06)",
+            maxWidth:
+              "900px",
 
-            padding:
-              "12px 16px",
+            margin:
+              "0 auto 30px auto",
+
+            background:
+              "rgba(255,255,255,0.08)",
 
             borderRadius:
-              "12px",
+              "20px",
 
-            marginBottom:
-              "10px",
-
-            color:
-              "white",
+            padding:
+              "20px",
           }}
         >
-         <div
-  style={{
-    display: "flex",
 
-    justifyContent:
-      "space-between",
+          <h2
+            style={{
+              color:
+                "#fe5d01",
 
-    alignItems:
-      "center",
+              marginBottom:
+                "16px",
+            }}
+          >
+            🔔 NOTIFICACIONES
+          </h2>
 
-    gap: "10px",
+          {notifications.map(
+            (n) => (
 
-    flexWrap:
-      "wrap",
-  }}
->
+              <div
+                key={n.id}
 
-  <span>
-    {n.mensaje}
-  </span>
+                style={{
+                  background:
+                    "rgba(255,255,255,0.06)",
 
-  {n.from_user &&
-    n.actividad_id && (
+                  padding:
+                    "12px 16px",
 
-    <button
-      onClick={() =>
-        navigate(
-          `/chat/${n.actividad_id}/${n.from_user}`
-        )
-      }
+                  borderRadius:
+                    "12px",
 
-      style={{
-        background:
-          "#720792",
+                  marginBottom:
+                    "10px",
 
-        color: "white",
+                  color:
+                    "white",
+                }}
+              >
 
-        border: "none",
+                <div
+                  style={{
+                    display:
+                      "flex",
 
-        borderRadius:
-          "8px",
+                    flexDirection:
+                      isMobile
+                        ? "column"
+                        : "row",
 
-        padding:
-          "8px 14px",
+                    justifyContent:
+                      "space-between",
 
-        cursor:
-          "pointer",
+                    alignItems:
+                      isMobile
+                        ? "flex-start"
+                        : "center",
 
-        fontWeight:
-          "bold",
-      }}
-    >
-      💬 RESPONDER
-    </button>
+                    gap: "12px",
+                  }}
+                >
 
-  )}
+                  <span>
+                    {n.mensaje}
+                  </span>
 
-</div> 
+                  <div
+                    style={{
+                      display:
+                        "flex",
+
+                      gap:
+                        "8px",
+
+                      flexWrap:
+                        "wrap",
+                    }}
+                  >
+
+                    {n.from_user &&
+                      n.actividad_id && (
+
+                      <button
+                        onClick={() =>
+                          navigate(
+                            `/chat/${n.actividad_id}/${n.from_user}`
+                          )
+                        }
+
+                        style={{
+                          background:
+                            "#720792",
+
+                          color:
+                            "white",
+
+                          border:
+                            "none",
+
+                          borderRadius:
+                            "8px",
+
+                          padding:
+                            "8px 14px",
+
+                          cursor:
+                            "pointer",
+
+                          fontWeight:
+                            "bold",
+                        }}
+                      >
+                        💬 RESPONDER
+                      </button>
+
+                    )}
+
+                    <button
+                      onClick={() =>
+                        borrarNotificacion(
+                          n.id
+                        )
+                      }
+
+                      style={{
+                        background:
+                          "#aa2222",
+
+                        color:
+                          "white",
+
+                        border:
+                          "none",
+
+                        borderRadius:
+                          "8px",
+
+                        padding:
+                          "8px 14px",
+
+                        cursor:
+                          "pointer",
+
+                        fontWeight:
+                          "bold",
+                      }}
+                    >
+                      ✖ BORRAR
+                    </button>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            )
+          )}
+
         </div>
 
-      )
-    )}
-
-  </div>
-
-)}
+      )}
 
       {/* BOTONES */}
 
@@ -1064,11 +1167,6 @@ export default function Home() {
                   session
                     ? 1
                     : 0.45,
-
-                filter:
-                  session
-                    ? "none"
-                    : "grayscale(1)",
               }}
             >
 
@@ -1104,9 +1202,6 @@ export default function Home() {
                   style={{
                     color:
                       TITLE_COLOR,
-
-                    marginBottom:
-                      "10px",
                   }}
                 >
                   {
@@ -1118,8 +1213,6 @@ export default function Home() {
                   style={{
                     color:
                       "white",
-
-                    margin: 0,
                   }}
                 >
                   {

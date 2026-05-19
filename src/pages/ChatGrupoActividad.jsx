@@ -11,11 +11,10 @@ import {
 import { supabase }
 from "../supabase";
 
-export default function ChatActividad() {
+export default function ChatGrupoActividad() {
 
   const {
     actividadId,
-    userId,
   } = useParams();
 
   const [user, setUser] =
@@ -69,10 +68,12 @@ export default function ChatActividad() {
 
     if (!user) return;
 
-    cargarMensajes(user.id);
+    cargarMensajes();
 
     supabase
-      .channel("chat-actividad")
+      .channel(
+        "chat-grupo-actividad"
+      )
       .on(
         "postgres_changes",
         {
@@ -84,9 +85,7 @@ export default function ChatActividad() {
         },
         () => {
 
-          cargarMensajes(
-            user.id
-          );
+          cargarMensajes();
         }
       )
       .subscribe();
@@ -98,9 +97,7 @@ export default function ChatActividad() {
   =========================================
   */
 
-  async function cargarMensajes(
-    currentUserId
-  ) {
+  async function cargarMensajes() {
 
     const { data, error } =
       await supabase
@@ -110,8 +107,9 @@ export default function ChatActividad() {
           "actividad_id",
           actividadId
         )
-        .or(
-          `and(from_user.eq.${currentUserId},to_user.eq.${userId}),and(from_user.eq.${userId},to_user.eq.${currentUserId})`
+        .is(
+          "to_user",
+          null
         )
         .order(
           "created_at",
@@ -157,7 +155,7 @@ export default function ChatActividad() {
               user.id,
 
             to_user:
-              userId,
+              null,
 
             actividad_id:
               actividadId,
@@ -179,7 +177,7 @@ export default function ChatActividad() {
 
   /*
   =========================================
-  ENTER PARA ENVIAR
+  ENTER ENVIAR
   =========================================
   */
 
@@ -228,7 +226,7 @@ export default function ChatActividad() {
             "20px",
         }}
       >
-        💬 CHAT ACTIVIDAD
+        💬 CHAT GRUPAL
       </h1>
 
       {/* MENSAJES */}
@@ -247,14 +245,14 @@ export default function ChatActividad() {
           minHeight:
             "400px",
 
-          marginBottom:
-            "20px",
-
           maxHeight:
             "70vh",
 
           overflowY:
             "auto",
+
+          marginBottom:
+            "20px",
         }}
       >
 
@@ -280,7 +278,7 @@ export default function ChatActividad() {
                       : "flex-start",
 
                   marginBottom:
-                    "12px",
+                    "14px",
                 }}
               >
 
@@ -305,11 +303,25 @@ export default function ChatActividad() {
 
                     wordBreak:
                       "break-word",
-
-                    boxShadow:
-                      "0 2px 8px rgba(0,0,0,0.25)",
                   }}
                 >
+
+                  <div
+                    style={{
+                      fontSize:
+                        "12px",
+
+                      opacity:
+                        0.7,
+
+                      marginBottom:
+                        "6px",
+                    }}
+                  >
+
+                    {m.from_user}
+
+                  </div>
 
                   <div
                     style={{
@@ -329,7 +341,7 @@ export default function ChatActividad() {
                         "11px",
 
                       opacity:
-                        0.7,
+                        0.6,
 
                       marginTop:
                         "6px",
@@ -350,6 +362,7 @@ export default function ChatActividad() {
                 </div>
 
               </div>
+
             );
           }
         )}
@@ -391,7 +404,7 @@ export default function ChatActividad() {
             handleKeyDown
           }
 
-          placeholder="Escribe un mensaje..."
+          placeholder="Mensaje grupal..."
 
           style={{
             flex: 1,
@@ -404,9 +417,6 @@ export default function ChatActividad() {
 
             border:
               "none",
-
-            fontSize:
-              "15px",
           }}
         />
 

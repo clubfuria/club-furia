@@ -820,6 +820,45 @@ const navigate =
 
 )}
 
+<button
+  onClick={() =>
+    navigate(
+      `/chat-grupo/${salida.id}`
+    )
+  }
+
+  style={{
+    marginTop:
+      "10px",
+
+    marginLeft:
+      "10px",
+
+    padding:
+      "10px 18px",
+
+    background:
+      "#720792",
+
+    color:
+      "white",
+
+    border:
+      "none",
+
+    borderRadius:
+      "10px",
+
+    cursor:
+      "pointer",
+
+    fontWeight:
+      "bold",
+  }}
+>
+  💬 CHAT GRUPAL
+</button>
+
           {/* EDITAR / BORRAR */}
 
           {user?.id ===

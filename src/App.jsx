@@ -34,6 +34,10 @@ from "./components/ProtectedRoute";
 import ChatActividad
 from "./pages/ChatActividad";
 
+
+import ChatGrupoActividad
+from "./pages/ChatGrupoActividad";
+
 export default function App() {
 
   return (
@@ -111,6 +115,14 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+
+<Route
+  path="/chat-grupo/:actividadId"
+  element={
+    <ChatGrupoActividad />
+  }
+/>
+
 
 <Route
   path="/chat/:actividadId/:userId"

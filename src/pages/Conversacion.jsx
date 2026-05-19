@@ -1,4 +1,8 @@
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+  useRef,
+} from "react";
 
 import {
   useParams,
@@ -19,68 +23,102 @@ export default function Conversacion() {
   const [mensajes, setMensajes] =
     useState([]);
 
-  const [nuevoMensaje,
-    setNuevoMensaje] =
-    useState("");
+  const [
+    nuevoMensaje,
+    setNuevoMensaje,
+  ] = useState("");
+
+  const mensajesEndRef =
+    useRef(null);
+
+  /*
+  =========================================
+  INIT
+  =========================================
+  */
 
   useEffect(() => {
 
-  obtenerUsuario();
+    obtenerUsuario();
 
-  
+    cargarMensajes();
 
-  const channel =
-    supabase
-      .channel(
-        "mensajes-tiempo-real"
-      )
+    const channel =
+      supabase
+        .channel(
+          `chat-${conversacionId}`
+        )
 
-      .on(
-        "postgres_changes",
+        .on(
+          "postgres_changes",
 
-        {
-          event: "INSERT",
+          {
+            event: "INSERT",
 
-          schema: "public",
+            schema: "public",
 
-          table: "mensajes",
+            table: "mensajes",
 
-          filter:
-            `conversacion_id=eq.${conversacionId}`,
-        },
+            filter:
+              `conversacion_id=eq.${conversacionId}`,
+          },
 
-        (payload) => {
+          (payload) => {
 
-  setMensajes((prev) => {
+            setMensajes(
+              (prev) => {
 
-    const existe =
-      prev.find(
-        (m) =>
-          m.id ===
-          payload.new.id
+                const existe =
+                  prev.find(
+                    (m) =>
+                      m.id ===
+                      payload.new.id
+                  );
+
+                if (existe)
+                  return prev;
+
+                return [
+                  ...prev,
+                  payload.new,
+                ];
+              }
+            );
+          }
+        )
+
+        .subscribe();
+
+    return () => {
+
+      supabase.removeChannel(
+        channel
       );
+    };
 
-    if (existe)
-      return prev;
+  }, [conversacionId]);
 
-    return [
-      ...prev,
-      payload.new,
-    ];
-  });
-}
-      )
+  /*
+  =========================================
+  AUTOSCROLL
+  =========================================
+  */
 
-      .subscribe();
+  useEffect(() => {
 
-  return () => {
+    mensajesEndRef.current
+      ?.scrollIntoView({
+        behavior:
+          "smooth",
+      });
 
-    supabase.removeChannel(
-      channel
-    );
-  };
+  }, [mensajes]);
 
-}, []);
+  /*
+  =========================================
+  USER
+  =========================================
+  */
 
   async function obtenerUsuario() {
 
@@ -91,6 +129,12 @@ export default function Conversacion() {
 
     setUser(user);
   }
+
+  /*
+  =========================================
+  LOAD MESSAGES
+  =========================================
+  */
 
   async function cargarMensajes() {
 
@@ -115,6 +159,12 @@ export default function Conversacion() {
     }
   }
 
+  /*
+  =========================================
+  SEND MESSAGE
+  =========================================
+  */
+
   async function enviarMensaje() {
 
     if (
@@ -122,6 +172,11 @@ export default function Conversacion() {
     ) return;
 
     if (!user) return;
+
+    const texto =
+      nuevoMensaje;
+
+    setNuevoMensaje("");
 
     const { error } =
       await supabase
@@ -135,7 +190,7 @@ export default function Conversacion() {
               user.id,
 
             mensaje:
-              nuevoMensaje,
+              texto,
           },
         ]);
 
@@ -145,10 +200,6 @@ export default function Conversacion() {
 
       return;
     }
-
-    setNuevoMensaje("");
-
-    cargarMensajes();
   }
 
   return (
@@ -206,6 +257,12 @@ export default function Conversacion() {
 
           overflowY:
             "auto",
+
+          display:
+            "flex",
+
+          flexDirection:
+            "column",
         }}
       >
 
@@ -259,6 +316,12 @@ export default function Conversacion() {
 
                     lineHeight:
                       1.4,
+
+                    wordBreak:
+                      "break-word",
+
+                    boxShadow:
+                      "0 2px 8px rgba(0,0,0,0.2)",
                   }}
                 >
                   {msg.mensaje}
@@ -269,6 +332,12 @@ export default function Conversacion() {
             );
           }
         )}
+
+        <div
+          ref={
+            mensajesEndRef
+          }
+        />
 
       </div>
 
@@ -305,6 +374,17 @@ export default function Conversacion() {
               e.target.value
             )
           }
+
+          onKeyDown={(e) => {
+
+            if (
+              e.key ===
+              "Enter"
+            ) {
+
+              enviarMensaje();
+            }
+          }}
 
           placeholder="Escribe un mensaje..."
 
@@ -354,6 +434,9 @@ export default function Conversacion() {
 
             fontWeight:
               "bold",
+
+            fontSize:
+              "16px",
           }}
         >
           ➤

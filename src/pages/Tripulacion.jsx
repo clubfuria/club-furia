@@ -10,7 +10,6 @@ from "react-router-dom";
 import { supabase }
 from "../supabase";
 
-
 import {
   useNavigate,
 } from "react-router-dom";
@@ -21,8 +20,8 @@ import {
 
 export default function Tripulacion() {
 
-const navigate =
-  useNavigate();
+  const navigate =
+    useNavigate();
 
   const [user, setUser] =
     useState(null);
@@ -193,85 +192,6 @@ const navigate =
       );
 
       fetchProfiles();
-    };
-
-  /*
-  =========================================
-  SOLICITAR CONTACTO
-  =========================================
-  */
-
-  const solicitarContacto =
-    async (profile) => {
-
-      if (!user) {
-
-        alert(
-          "Debes iniciar sesión"
-        );
-
-        return;
-      }
-
-      if (
-        user.id === profile.id
-      ) {
-
-        alert(
-          "Es tu propio perfil"
-        );
-
-        return;
-      }
-
-      const mensaje =
-        prompt(
-          "Mensaje para el tripulante:"
-        );
-
-      if (!mensaje) return;
-
-      const {
-        data: userData,
-      } =
-        await supabase.auth.getUser();
-
-      const email =
-        userData.user.email;
-
-      const { error } =
-        await supabase
-          .from(
-            "solicitudes_tripulacion"
-          )
-          .insert([
-            {
-              from_user:
-                user.id,
-
-              to_user:
-                profile.id,
-
-              from_nombre:
-                profileNombre,
-
-              from_email:
-                email,
-
-              mensaje,
-            },
-          ]);
-
-      if (error) {
-
-        alert(error.message);
-
-        return;
-      }
-
-      alert(
-        "Solicitud enviada"
-      );
     };
 
   return (
@@ -563,90 +483,61 @@ const navigate =
             profile.id && (
 
             <div
-  style={{
-    display: "flex",
-    gap: "10px",
-    marginTop: "16px",
-  }}
->
+              style={{
+                display: "flex",
 
-  <button
-    onClick={() =>
-      solicitarContacto(
-        profile
-      )
-    }
+                justifyContent:
+                  "center",
 
-    style={{
-      flex: 1,
+                marginTop: "16px",
+              }}
+            >
 
-      padding: "14px",
+              <button
+                onClick={async () => {
 
-      backgroundColor:
-        "#720792",
+                  const conversacionId =
+                    await obtenerOCrearConversacion(
+                      user.id,
+                      profile.id
+                    );
 
-      color: "white",
+                  navigate(
+                    `/conversacion/${conversacionId}`
+                  );
+                }}
 
-      border: "none",
+                style={{
+                  width: "100%",
 
-      borderRadius:
-        "10px",
+                  padding: "14px",
 
-      cursor: "pointer",
+                  background:
+                    "#0d7a32",
 
-      fontWeight:
-        "bold",
+                  color:
+                    "white",
 
-      fontSize: "16px",
-    }}
-  >
-    ⛵ CONTACTAR
-  </button>
+                  border:
+                    "none",
 
-  <button
-    onClick={async () => {
+                  borderRadius:
+                    "10px",
 
-      const conversacionId =
-        await obtenerOCrearConversacion(
-          user.id,
-          profile.id
-        );
+                  cursor:
+                    "pointer",
 
-      navigate(
-        `/conversacion/${conversacionId}`
-      );
-    }}
+                  fontWeight:
+                    "bold",
 
-    style={{
-      padding:
-        "14px 18px",
+                  fontSize:
+                    "16px",
+                }}
+              >
+                💬 CHAT
+              </button>
 
-      background:
-        "#0d7a32",
-
-      color:
-        "white",
-
-      border:
-        "none",
-
-      borderRadius:
-        "10px",
-
-      cursor:
-        "pointer",
-
-      fontWeight:
-        "bold",
-
-      fontSize:
-        "16px",
-    }}
-  >
-    💬 CHAT
-  </button>
-
-</div>
+            </div>
 
           )}
 

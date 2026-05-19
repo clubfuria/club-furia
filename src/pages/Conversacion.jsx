@@ -25,11 +25,53 @@ export default function Conversacion() {
 
   useEffect(() => {
 
-    obtenerUsuario();
+  obtenerUsuario();
 
-    cargarMensajes();
+  
 
-  }, []);
+  const channel =
+    supabase
+      .channel(
+        "mensajes-tiempo-real"
+      )
+
+      .on(
+        "postgres_changes",
+
+        {
+          event: "INSERT",
+
+          schema: "public",
+
+          table: "mensajes",
+
+          filter:
+            `conversacion_id=eq.${conversacionId}`,
+        },
+
+        (payload) => {
+
+          setMensajes(
+            (prev) => [
+
+              ...prev,
+
+              payload.new,
+            ]
+          );
+        }
+      )
+
+      .subscribe();
+
+  return () => {
+
+    supabase.removeChannel(
+      channel
+    );
+  };
+
+}, []);
 
   async function obtenerUsuario() {
 

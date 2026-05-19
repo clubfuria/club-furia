@@ -1,10 +1,15 @@
 import { useEffect, useState } from "react";
+
 import { supabase } from "../supabase";
-import { useNavigate } from "react-router-dom";
+
+import {
+  useNavigate,
+} from "react-router-dom";
 
 export default function MisChats() {
 
-  const navigate = useNavigate();
+  const navigate =
+    useNavigate();
 
   const [user, setUser] =
     useState(null);
@@ -22,7 +27,8 @@ export default function MisChats() {
 
     const {
       data: { user },
-    } = await supabase.auth.getUser();
+    } =
+      await supabase.auth.getUser();
 
     if (user) {
 
@@ -38,7 +44,7 @@ export default function MisChats() {
 
     const { data, error } =
       await supabase
-        .from("chats_privados")
+        .from("mensajes")
         .select("*")
         .or(
           `from_user.eq.${userId},to_user.eq.${userId}`
@@ -54,12 +60,16 @@ export default function MisChats() {
 
       const chatsUnicos = [];
 
-      data.forEach((chat) => {
+      data.forEach((msg) => {
 
         const otroUsuario =
-          chat.from_user === userId
-            ? chat.to_user
-            : chat.from_user;
+
+          msg.from_user ===
+          userId
+
+            ? msg.to_user
+
+            : msg.from_user;
 
         const existe =
           chatsUnicos.find(
@@ -71,7 +81,7 @@ export default function MisChats() {
         if (!existe) {
 
           chatsUnicos.push({
-            ...chat,
+            ...msg,
             otroUsuario,
           });
         }
@@ -86,17 +96,24 @@ export default function MisChats() {
     <div
       style={{
         maxWidth: "800px",
+
         margin: "0 auto",
+
         padding: "20px",
+
         minHeight: "100vh",
-        background: "#011135",
+
+        background:
+          "#011135",
       }}
     >
 
       <h1
         style={{
           color: "white",
-          marginBottom: "20px",
+
+          marginBottom:
+            "20px",
         }}
       >
         💬 Mis Chats
@@ -104,7 +121,11 @@ export default function MisChats() {
 
       {chats.length === 0 && (
 
-        <p style={{ color: "white" }}>
+        <p
+          style={{
+            color: "white",
+          }}
+        >
           No tienes chats todavía
         </p>
 
@@ -116,16 +137,19 @@ export default function MisChats() {
           key={chat.id}
 
           onClick={() =>
+
             navigate(
-              `/chat/${chat.salida_id}/${chat.otroUsuario}`
+              `/conversacion/${chat.conversacion_id}`
             )
+
           }
 
           style={{
             background:
               "#02235c",
 
-            padding: "16px",
+            padding:
+              "16px",
 
             borderRadius:
               "12px",
@@ -135,23 +159,33 @@ export default function MisChats() {
 
             cursor:
               "pointer",
+
+            border:
+              "1px solid rgba(255,255,255,0.08)",
           }}
         >
 
           <p
             style={{
-              color: "#e7eb0f",
-              marginBottom: "8px",
+              color:
+                "#e7eb0f",
+
+              marginBottom:
+                "8px",
+
+              fontWeight:
+                "bold",
             }}
           >
-            Usuario:
-            {" "}
-            {chat.otroUsuario}
+            💬 Conversación
           </p>
 
           <p
             style={{
-              color: "white",
+              color:
+                "white",
+
+              margin: 0,
             }}
           >
             {chat.mensaje}

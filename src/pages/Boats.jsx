@@ -2,10 +2,21 @@ import BottomNav from "../components/BottomNav";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../supabase";
+import {
+  useNavigate,
+} from "react-router-dom";
+
+import {
+  obtenerOCrearConversacion,
+} from "../utils/chatUtils";
+
 
 export default function Boats() {
 
   const [user, setUser] = useState(null);
+
+const navigate =
+  useNavigate();
 
   const [boats, setBoats] = useState([]);
 
@@ -703,6 +714,70 @@ export default function Boats() {
     </a>
 
   )}
+
+{user?.id !==
+  filteredBoats[
+    currentBoat
+  ]?.user_id && (
+
+  <button
+    onClick={async () => {
+
+      const conversacionId =
+        await obtenerOCrearConversacion(
+          user.id,
+
+          filteredBoats[
+            currentBoat
+          ]?.user_id
+        );
+
+      navigate(
+        `/conversacion/${conversacionId}`
+      );
+    }}
+
+    style={{
+      display: "flex",
+
+      alignItems:
+        "center",
+
+      justifyContent:
+        "center",
+
+      width: "52px",
+
+      height: "52px",
+
+      borderRadius:
+        "50%",
+
+      background:
+        "#720792",
+
+      color: "white",
+
+      border:
+        "none",
+
+      textDecoration:
+        "none",
+
+      fontSize: "24px",
+
+      cursor: "pointer",
+
+      boxShadow:
+        "0 4px 10px rgba(0,0,0,0.3)",
+    }}
+
+    title="Chat"
+  >
+    💬
+  </button>
+
+)}
 
 </div>
 

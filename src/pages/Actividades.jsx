@@ -247,9 +247,11 @@ export default function Actividades() {
               user.id,
 
             user_name:
-              user.user_metadata
-                ?.nombre ||
-              user.email,
+            user.user_metadata
+  ?.nombre ||
+
+user.email
+  ?.split("@")[0]  
           },
         ]);
 
@@ -919,7 +921,13 @@ export default function Actividades() {
                       margin: 0,
                     }}
                   >
-                    • {t.user_name}
+                • {
+  t.user_name?.includes("@")
+
+    ? t.user_name.split("@")[0]
+
+    : t.user_name
+}    
                   </p>
 
                   {(

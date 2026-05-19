@@ -51,15 +51,24 @@ export default function Conversacion() {
 
         (payload) => {
 
-          setMensajes(
-            (prev) => [
+  setMensajes((prev) => {
 
-              ...prev,
+    const existe =
+      prev.find(
+        (m) =>
+          m.id ===
+          payload.new.id
+      );
 
-              payload.new,
-            ]
-          );
-        }
+    if (existe)
+      return prev;
+
+    return [
+      ...prev,
+      payload.new,
+    ];
+  });
+}
       )
 
       .subscribe();

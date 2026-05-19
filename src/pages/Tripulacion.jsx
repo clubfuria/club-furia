@@ -10,7 +10,19 @@ from "react-router-dom";
 import { supabase }
 from "../supabase";
 
+
+import {
+  useNavigate,
+} from "react-router-dom";
+
+import {
+  obtenerOCrearConversacion,
+} from "../utils/chatUtils";
+
 export default function Tripulacion() {
+
+const navigate =
+  useNavigate();
 
   const [user, setUser] =
     useState(null);
@@ -550,40 +562,91 @@ export default function Tripulacion() {
           {user?.id !==
             profile.id && (
 
-            <button
-              onClick={() =>
-                solicitarContacto(
-                  profile
-                )
-              }
-              style={{
-                width: "100%",
+            <div
+  style={{
+    display: "flex",
+    gap: "10px",
+    marginTop: "16px",
+  }}
+>
 
-                marginTop: "16px",
+  <button
+    onClick={() =>
+      solicitarContacto(
+        profile
+      )
+    }
 
-                padding: "14px",
+    style={{
+      flex: 1,
 
-                backgroundColor:
-                  "#720792",
+      padding: "14px",
 
-                color: "white",
+      backgroundColor:
+        "#720792",
 
-                border: "none",
+      color: "white",
 
-                borderRadius:
-                  "10px",
+      border: "none",
 
-                cursor: "pointer",
+      borderRadius:
+        "10px",
 
-                fontWeight:
-                  "bold",
+      cursor: "pointer",
 
-                fontSize: "16px",
-              }}
-            >
-              ⛵ CONTACTAR
-              PARA NAVEGAR
-            </button>
+      fontWeight:
+        "bold",
+
+      fontSize: "16px",
+    }}
+  >
+    ⛵ CONTACTAR
+  </button>
+
+  <button
+    onClick={async () => {
+
+      const conversacionId =
+        await obtenerOCrearConversacion(
+          user.id,
+          profile.id
+        );
+
+      navigate(
+        `/conversacion/${conversacionId}`
+      );
+    }}
+
+    style={{
+      padding:
+        "14px 18px",
+
+      background:
+        "#0d7a32",
+
+      color:
+        "white",
+
+      border:
+        "none",
+
+      borderRadius:
+        "10px",
+
+      cursor:
+        "pointer",
+
+      fontWeight:
+        "bold",
+
+      fontSize:
+        "16px",
+    }}
+  >
+    💬 CHAT
+  </button>
+
+</div>
 
           )}
 

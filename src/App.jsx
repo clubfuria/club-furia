@@ -34,9 +34,12 @@ from "./components/ProtectedRoute";
 import ChatActividad
 from "./pages/ChatActividad";
 
+import MisChats from "./pages/MisChats";
 
 import ChatGrupoActividad
 from "./pages/ChatGrupoActividad";
+
+import Conversacion from "./pages/Conversacion";
 
 export default function App() {
 
@@ -89,6 +92,12 @@ export default function App() {
           }
         />
 
+
+<Route
+  path="/mis-chats"
+  element={<MisChats />}
+/>
+
         <Route
           path="/recursos"
           element={
@@ -115,6 +124,16 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+
+<Route
+  path="/conversacion/:conversacionId"
+  element={
+    <ProtectedRoute>
+      <Conversacion />
+    </ProtectedRoute>
+  }
+/>
+
 
 <Route
   path="/chat-grupo/:actividadId"

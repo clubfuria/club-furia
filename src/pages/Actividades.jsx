@@ -5,11 +5,13 @@ import {
   useNavigate,
 } from "react-router-dom";
 import { supabase } from "../supabase";
-
+import {
+  obtenerOCrearConversacion,
+} from "../utils/chatUtils";
 export default function Actividades() {
 
-const navigate =
-  useNavigate();
+  const navigate = useNavigate();
+
   const [user, setUser] = useState(null);
 
   const [salidas, setSalidas] =
@@ -35,8 +37,6 @@ const navigate =
     setSalidaDescripcion,
   ] = useState("");
 
-  // EDITAR
-
   const [
     editingSalidaId,
     setEditingSalidaId,
@@ -55,12 +55,6 @@ const navigate =
     );
 
   }, []);
-
-  /*
-    ==========================================
-    FETCH SALIDAS
-    ==========================================
-  */
 
   async function fetchSalidas() {
 
@@ -89,12 +83,6 @@ const navigate =
     }
   }
 
-  /*
-    ==========================================
-    FETCH TRIPULANTES
-    ==========================================
-  */
-
   async function fetchTripulantes() {
 
     const { data, error } =
@@ -108,12 +96,6 @@ const navigate =
     }
   }
 
-  /*
-    ==========================================
-    CREAR / EDITAR
-    ==========================================
-  */
-
   const addSalida = async () => {
 
     if (!user) {
@@ -124,8 +106,6 @@ const navigate =
 
       return;
     }
-
-    // EDITAR
 
     if (editingSalidaId) {
 
@@ -170,8 +150,6 @@ const navigate =
 
     } else {
 
-      // NUEVA
-
       const { error } =
         await supabase
           .from("salidas")
@@ -212,8 +190,6 @@ const navigate =
       );
     }
 
-    // LIMPIAR
-
     setSalidaTitulo("");
 
     setSalidaPuerto("");
@@ -226,12 +202,6 @@ const navigate =
 
     fetchSalidas();
   };
-
-  /*
-    ==========================================
-    APUNTARSE
-    ==========================================
-  */
 
   const apuntarseSalida = async (
     salidaId
@@ -290,12 +260,6 @@ const navigate =
       return;
     }
 
-    /*
-      ==========================================
-      NOTIFICACIÓN
-      ==========================================
-    */
-
     const salida =
       salidas.find(
         (s) =>
@@ -307,25 +271,25 @@ const navigate =
       salida.user_id !== user.id
     ) {
 
-     await supabase
-  .from(
-    "notificaciones"
-  )
-  .insert([
-    {
-      user_id:
-        salida.user_id,
+      await supabase
+        .from(
+          "notificaciones"
+        )
+        .insert([
+          {
+            user_id:
+              salida.user_id,
 
-      from_user:
-        user.id,
+            from_user:
+              user.id,
 
-      actividad_id:
-        salida.id,
+            actividad_id:
+              salida.id,
 
-      mensaje:
-        `${user.email} se ha apuntado a ${salida.titulo}`,
-    },
-  ]);
+            mensaje:
+              `${user.email} se ha apuntado a ${salida.titulo}`,
+          },
+        ]);
     }
 
     fetchTripulantes();
@@ -334,12 +298,6 @@ const navigate =
       "Te has apuntado"
     );
   };
-
-  /*
-    ==========================================
-    EDITAR
-    ==========================================
-  */
 
   const editarSalida = (
     salida
@@ -370,12 +328,6 @@ const navigate =
     );
   };
 
-  /*
-    ==========================================
-    BORRAR
-    ==========================================
-  */
-
   const borrarSalida =
     async (id) => {
 
@@ -394,12 +346,6 @@ const navigate =
 
       fetchSalidas();
     };
-
-/*
-    ==========================================
-    SALIR ACTIVIDAD
-    ==========================================
-  */
 
   async function salirActividad(
     salidaId
@@ -465,8 +411,6 @@ const navigate =
       }}
     >
 
-      {/* CABECERA */}
-
       <div
         style={{
           display: "flex",
@@ -512,8 +456,6 @@ const navigate =
         </Link>
 
       </div>
-
-      {/* FORMULARIO */}
 
       <div
         style={{
@@ -658,8 +600,6 @@ const navigate =
 
       </div>
 
-      {/* LISTA */}
-
       {salidas.map((salida) => (
 
         <div
@@ -686,61 +626,31 @@ const navigate =
             {salida.titulo}
           </h3>
 
-          <p
-            style={{
-              color: "white",
-            }}
-          >
-            📍
-            {" "}
-            {salida.puerto}
+          <p style={{ color: "white" }}>
+            📍 {salida.puerto}
           </p>
 
-          <p
-            style={{
-              color: "white",
-            }}
-          >
-            📅
-            {" "}
-            {salida.fecha}
+          <p style={{ color: "white" }}>
+            📅 {salida.fecha}
           </p>
 
-          <p
-            style={{
-              color: "white",
-            }}
-          >
-            👥 Plazas:
-            {" "}
-            {salida.plazas}
+          <p style={{ color: "white" }}>
+            👥 Plazas: {salida.plazas}
           </p>
 
-          <p
-            style={{
-              color: "white",
-            }}
-          >
+          <p style={{ color: "white" }}>
             {salida.descripcion}
           </p>
-
-          {/* ORGANIZA */}
 
           <p
             style={{
               color: "#cccccc",
-
               fontSize: "14px",
-
               marginTop: "10px",
             }}
           >
-            Organiza:
-            {" "}
-            {salida.user_email}
+            Organiza: {salida.user_email}
           </p>
-
-          {/* APUNTARSE */}
 
           <button
             onClick={() =>
@@ -772,94 +682,105 @@ const navigate =
             Apuntarme
           </button>
 
+          {tripulantes.some(
+            (t) =>
+              t.salida_id ===
+                salida.id &&
+              t.user_id ===
+                user?.id
+          ) && (
 
-{
-  tripulantes.some(
-    (t) =>
-      t.salida_id ===
-        salida.id &&
-      t.user_id ===
-        user?.id
-  ) && (
+            <button
+              onClick={() =>
+                salirActividad(
+                  salida.id
+                )
+              }
 
-    <button
-      onClick={() =>
-        salirActividad(
-          salida.id
-        )
-      }
+              style={{
+                marginTop:
+                  "10px",
 
-      style={{
-        marginTop:
-          "10px",
+                marginLeft:
+                  "10px",
 
-        marginLeft:
-          "10px",
+                padding:
+                  "10px 20px",
 
-        padding:
-          "10px 20px",
+                backgroundColor:
+                  "#aa2222",
 
-        backgroundColor:
-          "#aa2222",
+                color:
+                  "white",
 
-        color:
-          "white",
+                border:
+                  "none",
 
-        border:
-          "none",
+                borderRadius:
+                  "8px",
 
-        borderRadius:
-          "8px",
+                cursor:
+                  "pointer",
+              }}
+            >
+              ❌ SALIR
+            </button>
 
-        cursor:
-          "pointer",
-      }}
-    >
-      ❌ SALIR
-    </button>
+          )}
 
-)}
+          {(
+            user?.id ===
+              salida.user_id ||
 
-<button
-  onClick={() =>
-    navigate(
-      `/chat-grupo/${salida.id}`
-    )
-  }
+            tripulantes.some(
+              (t) =>
+                t.salida_id ===
+                  salida.id &&
+                t.user_id ===
+                  user?.id
+            )
+          ) && (
 
-  style={{
-    marginTop:
-      "10px",
+            <button
+              onClick={() =>
+                navigate(
+                  `/chat-grupo/${salida.id}`
+                )
+              }
 
-    marginLeft:
-      "10px",
+              style={{
+                marginTop:
+                  "10px",
 
-    padding:
-      "10px 18px",
+                marginLeft:
+                  "10px",
 
-    background:
-      "#720792",
+                padding:
+                  "10px 18px",
 
-    color:
-      "white",
+                background:
+                  "#720792",
 
-    border:
-      "none",
+                color:
+                  "white",
 
-    borderRadius:
-      "10px",
+                border:
+                  "none",
 
-    cursor:
-      "pointer",
+                borderRadius:
+                  "10px",
 
-    fontWeight:
-      "bold",
-  }}
->
-  💬 CHAT GRUPAL
-</button>
+                cursor:
+                  "pointer",
 
-          {/* EDITAR / BORRAR */}
+                fontWeight:
+                  "bold",
+              }}
+            >
+              💬 CHAT GRUPAL
+            </button>
+
+          )}
 
           {user?.id ===
             salida.user_id && (
@@ -941,8 +862,6 @@ const navigate =
 
           )}
 
-          {/* TRIPULANTES */}
-
           <div
             style={{
               marginTop:
@@ -966,91 +885,97 @@ const navigate =
               )
               .map((t) => (
 
-               <div
-  key={t.id}
+                <div
+                  key={t.id}
+
+                  style={{
+                    display: "flex",
+
+                    alignItems:
+                      "center",
+
+                    justifyContent:
+                      "space-between",
+
+                    gap: "10px",
+
+                    background:
+                      "rgba(255,255,255,0.06)",
+
+                    padding:
+                      "10px 14px",
+
+                    borderRadius:
+                      "10px",
+
+                    marginBottom:
+                      "8px",
+                  }}
+                >
+
+                  <p
+                    style={{
+                      color: "white",
+                      margin: 0,
+                    }}
+                  >
+                    • {t.user_name}
+                  </p>
+
+                  {(
+                    user?.id ===
+                      salida.user_id ||
+
+                    tripulantes.some(
+                      (trip) =>
+                        trip.salida_id ===
+                          salida.id &&
+                        trip.user_id ===
+                          user?.id
+                    )
+                  ) && (
+
+                    <button
+  onClick={async () => {
+
+    const conversacionId =
+      await obtenerOCrearConversacion(
+        user.id,
+        t.user_id
+      );
+
+    navigate(
+      `/conversacion/${conversacionId}`
+    );
+  }}
 
   style={{
-    display: "flex",
-
-    alignItems:
-      "center",
-
-    justifyContent:
-      "space-between",
-
-    gap: "10px",
-
     background:
-      "rgba(255,255,255,0.06)",
+      "#720792",
 
-    padding:
-      "10px 14px",
+    color: "white",
+
+    border: "none",
 
     borderRadius:
-      "10px",
-
-    marginBottom:
       "8px",
+
+    padding:
+      "8px 14px",
+
+    cursor:
+      "pointer",
+
+    fontWeight:
+      "bold",
   }}
 >
+  💬 CHAT
+</button>
 
-  <p
-    style={{
-      color: "white",
+                  )}
 
-      margin: 0,
-    }}
-  >
-    • {t.user_name}
-  </p>
-
-{(
-  user?.id ===
-    salida.user_id ||
-
-  tripulantes.some(
-    (trip) =>
-      trip.salida_id ===
-        salida.id &&
-      trip.user_id ===
-        user?.id
-  )
-) && (
-
-    <button
-      onClick={() =>
-        navigate(
-          `/chat/${salida.id}/${t.user_id}`
-        )
-      }
-
-      style={{
-        background:
-          "#720792",
-
-        color: "white",
-
-        border: "none",
-
-        borderRadius:
-          "8px",
-
-        padding:
-          "8px 14px",
-
-        cursor:
-          "pointer",
-
-        fontWeight:
-          "bold",
-      }}
-    >
-      💬 CHAT
-    </button>
-
-  )}
-
-</div> 
+                </div>
 
               ))}
 

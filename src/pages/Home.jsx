@@ -545,6 +545,21 @@ async function borrarNotificacion(
       image:
         "/buttons/bricos.png",
     },
+
+{
+  title:
+    "MIS CHATS",
+
+  description:
+    "Conversaciones privadas",
+
+  path:
+    "/mis-chats",
+
+  image:
+    "/buttons/chats.png",
+},
+
   ];
 
   if (loading) {

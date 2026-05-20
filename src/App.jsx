@@ -41,6 +41,12 @@ from "./pages/ChatGrupoActividad";
 
 import Conversacion from "./pages/Conversacion";
 
+import ResetPassword
+from "./pages/ResetPassword";
+
+import UpdatePassword
+from "./pages/UpdatePassword";
+
 export default function App() {
 
   return (
@@ -152,6 +158,15 @@ export default function App() {
   }
 />
 
+<Route
+  path="/reset-password"
+  element={<ResetPassword />}
+/>
+
+<Route
+  path="/update-password"
+  element={<UpdatePassword />}
+/>
 
       </Routes>
 

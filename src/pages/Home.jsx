@@ -41,6 +41,12 @@ export default function Home() {
   const [password, setPassword] =
     useState("");
 
+const [
+  modoRegistro,
+  setModoRegistro,
+] = useState(false);
+
+
   const [
     aceptaPrivacidad,
     setAceptaPrivacidad,
@@ -206,18 +212,68 @@ export default function Home() {
         password,
       });
 
-    if (error) {
+   if (error) {
 
-      alert(error.message);
+  alert(error.message);
 
-      return;
-    }
+  return;
+}
 
-    alert(
-      "Cuenta creada correctamente"
-    );
+const {
+  data: authData,
+} =
+  await supabase.auth.getUser();
+
+await asegurarProfile(
+  authData.user
+);
+
+alert(
+  "Sesión iniciada"
+);
   }
+async function asegurarProfile(
+  user
+) {
 
+  if (!user) return;
+
+  const { data } =
+    await supabase
+      .from("profiles")
+      .select("id")
+      .eq("id", user.id)
+      .single();
+
+  /*
+  =====================================
+  YA EXISTE
+  =====================================
+  */
+
+  if (data) return;
+
+  /*
+  =====================================
+  CREAR PROFILE
+  =====================================
+  */
+
+  await supabase
+    .from("profiles")
+    .insert([
+      {
+        id: user.id,
+
+        usuario:
+          user.email,
+
+        nombre:
+          user.email
+            ?.split("@")[0],
+      },
+    ]);
+}
   /*
   ==========================================
   LOGOUT
@@ -703,7 +759,11 @@ async function borrarNotificacion(
           />
 
           <button
-            onClick={login}
+           onClick={
+  modoRegistro
+    ? registrarse
+    : login
+}
 
             style={{
               width: "100%",
@@ -727,7 +787,11 @@ async function borrarNotificacion(
                 "bold",
             }}
           >
-            ENTRAR
+            {
+  modoRegistro
+    ? "REGISTRARSE"
+    : "ENTRAR"
+}
           </button>
 
 <p
@@ -753,127 +817,145 @@ async function borrarNotificacion(
   ¿Has olvidado tu contraseña?
 </p>
 
-          <div
-            style={{
-              marginBottom:
-                "16px",
+   {modoRegistro && (
 
-              color: "white",
+  <div
+    style={{
+      marginBottom:
+        "16px",
 
-              fontSize:
-                "14px",
+      color: "white",
 
-              background:
-                "rgba(255,255,255,0.08)",
+      fontSize:
+        "14px",
 
-              padding: "14px",
+      background:
+        "rgba(255,255,255,0.08)",
 
-              borderRadius:
-                "12px",
+      padding: "14px",
 
-              border:
-                "1px solid rgba(255,255,255,0.15)",
-            }}
-          >
+      borderRadius:
+        "12px",
 
-            <label
-              style={{
-                display:
-                  "flex",
+      border:
+        "1px solid rgba(255,255,255,0.15)",
+    }}
+  >
 
-                alignItems:
-                  "center",
+    <label
+      style={{
+        display:
+          "flex",
 
-                gap: "12px",
+        alignItems:
+          "flex-start",
 
-                lineHeight:
-                  1.5,
+        gap: "12px",
 
-                cursor:
-                  "pointer",
-              }}
-            >
+        lineHeight:
+          1.5,
 
-              <input
-                type="checkbox"
+        cursor:
+          "pointer",
+      }}
+    >
 
-                checked={
-                  aceptaPrivacidad
-                }
+      <input
+        type="checkbox"
 
-                onChange={(e) =>
-                  setAceptaPrivacidad(
-                    e.target.checked
-                  )
-                }
+        checked={
+          aceptaPrivacidad
+        }
 
-                style={{
-                  width: "22px",
+        onChange={(e) =>
+          setAceptaPrivacidad(
+            e.target.checked
+          )
+        }
 
-                  height: "22px",
+        style={{
+          width: "22px",
 
-                  cursor:
-                    "pointer",
-                }}
-              />
+          height: "22px",
 
-              <span>
+          cursor:
+            "pointer",
 
-                Acepto la{" "}
+          marginTop:
+            "3px",
+        }}
+      />
 
-                <a
-                  href="/privacidad"
+      <span>
 
-                  target="_blank"
+        He leído y acepto la{" "}
 
-                  rel="noreferrer"
+        <a
+          href="/privacidad"
 
-                  style={{
-                    color:
-                      "#e0f406",
+          target="_blank"
 
-                    fontWeight:
-                      "bold",
-                  }}
-                >
-                  política de privacidad
-                </a>
+          rel="noreferrer"
 
-              </span>
+          style={{
+            color:
+              "#e0f406",
 
-            </label>
+            fontWeight:
+              "bold",
+          }}
+        >
+          política de privacidad
+        </a>
 
-          </div>
+        {" "}y consiento expresamente que mis datos identificativos y de contacto puedan ser visibles o compartidos con otros usuarios de Club Furia exclusivamente para facilitar la comunicación, organización de actividades náuticas y funcionamiento de la plataforma.
 
-          <button
-            onClick={
-              registrarse
-            }
+      </span>
 
-            style={{
-              width: "100%",
+    </label>
 
-              padding: "14px",
+  </div>
 
-              border: "none",
+)}       
 
-              borderRadius:
-                "10px",
+    <button
+  onClick={() =>
+    setModoRegistro(
+      !modoRegistro
+    )
+  }
 
-              background:
-                "#720792",
+  style={{
+    width: "100%",
 
-              color: "white",
+    padding: "14px",
 
-              fontWeight:
-                "bold",
-            }}
-          >
-            REGISTRARSE
-          </button>
+    border: "none",
 
-        </div>
+    borderRadius:
+      "10px",
 
+    background:
+      "#720792",
+
+    color: "white",
+
+    fontWeight:
+      "bold",
+
+    marginTop:
+      "12px",
+  }}
+>
+  {
+    modoRegistro
+
+      ? "YA TENGO CUENTA"
+
+      : "CREAR CUENTA"
+  }
+</button>     
+</div>
       ) : (
 
         <div

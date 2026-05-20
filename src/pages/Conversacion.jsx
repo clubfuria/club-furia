@@ -6,6 +6,7 @@ import {
 
 import {
   useParams,
+  useNavigate,
 } from "react-router-dom";
 
 import { supabase }
@@ -16,6 +17,9 @@ export default function Conversacion() {
   const {
     conversacionId,
   } = useParams();
+
+const navigate =
+  useNavigate();
 
   const [user, setUser] =
     useState(null);
@@ -223,28 +227,69 @@ export default function Conversacion() {
       {/* CABECERA */}
 
       <div
-        style={{
-          padding:
-            "20px",
+  style={{
+    padding:
+      "16px 20px",
 
-          background:
-            "#021b44",
+    background:
+      "#021b44",
 
-          color:
-            "white",
+    color:
+      "white",
 
-          fontSize:
-            "22px",
+    borderBottom:
+      "1px solid rgba(255,255,255,0.1)",
 
-          fontWeight:
-            "bold",
+    display:
+      "flex",
 
-          borderBottom:
-            "1px solid rgba(255,255,255,0.1)",
-        }}
-      >
-        💬 Conversación
-      </div>
+    alignItems:
+      "center",
+
+    gap: "16px",
+  }}
+>
+
+  <button
+    onClick={() =>
+      navigate(
+        "/mis-chats"
+      )
+    }
+
+    style={{
+      background:
+        "transparent",
+
+      border:
+        "none",
+
+      color:
+        "white",
+
+      fontSize:
+        "28px",
+
+      cursor:
+        "pointer",
+    }}
+  >
+    ←
+  </button>
+
+  <div
+    style={{
+      fontSize:
+        "22px",
+
+      fontWeight:
+        "bold",
+    }}
+  >
+    💬 Conversación
+  </div>
+
+</div>
 
       {/* MENSAJES */}
 

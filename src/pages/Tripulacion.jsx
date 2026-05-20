@@ -163,6 +163,9 @@ export default function Tripulacion() {
             {
               id: user.id,
 
+usuario:
+  user.email,
+
               nombre:
                 profileNombre,
 

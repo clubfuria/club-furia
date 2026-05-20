@@ -1,6 +1,10 @@
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+} from "react";
 
-import { supabase } from "../supabase";
+import { supabase }
+from "../supabase";
 
 import {
   useNavigate,
@@ -17,11 +21,23 @@ export default function MisChats() {
   const [chats, setChats] =
     useState([]);
 
+  /*
+  =========================================
+  INIT
+  =========================================
+  */
+
   useEffect(() => {
 
     obtenerUsuario();
 
   }, []);
+
+  /*
+  =========================================
+  USER
+  =========================================
+  */
 
   async function obtenerUsuario() {
 
@@ -30,25 +46,117 @@ export default function MisChats() {
     } =
       await supabase.auth.getUser();
 
-    if (user) {
+    if (!user) return;
 
-      setUser(user);
+    setUser(user);
 
-      cargarChats(user.id);
-    }
+    cargarChats(user.id);
   }
+
+  /*
+  =========================================
+  CARGAR CHATS
+  =========================================
+  */
 
   async function cargarChats(
     userId
   ) {
 
-    const { data, error } =
+    /*
+    =====================================
+    CONVERSACIONES USUARIO
+    =====================================
+    */
+
+    const {
+      data: participaciones,
+      error:
+        participacionesError,
+    } =
       await supabase
-        .from("mensajes")
-        .select("*")
-        .or(
-          `from_user.eq.${userId},to_user.eq.${userId}`
+
+        .from(
+          "conversacion_participantes"
         )
+
+        .select("*")
+
+        .eq(
+          "user_id",
+          userId
+        );
+
+    if (
+      participacionesError
+    ) {
+
+      console.log(
+        participacionesError
+      );
+
+      return;
+    }
+
+    const conversacionesIds =
+
+      participaciones.map(
+        (p) =>
+          p.conversacion_id
+      );
+
+    if (
+      conversacionesIds.length ===
+      0
+    ) {
+
+      setChats([]);
+
+      return;
+    }
+
+    /*
+    =====================================
+    PARTICIPANTES
+    =====================================
+    */
+
+    const {
+      data: todosParticipantes,
+    } =
+      await supabase
+
+        .from(
+          "conversacion_participantes"
+        )
+
+        .select("*")
+
+        .in(
+          "conversacion_id",
+          conversacionesIds
+        );
+
+    /*
+    =====================================
+    MENSAJES
+    =====================================
+    */
+
+    const {
+      data: mensajes,
+    } =
+      await supabase
+
+        .from("mensajes")
+
+        .select("*")
+
+        .in(
+          "conversacion_id",
+          conversacionesIds
+        )
+
         .order(
           "created_at",
           {
@@ -56,39 +164,137 @@ export default function MisChats() {
           }
         );
 
-    if (!error && data) {
+    /*
+    =====================================
+    PROFILES
+    =====================================
+    */
 
-      const chatsUnicos = [];
+    const otrosUsuarios =
 
-      data.forEach((msg) => {
+      todosParticipantes
+        .filter(
+          (p) =>
+            p.user_id !==
+            userId
+        )
 
-        const otroUsuario =
+        .map(
+          (p) => p.user_id
+        );
 
-          msg.from_user ===
-          userId
+    const {
+      data: profiles,
+    } =
+      await supabase
 
-            ? msg.to_user
+        .from("profiles")
 
-            : msg.from_user;
+       .select("id,nombre,usuario,email")
 
-        const existe =
-          chatsUnicos.find(
-            (c) =>
-              c.otroUsuario ===
-              otroUsuario
-          );
+        .in(
+          "id",
+          otrosUsuarios
+        );
 
-        if (!existe) {
+    /*
+    =====================================
+    CONSTRUIR CHATS
+    =====================================
+    */
 
-          chatsUnicos.push({
-            ...msg,
-            otroUsuario,
-          });
+    const chatsFinales =
+
+      conversacionesIds.map(
+        (
+          conversacionId
+        ) => {
+
+          const otroParticipante =
+
+            todosParticipantes.find(
+
+              
+              (p) =>
+
+                p.conversacion_id ===
+                  conversacionId &&
+
+                p.user_id !==
+                  userId
+            );
+
+          const profile =
+
+            profiles?.find(
+              (p) =>
+                p.id ===
+                otroParticipante?.user_id
+            );
+
+          const ultimoMensaje =
+
+            mensajes?.find(
+              (m) =>
+                m.conversacion_id ===
+                conversacionId
+            );
+
+          return {
+
+            conversacionId,
+
+            nombre:
+
+  profile?.nombre ||
+
+  profile?.usuario
+    ?.split("@")[0] ||
+
+  profile?.email
+      ?.split("@")[0] ||
+
+    "Chat",
+    ultimoMensaje:
+
+    ultimoMensaje
+      ?.mensaje ||
+
+    "Sin mensajes",
+
+  fecha:
+
+    ultimoMensaje
+      ?.created_at ||
+
+    "",
+
+
+          };
         }
-      });
+      );
 
-      setChats(chatsUnicos);
-    }
+    /*
+    =====================================
+    ORDENAR
+    =====================================
+    */
+
+    chatsFinales.sort(
+      (a, b) =>
+
+        new Date(
+          b.fecha
+        ) -
+
+        new Date(
+          a.fecha
+        )
+    );
+
+    setChats(
+      chatsFinales
+    );
   }
 
   return (
@@ -108,16 +314,56 @@ export default function MisChats() {
       }}
     >
 
-      <h1
-        style={{
-          color: "white",
+      <div
+  style={{
+    display: "flex",
 
-          marginBottom:
-            "20px",
-        }}
-      >
-        💬 Mis Chats
-      </h1>
+    alignItems:
+      "center",
+
+    gap: "14px",
+
+    marginBottom:
+      "24px",
+  }}
+>
+
+  <button
+    onClick={() =>
+      navigate("/")
+    }
+
+    style={{
+      background:
+        "transparent",
+
+      border:
+        "none",
+
+      color:
+        "white",
+
+      fontSize:
+        "30px",
+
+      cursor:
+        "pointer",
+    }}
+  >
+    ←
+  </button>
+
+  <h1
+    style={{
+      color: "white",
+
+      margin: 0,
+    }}
+  >
+    💬 Mis Chats
+  </h1>
+
+</div>
 
       {chats.length === 0 && (
 
@@ -134,12 +380,14 @@ export default function MisChats() {
       {chats.map((chat) => (
 
         <div
-          key={chat.id}
+          key={
+            chat.conversacionId
+          }
 
           onClick={() =>
 
             navigate(
-              `/conversacion/${chat.conversacion_id}`
+              `/conversacion/${chat.conversacionId}`
             )
 
           }
@@ -152,44 +400,123 @@ export default function MisChats() {
               "16px",
 
             borderRadius:
-              "12px",
+              "14px",
 
             marginBottom:
-              "12px",
+              "14px",
 
             cursor:
               "pointer",
 
             border:
               "1px solid rgba(255,255,255,0.08)",
+
+            display:
+              "flex",
+
+            alignItems:
+              "center",
+
+            gap: "14px",
           }}
         >
 
-          <p
+          {/* AVATAR */}
+
+          <div
             style={{
-              color:
-                "#e7eb0f",
+              width: "52px",
 
-              marginBottom:
-                "8px",
+              height: "52px",
 
-              fontWeight:
-                "bold",
-            }}
-          >
-            💬 Conversación
-          </p>
+              borderRadius:
+                "50%",
 
-          <p
-            style={{
+              background:
+                "#720792",
+
+              display:
+                "flex",
+
+              alignItems:
+                "center",
+
+              justifyContent:
+                "center",
+
               color:
                 "white",
 
-              margin: 0,
+              fontWeight:
+                "bold",
+
+              fontSize:
+                "20px",
+
+              flexShrink: 0,
             }}
           >
-            {chat.mensaje}
-          </p>
+            {chat.nombre
+              ?.charAt(0)
+              ?.toUpperCase()}
+          </div>
+
+          {/* INFO */}
+
+          <div
+            style={{
+              flex: 1,
+
+              overflow:
+                "hidden",
+            }}
+          >
+
+            <p
+              style={{
+                color:
+                  "#e7eb0f",
+
+                margin: 0,
+
+                marginBottom:
+                  "6px",
+
+                fontWeight:
+                  "bold",
+
+                fontSize:
+                  "17px",
+              }}
+            >
+              {chat.nombre}
+            </p>
+
+            <p
+              style={{
+                color:
+                  "white",
+
+                margin: 0,
+
+                opacity: 0.9,
+
+                overflow:
+                  "hidden",
+
+                textOverflow:
+                  "ellipsis",
+
+                whiteSpace:
+                  "nowrap",
+              }}
+            >
+              {
+                chat.ultimoMensaje
+              }
+            </p>
+
+          </div>
 
         </div>
 

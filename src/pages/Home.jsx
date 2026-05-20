@@ -730,6 +730,29 @@ async function borrarNotificacion(
             ENTRAR
           </button>
 
+<p
+  onClick={() =>
+    navigate(
+      "/reset-password"
+    )
+  }
+
+  style={{
+    color: "#7db7ff",
+
+    marginTop: "16px",
+
+    marginBottom:
+      "16px",
+
+    cursor: "pointer",
+
+    textAlign: "center",
+  }}
+>
+  ¿Has olvidado tu contraseña?
+</p>
+
           <div
             style={{
               marginBottom:

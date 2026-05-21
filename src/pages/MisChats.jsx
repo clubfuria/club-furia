@@ -137,6 +137,26 @@ export default function MisChats() {
           conversacionesIds
         );
 
+/*
+=====================================
+PERFILES
+=====================================
+*/
+
+const otrosIds = todosParticipantes
+  .filter(
+    (p) => p.user_id !== userId
+  )
+  .map((p) => p.user_id);
+
+const {
+  data: perfiles,
+} =
+  await supabase
+    .from("profiles")
+    .select("*")
+    .in("id", otrosIds);
+
     /*
     =====================================
     MENSAJES
@@ -166,39 +186,6 @@ export default function MisChats() {
 
     /*
     =====================================
-    PROFILES
-    =====================================
-    */
-
-    const otrosUsuarios =
-
-      todosParticipantes
-        .filter(
-          (p) =>
-            p.user_id !==
-            userId
-        )
-
-        .map(
-          (p) => p.user_id
-        );
-
-    const {
-      data: profiles,
-    } =
-      await supabase
-
-        .from("profiles")
-
-       .select("id,nombre,usuario,email")
-
-        .in(
-          "id",
-          otrosUsuarios
-        );
-
-    /*
-    =====================================
     CONSTRUIR CHATS
     =====================================
     */
@@ -214,7 +201,6 @@ export default function MisChats() {
 
             todosParticipantes.find(
 
-              
               (p) =>
 
                 p.conversacion_id ===
@@ -222,14 +208,6 @@ export default function MisChats() {
 
                 p.user_id !==
                   userId
-            );
-
-          const profile =
-
-            profiles?.find(
-              (p) =>
-                p.id ===
-                otroParticipante?.user_id
             );
 
           const ultimoMensaje =
@@ -240,36 +218,48 @@ export default function MisChats() {
                 conversacionId
             );
 
-          return {
+/*
+================================
+PERFIL USUARIO
+================================
+*/
 
-            conversacionId,
+const perfil =
+  perfiles?.find(
+    (p) =>
+      p.id ===
+      otroParticipante?.user_id
+  );
 
-            nombre:
+const nombre =
+  perfil?.nombre ||
+  perfil?.username ||
+  "Usuario";
 
-  profile?.nombre ||
+const avatar =
+  perfil?.avatar_url || "";
 
-  profile?.usuario
-    ?.split("@")[0] ||
+    return {
 
-  profile?.email
-      ?.split("@")[0] ||
+  conversacionId,
 
-    "Chat",
-    ultimoMensaje:
+  nombre,
 
-    ultimoMensaje
-      ?.mensaje ||
+  avatar,      
 
-    "Sin mensajes",
+            ultimoMensaje:
 
-  fecha:
+              ultimoMensaje
+                ?.mensaje ||
 
-    ultimoMensaje
-      ?.created_at ||
+              "Sin mensajes",
 
-    "",
+            fecha:
 
+              ultimoMensaje
+                ?.created_at ||
 
+              "",
           };
         }
       );
@@ -314,56 +304,60 @@ export default function MisChats() {
       }}
     >
 
+      {/* HEADER */}
+
       <div
-  style={{
-    display: "flex",
+        style={{
+          display: "flex",
 
-    alignItems:
-      "center",
+          alignItems:
+            "center",
 
-    gap: "14px",
+          gap: "14px",
 
-    marginBottom:
-      "24px",
-  }}
->
+          marginBottom:
+            "24px",
+        }}
+      >
 
-  <button
-    onClick={() =>
-      navigate("/")
-    }
+        <button
+          onClick={() =>
+            navigate("/")
+          }
 
-    style={{
-      background:
-        "transparent",
+          style={{
+            background:
+              "transparent",
 
-      border:
-        "none",
+            border:
+              "none",
 
-      color:
-        "white",
+            color:
+              "white",
 
-      fontSize:
-        "30px",
+            fontSize:
+              "30px",
 
-      cursor:
-        "pointer",
-    }}
-  >
-    ←
-  </button>
+            cursor:
+              "pointer",
+          }}
+        >
+          ←
+        </button>
 
-  <h1
-    style={{
-      color: "white",
+        <h1
+          style={{
+            color: "white",
 
-      margin: 0,
-    }}
-  >
-    💬 Mis Chats
-  </h1>
+            margin: 0,
+          }}
+        >
+          💬 Mis Chats
+        </h1>
 
-</div>
+      </div>
+
+      {/* VACÍO */}
 
       {chats.length === 0 && (
 
@@ -376,6 +370,8 @@ export default function MisChats() {
         </p>
 
       )}
+
+      {/* LISTA */}
 
       {chats.map((chat) => (
 
@@ -421,45 +417,63 @@ export default function MisChats() {
           }}
         >
 
-          {/* AVATAR */}
+         {/* AVATAR */}
 
-          <div
-            style={{
-              width: "52px",
+{chat.avatar ? (
 
-              height: "52px",
+  <img
+    src={chat.avatar}
+    alt=""
+    style={{
+      width: "52px",
+      height: "52px",
+      borderRadius: "50%",
+      objectFit: "cover",
+      flexShrink: 0,
+    }}
+  />
 
-              borderRadius:
-                "50%",
+) : (
 
-              background:
-                "#720792",
+  <div
+    style={{
+      width: "52px",
 
-              display:
-                "flex",
+      height: "52px",
 
-              alignItems:
-                "center",
+      borderRadius:
+        "50%",
 
-              justifyContent:
-                "center",
+      background:
+        "#720792",
 
-              color:
-                "white",
+      display:
+        "flex",
 
-              fontWeight:
-                "bold",
+      alignItems:
+        "center",
 
-              fontSize:
-                "20px",
+      justifyContent:
+        "center",
 
-              flexShrink: 0,
-            }}
-          >
-            {chat.nombre
-              ?.charAt(0)
-              ?.toUpperCase()}
-          </div>
+      color:
+        "white",
+
+      fontWeight:
+        "bold",
+
+      fontSize:
+        "20px",
+
+      flexShrink: 0,
+    }}
+  >
+    {chat.nombre
+      ?.charAt(0)
+      ?.toUpperCase()}
+  </div>
+
+)}
 
           {/* INFO */}
 

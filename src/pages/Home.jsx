@@ -52,6 +52,11 @@ const [
     setAceptaPrivacidad,
   ] = useState(false);
 
+  const [
+  necesitaAceptarPrivacidad,
+  setNecesitaAceptarPrivacidad,
+] = useState(false);
+
   /*
   ==========================================
   POSTS
@@ -130,37 +135,80 @@ const [
 
   async function login() {
 
-    if (
-      !email ||
-      !password
-    ) {
-
-      alert(
-        "Introduce email y contraseña"
-      );
-
-      return;
-    }
-
-    const { error } =
-      await supabase.auth.signInWithPassword({
-
-        email,
-
-        password,
-      });
-
-    if (error) {
-
-      alert(error.message);
-
-      return;
-    }
+  if (
+    !email ||
+    !password
+  ) {
 
     alert(
-      "Sesión iniciada"
+      "Introduce email y contraseña"
     );
+
+    return;
   }
+
+  const { error } =
+    await supabase.auth.signInWithPassword({
+
+      email,
+
+      password,
+    });
+
+  if (error) {
+
+    alert(error.message);
+
+    return;
+  }
+
+  /*
+  =====================================
+  ASEGURAR PROFILE
+  =====================================
+  */
+
+  const {
+    data: authData,
+  } =
+    await supabase.auth.getUser();
+
+  await asegurarProfile(
+  authData.user
+);
+
+/*
+=====================================
+COMPROBAR PRIVACIDAD
+=====================================
+*/
+
+const { data: profile } =
+  await supabase
+    .from("profiles")
+    .select("*")
+    .eq(
+      "id",
+      authData.user.id
+    )
+    .single();
+
+if (
+  !profile?.acepta_privacidad
+) {
+
+  setNecesitaAceptarPrivacidad(
+    true
+  );
+
+  return;
+}
+
+alert(
+  "Sesión iniciada"
+);
+}
+
 
   /*
   ==========================================
@@ -690,7 +738,9 @@ async function borrarNotificacion(
 
       {/* LOGIN */}
 
-      {!session ? (
+      {!session ||
+
+necesitaAceptarPrivacidad ? (
 
         <div
           style={{
@@ -817,7 +867,11 @@ async function borrarNotificacion(
   ¿Has olvidado tu contraseña?
 </p>
 
-   {modoRegistro && (
+   {(
+  modoRegistro ||
+
+  necesitaAceptarPrivacidad
+) && (
 
   <div
     style={{
@@ -917,6 +971,79 @@ async function borrarNotificacion(
   </div>
 
 )}       
+
+
+{necesitaAceptarPrivacidad && (
+
+  <button
+    onClick={async () => {
+
+      if (
+        !aceptaPrivacidad
+      ) {
+
+        alert(
+          "Debes aceptar la política de privacidad"
+        );
+
+        return;
+      }
+
+      const {
+        data: authData,
+      } =
+        await supabase.auth.getUser();
+
+      await supabase
+        .from("profiles")
+        .update({
+          acepta_privacidad:
+            true,
+
+          fecha_aceptacion_privacidad:
+            new Date(),
+        })
+
+        .eq(
+          "id",
+          authData.user.id
+        );
+
+      setNecesitaAceptarPrivacidad(
+        false
+      );
+
+      alert(
+        "Privacidad aceptada"
+      );
+    }}
+
+    style={{
+      width: "100%",
+
+      padding: "14px",
+
+      border: "none",
+
+      borderRadius:
+        "10px",
+
+      background:
+        "#00aa55",
+
+      color: "white",
+
+      fontWeight:
+        "bold",
+
+      marginTop:
+        "12px",
+    }}
+  >
+    ACEPTAR PRIVACIDAD
+  </button>
+
+)}
 
     <button
   onClick={() =>

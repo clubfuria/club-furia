@@ -2,21 +2,14 @@ import BottomNav from "../components/BottomNav";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../supabase";
-import {
-  useNavigate,
-} from "react-router-dom";
-
-import {
-  obtenerOCrearConversacion,
-} from "../utils/chatUtils";
-
+import { useNavigate } from "react-router-dom";
+import { obtenerOCrearConversacion } from "../utils/chatUtils";
 
 export default function Boats() {
 
   const [user, setUser] = useState(null);
 
-const navigate =
-  useNavigate();
+  const navigate = useNavigate();
 
   const [boats, setBoats] = useState([]);
 
@@ -44,11 +37,62 @@ const navigate =
   const [boatTelefono, setBoatTelefono] =
     useState("");
 
+  const [boatEslora, setBoatEslora] =
+    useState("");
+
+  const [
+    boatTipoNavegacion,
+    setBoatTipoNavegacion,
+  ] = useState("");
+
+  const [
+    boatElectronica,
+    setBoatElectronica,
+  ] = useState("");
+
+  const [
+    boatConfort,
+    setBoatConfort,
+  ] = useState("");
+
+  const [
+    boatSeguridad,
+    setBoatSeguridad,
+  ] = useState("");
+
+  const [boatVelas, setBoatVelas] =
+    useState("");
+
+  const [boatMotor, setBoatMotor] =
+    useState("");
+
+  const [
+    boatMejoras,
+    setBoatMejoras,
+  ] = useState("");
+
+  const [
+    boatDescripcion,
+    setBoatDescripcion,
+  ] = useState("");
+
   const [boatImage, setBoatImage] =
     useState(null);
 
-  const [editingBoatId, setEditingBoatId] =
-    useState(null);
+  const [
+    boatGallery,
+    setBoatGallery,
+  ] = useState([]);
+
+  const [
+    selectedImage,
+    setSelectedImage,
+  ] = useState("");
+
+  const [
+    editingBoatId,
+    setEditingBoatId,
+  ] = useState(null);
 
   const isMobile =
     window.innerWidth < 768;
@@ -65,12 +109,6 @@ const navigate =
 
   }, []);
 
-  /*
-  =========================================
-  FETCH BOATS
-  =========================================
-  */
-
   async function fetchBoats() {
 
     const { data, error } =
@@ -86,12 +124,6 @@ const navigate =
       setBoats(data);
     }
   }
-
-  /*
-  =========================================
-  BUSCADOR SIN ACENTOS
-  =========================================
-  */
 
   const normalizeText = (text) => {
 
@@ -132,13 +164,9 @@ const navigate =
       );
     });
 
-  /*
-  =========================================
-  NEXT
-  =========================================
-  */
-
   const nextBoat = () => {
+
+    setSelectedImage("");
 
     if (
       currentBoat <
@@ -155,13 +183,9 @@ const navigate =
     }
   };
 
-  /*
-  =========================================
-  PREV
-  =========================================
-  */
-
   const prevBoat = () => {
+
+    setSelectedImage("");
 
     if (currentBoat > 0) {
 
@@ -177,12 +201,6 @@ const navigate =
     }
   };
 
-  /*
-  =========================================
-  ADD / EDIT BOAT
-  =========================================
-  */
-
   const addBoat = async () => {
 
     if (!user) {
@@ -196,9 +214,45 @@ const navigate =
 
     let imageUrl = "";
 
+    let galleryUrls = [];
+
     /*
     =======================================
-    SUBIR FOTO
+    GALERÍA
+    =======================================
+    */
+
+    if (
+      boatGallery.length > 0
+    ) {
+
+      for (
+        const file of boatGallery
+      ) {
+
+        const galleryFileName =
+          `${Date.now()}-${file.name}`;
+
+        const { error } =
+          await supabase.storage
+            .from("boats")
+            .upload(
+              galleryFileName,
+              file
+            );
+
+        if (!error) {
+
+          galleryUrls.push(
+            `https://cqfxomvrkkaegtfkboun.supabase.co/storage/v1/object/public/boats/${galleryFileName}`
+          );
+        }
+      }
+    }
+
+    /*
+    =======================================
+    FOTO PRINCIPAL
     =======================================
     */
 
@@ -226,6 +280,60 @@ const navigate =
         `https://cqfxomvrkkaegtfkboun.supabase.co/storage/v1/object/public/boats/${fileName}`;
     }
 
+    const boatData = {
+
+      name: boatName,
+
+      model: boatModel,
+
+      port: boatPort,
+
+      tripulacion: boatCrew,
+
+      email: boatEmail,
+
+      telefono:
+        boatTelefono,
+
+      eslora:
+        boatEslora,
+
+      tipo_navegacion:
+        boatTipoNavegacion,
+
+      electronica:
+        boatElectronica,
+
+      confort:
+        boatConfort,
+
+      seguridad:
+        boatSeguridad,
+
+      velas:
+        boatVelas,
+
+      motor:
+        boatMotor,
+
+      mejoras:
+        boatMejoras,
+
+      descripcion:
+        boatDescripcion,
+
+      gallery_urls:
+        galleryUrls,
+
+      user_id: user.id,
+    };
+
+    if (imageUrl) {
+
+      boatData.image_url =
+        imageUrl;
+    }
+
     /*
     =======================================
     EDITAR
@@ -234,32 +342,10 @@ const navigate =
 
     if (editingBoatId) {
 
-      const updateData = {
-
-        name: boatName,
-
-        model: boatModel,
-
-        port: boatPort,
-
-        tripulacion: boatCrew,
-
-        email: boatEmail,
-
-        telefono:
-          boatTelefono,
-      };
-
-      if (imageUrl) {
-
-        updateData.image_url =
-          imageUrl;
-      }
-
       const { error } =
         await supabase
           .from("boats")
-          .update(updateData)
+          .update(boatData)
           .eq(
             "id",
             editingBoatId
@@ -281,33 +367,16 @@ const navigate =
     } else {
 
       /*
-      =====================================
+      =======================================
       NUEVO
-      =====================================
+      =======================================
       */
 
       const { error } =
         await supabase
           .from("boats")
           .insert([
-            {
-              name: boatName,
-
-              model: boatModel,
-
-              port: boatPort,
-
-              tripulacion: boatCrew,
-
-              email: boatEmail,
-
-              telefono:
-                boatTelefono,
-
-              image_url: imageUrl,
-
-              user_id: user.id,
-            },
+            boatData,
           ]);
 
       if (error) {
@@ -329,31 +398,28 @@ const navigate =
     */
 
     setBoatName("");
-
     setBoatModel("");
-
     setBoatPort("");
-
     setBoatCrew("");
-
     setBoatEmail("");
-
     setBoatTelefono("");
-
+    setBoatEslora("");
+    setBoatTipoNavegacion("");
+    setBoatElectronica("");
+    setBoatConfort("");
+    setBoatSeguridad("");
+    setBoatVelas("");
+    setBoatMotor("");
+    setBoatMejoras("");
+    setBoatDescripcion("");
     setBoatImage(null);
+    setBoatGallery([]);
 
     fetchBoats();
   };
 
-  /*
-  =========================================
-  DELETE
-  =========================================
-  */
-
   const deleteBoat = async (
-    id,
-    imageUrl
+    id
   ) => {
 
     if (
@@ -365,18 +431,6 @@ const navigate =
       return;
     }
 
-    if (imageUrl) {
-
-      const fileName =
-        imageUrl.split(
-          "/boats/"
-        )[1];
-
-      await supabase.storage
-        .from("boats")
-        .remove([fileName]);
-    }
-
     await supabase
       .from("boats")
       .delete()
@@ -386,12 +440,6 @@ const navigate =
 
     setCurrentBoat(0);
   };
-
-  /*
-  =========================================
-  EDIT
-  =========================================
-  */
 
   const editBoat = (boat) => {
 
@@ -420,6 +468,73 @@ const navigate =
     setBoatTelefono(
       boat.telefono || ""
     );
+
+    setBoatEslora(
+      boat.eslora || ""
+    );
+
+    setBoatTipoNavegacion(
+      boat.tipo_navegacion || ""
+    );
+
+    setBoatElectronica(
+      boat.electronica || ""
+    );
+
+    setBoatConfort(
+      boat.confort || ""
+    );
+
+    setBoatSeguridad(
+      boat.seguridad || ""
+    );
+
+    setBoatVelas(
+      boat.velas || ""
+    );
+
+    setBoatMotor(
+      boat.motor || ""
+    );
+
+    setBoatMejoras(
+      boat.mejoras || ""
+    );
+
+    setBoatDescripcion(
+      boat.descripcion || ""
+    );
+  };
+
+  const openChat = async (
+    boat
+  ) => {
+
+    if (!user) {
+
+      alert(
+        "Inicia sesión"
+      );
+
+      return;
+    }
+
+    if (
+      boat.user_id === user.id
+    ) {
+
+      return;
+    }
+
+    const conversacionId =
+      await obtenerOCrearConversacion(
+        user.id,
+        boat.user_id
+      );
+
+    navigate(
+      `/conversacion/${conversacionId}`
+    );
   };
 
   return (
@@ -428,54 +543,47 @@ const navigate =
       style={{
         width: "100%",
         maxWidth: "950px",
-
         margin: "0 auto",
-
-        padding: isMobile
-          ? "16px"
-          : "24px",
-
-        boxSizing: "border-box",
-
+        padding:
+          isMobile
+            ? "16px"
+            : "24px",
+        boxSizing:
+          "border-box",
         background:
           "linear-gradient(to bottom,#021224,#0c3157)",
-
-        minHeight: "100vh",
-
+        minHeight:
+          "100vh",
         fontFamily:
           "Arial,sans-serif",
-
-        paddingBottom: "100px",
+        paddingBottom:
+          "100px",
       }}
     >
-
-      {/* CABECERA */}
 
       <div
         style={{
           display: "flex",
-
           justifyContent:
             "space-between",
-
-          alignItems: "center",
-
-          flexWrap: "wrap",
-
+          alignItems:
+            "center",
+          flexWrap:
+            "wrap",
           gap: "12px",
-
-          marginBottom: "24px",
+          marginBottom:
+            "24px",
         }}
       >
 
         <h1
           style={{
-            color: "#fe5d01",
-
-            fontSize: isMobile
-              ? "34px"
-              : "46px",
-
+            color:
+              "#fe5d01",
+            fontSize:
+              isMobile
+                ? "34px"
+                : "46px",
             margin: 0,
           }}
         >
@@ -487,18 +595,15 @@ const navigate =
           style={{
             backgroundColor:
               "#720792",
-
             color: "white",
-
             padding:
               "10px 20px",
-
-            borderRadius: "10px",
-
+            borderRadius:
+              "10px",
             textDecoration:
               "none",
-
-            fontWeight: "bold",
+            fontWeight:
+              "bold",
           }}
         >
           INICIO
@@ -506,22 +611,40 @@ const navigate =
 
       </div>
 
-      {/* CARRUSEL */}
+      <input
+        type="text"
+        placeholder="Buscar barco"
+        value={boatSearch}
+        onChange={(e) =>
+          setBoatSearch(
+            e.target.value
+          )
+        }
+        style={{
+          width: "100%",
+          padding: "12px",
+          borderRadius:
+            "10px",
+          border: "none",
+          marginBottom:
+            "24px",
+          boxSizing:
+            "border-box",
+        }}
+      />
 
-      {filteredBoats.length > 0 && (
+      {filteredBoats.length >
+        0 && (
 
         <div
           style={{
             background:
               "rgba(255,255,255,0.08)",
-
             borderRadius:
               "20px",
-
             padding: "20px",
-
-            marginBottom: "30px",
-
+            marginBottom:
+              "30px",
             border:
               "1px solid rgba(255,255,255,0.15)",
           }}
@@ -531,51 +654,204 @@ const navigate =
             currentBoat
           ]?.image_url && (
 
-            <img
-              src={
-                filteredBoats[
+            <>
+
+              <img
+                src={
+                  selectedImage ||
+
+                  filteredBoats[
+                    currentBoat
+                  ]?.image_url
+                }
+
+                alt=""
+
+                style={{
+                  width: "100%",
+                  maxHeight:
+                    "520px",
+                  objectFit:
+                    "cover",
+                  borderRadius:
+                    "16px",
+                  marginBottom:
+                    "20px",
+                }}
+              />
+
+              <div
+                style={{
+                  display:
+                    "flex",
+                  gap: "10px",
+                  flexWrap:
+                    "wrap",
+                  marginBottom:
+                    "20px",
+                }}
+              >
+
+                <img
+                  src={
+                    filteredBoats[
+                      currentBoat
+                    ]?.image_url
+                  }
+
+                  alt=""
+
+                  onClick={() =>
+                    setSelectedImage(
+                      ""
+                    )
+                  }
+
+                  style={{
+                    width:
+                      "90px",
+                    height:
+                      "70px",
+                    objectFit:
+                      "cover",
+                    borderRadius:
+                      "10px",
+                    cursor:
+                      "pointer",
+                    border:
+                      selectedImage ===
+                      ""
+                        ? "3px solid #fe5d01"
+                        : "2px solid white",
+                  }}
+                />
+
+                {filteredBoats[
                   currentBoat
-                ].image_url
-              }
-              alt=""
-              style={{
-                width: "100%",
+                ]?.gallery_urls?.map(
+                  (
+                    img,
+                    index
+                  ) => (
 
-                maxHeight:
-                  "520px",
+                    <img
+                      key={index}
 
-                objectFit:
-                  "cover",
+                      src={img}
 
-                borderRadius:
-                  "16px",
+                      alt=""
 
-                marginBottom:
-                  "20px",
-              }}
-            />
+                      onClick={() =>
+                        setSelectedImage(
+                          img
+                        )
+                      }
+
+                      style={{
+                        width:
+                          "90px",
+                        height:
+                          "70px",
+                        objectFit:
+                          "cover",
+                        borderRadius:
+                          "10px",
+                        cursor:
+                          "pointer",
+                        border:
+                          selectedImage ===
+                          img
+                            ? "3px solid #fe5d01"
+                            : "2px solid white",
+                      }}
+                    />
+
+                  )
+                )}
+
+              </div>
+
+            </>
 
           )}
 
-          <h2
-            style={{
-              color: "#fe5d01",
+          <div
+  style={{
+    display: "flex",
+    justifyContent:
+      "space-between",
+    alignItems: "center",
+    marginBottom: "10px",
+    gap: "10px",
+    flexWrap: "wrap",
+  }}
+>
 
-              fontSize: isMobile
-                ? "28px"
-                : "38px",
+
+  <div
+  style={{
+    display: "flex",
+    justifyContent:
+      "flex-end",
+    marginBottom:
+      "10px",
+  }}
+>
+
+  <div
+    style={{
+      color: "white",
+      fontSize: "14px",
+      opacity: 0.8,
+    }}
+  >
+    Barco{" "}
+    {currentBoat + 1}
+    {" / "}
+    {filteredBoats.length}
+  </div>
+
+</div>
+
+<h2
+  style={{
+    color:
+      "#fe5d01",
+
+    fontSize:
+      isMobile
+        ? "38px"
+        : "54px",
+
+    textAlign:
+      "center",
+
+    marginBottom:
+      "20px",
+
+    marginTop:
+      "10px",
+
+    fontWeight:
+      "bold",
+  }}
+>
+  {
+    filteredBoats[
+      currentBoat
+    ]?.name
+  }
+</h2>
+
+</div>
+
+          <p
+            style={{
+              color:
+                "white",
             }}
           >
-            {
-              filteredBoats[
-                currentBoat
-              ]?.name
-            }
-          </h2>
-
-          <p style={{ color: "white" }}>
-            ⛵ Modelo:
-            {" "}
+            ⛵ Modelo:{" "}
             {
               filteredBoats[
                 currentBoat
@@ -583,9 +859,13 @@ const navigate =
             }
           </p>
 
-          <p style={{ color: "white" }}>
-            📍 Puerto:
-            {" "}
+          <p
+            style={{
+              color:
+                "white",
+            }}
+          >
+            📍 Puerto:{" "}
             {
               filteredBoats[
                 currentBoat
@@ -593,9 +873,13 @@ const navigate =
             }
           </p>
 
-          <p style={{ color: "white" }}>
-            👥 Tripulación:
-            {" "}
+          <p
+            style={{
+              color:
+                "white",
+            }}
+          >
+            👥 Tripulación:{" "}
             {
               filteredBoats[
                 currentBoat
@@ -603,425 +887,466 @@ const navigate =
             }
           </p>
 
-         {/* CONTACTO PRIVADO */}
+          <p
+            style={{
+              color:
+                "white",
+            }}
+          >
+            📏 Eslora:{" "}
+            {
+              filteredBoats[
+                currentBoat
+              ]?.eslora
+            }
+          </p>
 
-<div
+          <p
+            style={{
+              color:
+                "white",
+            }}
+          >
+            🌊 Navegación:{" "}
+            {
+              filteredBoats[
+                currentBoat
+              ]
+                ?.tipo_navegacion
+            }
+          </p>
+
+          <p
+            style={{
+              color:
+                "white",
+            }}
+          >
+            ⚡ Electrónica:{" "}
+            {
+              filteredBoats[
+                currentBoat
+              ]?.electronica
+            }
+          </p>
+
+          <p
+            style={{
+              color:
+                "white",
+            }}
+          >
+            🛏️ Confort:{" "}
+            {
+              filteredBoats[
+                currentBoat
+              ]?.confort
+            }
+          </p>
+
+          <p
+            style={{
+              color:
+                "white",
+            }}
+          >
+            🛟 Seguridad:{" "}
+            {
+              filteredBoats[
+                currentBoat
+              ]?.seguridad
+            }
+          </p>
+
+          <p
+            style={{
+              color:
+                "white",
+            }}
+          >
+            ⛵ Velas:{" "}
+            {
+              filteredBoats[
+                currentBoat
+              ]?.velas
+            }
+          </p>
+
+          <p
+            style={{
+              color:
+                "white",
+            }}
+          >
+            ⚙️ Motor:{" "}
+            {
+              filteredBoats[
+                currentBoat
+              ]?.motor
+            }
+          </p>
+
+          <p
+            style={{
+              color:
+                "white",
+            }}
+          >
+            🔧 Mejoras:{" "}
+            {
+              filteredBoats[
+                currentBoat
+              ]?.mejoras
+            }
+          </p>
+
+          <p
+            style={{
+              color:
+                "white",
+            }}
+          >
+            📝 Descripción:{" "}
+            {
+              filteredBoats[
+                currentBoat
+              ]?.descripcion
+            }
+          </p>
+
+          <div
   style={{
     display: "flex",
-
-    justifyContent: "center",
-
+    justifyContent:
+      "space-between",
     alignItems: "center",
-
-    gap: "18px",
-
-    marginTop: "22px",
-
-    width: "100%",
-
+    gap: "12px",
+    marginTop: "20px",
     flexWrap: "wrap",
   }}
 >
 
-  {filteredBoats[
-    currentBoat
-  ]?.email && (
+  {/* IZQUIERDA */}
 
-    <a
-      href={`mailto:${
-        filteredBoats[
-          currentBoat
-        ]?.email
-      }`}
+  <div>
+
+    <button
+      onClick={prevBoat}
       style={{
-        display: "flex",
+        padding:
+          "12px 20px",
 
-        alignItems:
-          "center",
-
-        justifyContent:
-          "center",
-
-        width: "52px",
-
-        height: "52px",
+        border: "none",
 
         borderRadius:
-          "50%",
+          "10px",
 
-        background:
-          "#fe5d01",
+        backgroundColor:
+          "#2e07f1",
 
         color: "white",
 
-        textDecoration:
-          "none",
-
-        fontSize: "26px",
-
-        boxShadow:
-          "0 4px 10px rgba(0,0,0,0.3)",
+        cursor:
+          "pointer",
       }}
-      title="Enviar email"
     >
-      ✉️
-    </a>
+      ← ANTERIOR
+    </button>
 
-  )}
+  </div>
 
-  {filteredBoats[
-    currentBoat
-  ]?.telefono && (
+  {/* CENTRO */}
 
-    <a
-      href={`tel:${
-        filteredBoats[
-          currentBoat
-        ]?.telefono
-      }`}
-      style={{
-        display: "flex",
-
-        alignItems:
-          "center",
-
-        justifyContent:
-          "center",
-
-        width: "52px",
-
-        height: "52px",
-
-        borderRadius:
-          "50%",
-
-        background:
-          "#0d7a32",
-
-        color: "white",
-
-        textDecoration:
-          "none",
-
-        fontSize: "26px",
-
-        boxShadow:
-          "0 4px 10px rgba(0,0,0,0.3)",
-      }}
-      title="Llamar"
-    >
-      📞
-    </a>
-
-  )}
-
-{user?.id !==
-  filteredBoats[
-    currentBoat
-  ]?.user_id && (
-
-  <button
-    onClick={async () => {
-
-      const conversacionId =
-        await obtenerOCrearConversacion(
-          user.id,
-
-          filteredBoats[
-            currentBoat
-          ]?.user_id
-        );
-
-      navigate(
-        `/conversacion/${conversacionId}`
-      );
-    }}
-
+  <div
     style={{
       display: "flex",
-
-      alignItems:
-        "center",
-
+      gap: "10px",
+      flexWrap: "wrap",
       justifyContent:
         "center",
-
-      width: "52px",
-
-      height: "52px",
-
-      borderRadius:
-        "50%",
-
-      background:
-        "#720792",
-
-      color: "white",
-
-      border:
-        "none",
-
-      textDecoration:
-        "none",
-
-      fontSize: "24px",
-
-      cursor: "pointer",
-
-      boxShadow:
-        "0 4px 10px rgba(0,0,0,0.3)",
     }}
-
-    title="Chat"
   >
-    💬
-  </button>
 
-)}
+    {user &&
+
+      filteredBoats[
+        currentBoat
+      ]?.user_id !==
+        user.id && (
+
+        <button
+  onClick={() =>
+    openChat(
+      filteredBoats[
+        currentBoat
+      ]
+    )
+  }
+
+  style={{
+    width: "52px",
+
+    height: "52px",
+
+    borderRadius:
+      "50%",
+
+    backgroundColor:
+      "#0d7a32",
+
+    color: "white",
+
+    border: "none",
+
+    display: "flex",
+
+    alignItems:
+      "center",
+
+    justifyContent:
+      "center",
+
+    fontSize: "24px",
+
+    cursor:
+      "pointer",
+  }}
+>
+  💬
+</button>
+
+      )}
+
+    {filteredBoats[
+      currentBoat
+    ]?.telefono && (
+
+      <a
+  href={`tel:${filteredBoats[currentBoat]?.telefono}`}
+
+  style={{
+    width: "52px",
+
+    height: "52px",
+
+    borderRadius:
+      "50%",
+
+    backgroundColor:
+      "#0066cc",
+
+    color: "white",
+
+    textDecoration:
+      "none",
+
+    display: "flex",
+
+    alignItems:
+      "center",
+
+    justifyContent:
+      "center",
+
+    fontSize: "24px",
+
+    fontWeight:
+      "bold",
+  }}
+>
+  📞
+</a>
+  )}
+
+    {filteredBoats[
+      currentBoat
+    ]?.email && (
+
+     <a
+  href={`mailto:${filteredBoats[currentBoat]?.email}`}
+
+  style={{
+    width: "52px",
+
+    height: "52px",
+
+    borderRadius:
+      "50%",
+
+    backgroundColor:
+      "#fe5d01",
+
+    color: "white",
+
+    textDecoration:
+      "none",
+
+    display: "flex",
+
+    alignItems:
+      "center",
+
+    justifyContent:
+      "center",
+
+    fontSize: "24px",
+
+    fontWeight:
+      "bold",
+  }}
+>
+  ✉️
+</a> 
+
+    )}
+
+    {user &&
+
+      filteredBoats[
+        currentBoat
+      ]?.user_id ===
+        user.id && (
+
+        <>
+
+          <button
+            onClick={() =>
+              editBoat(
+                filteredBoats[
+                  currentBoat
+                ]
+              )
+            }
+
+            style={{
+              padding:
+                "12px 20px",
+
+              border:
+                "none",
+
+              borderRadius:
+                "10px",
+
+              backgroundColor:
+                "#0066cc",
+
+              color:
+                "white",
+
+              cursor:
+                "pointer",
+            }}
+          >
+            ✏️ EDITAR
+          </button>
+
+          <button
+            onClick={() =>
+              deleteBoat(
+                filteredBoats[
+                  currentBoat
+                ].id
+              )
+            }
+
+            style={{
+              padding:
+                "12px 20px",
+
+              border:
+                "none",
+
+              borderRadius:
+                "10px",
+
+              backgroundColor:
+                "#c70039",
+
+              color:
+                "white",
+
+              cursor:
+                "pointer",
+            }}
+          >
+            🗑️ BORRAR
+          </button>
+
+        </>
+
+      )}
+
+  </div>
+
+  {/* DERECHA */}
+
+  <div>
+
+    <button
+      onClick={nextBoat}
+      style={{
+        padding:
+          "12px 20px",
+
+        border: "none",
+
+        borderRadius:
+          "10px",
+
+        backgroundColor:
+          "#2e07f1",
+
+        color: "white",
+
+        cursor:
+          "pointer",
+      }}
+    >
+      SIGUIENTE →
+    </button>
+
+  </div>
 
 </div>
-
-          {/* BOTONES */}
-
-          {user?.id ===
-            filteredBoats[
-              currentBoat
-            ]?.user_id && (
-
-            <div
-              style={{
-                display: "flex",
-
-                gap: "10px",
-
-                flexWrap: "wrap",
-
-                marginTop: "20px",
-              }}
-            >
-
-              <button
-                onClick={() =>
-                  editBoat(
-                    filteredBoats[
-                      currentBoat
-                    ]
-                  )
-                }
-                style={{
-                  backgroundColor:
-                    "#0d7a32",
-
-                  color: "white",
-
-                  border: "none",
-
-                  padding:
-                    "10px 20px",
-
-                  borderRadius:
-                    "10px",
-
-                  cursor: "pointer",
-                }}
-              >
-                EDITAR
-              </button>
-
-              <button
-                onClick={() =>
-                  deleteBoat(
-                    filteredBoats[
-                      currentBoat
-                    ].id,
-
-                    filteredBoats[
-                      currentBoat
-                    ].image_url
-                  )
-                }
-                style={{
-                  backgroundColor:
-                    "#aa2222",
-
-                  color: "white",
-
-                  border: "none",
-
-                  padding:
-                    "10px 20px",
-
-                  borderRadius:
-                    "10px",
-
-                  cursor: "pointer",
-                }}
-              >
-                BORRAR
-              </button>
-
-            </div>
-
-          )}
-
-          {/* FLECHAS */}
-
-          <div
-            style={{
-              display: "flex",
-
-              justifyContent:
-                "space-between",
-
-              gap: "12px",
-
-              marginTop: "30px",
-            }}
-          >
-
-            <button
-              onClick={prevBoat}
-              style={{
-                flex: 1,
-
-                padding:
-                  "12px",
-
-                borderRadius:
-                  "10px",
-
-                border: "none",
-
-                cursor: "pointer",
-              }}
-            >
-              ← ANTERIOR
-            </button>
-
-            <button
-              onClick={nextBoat}
-              style={{
-                flex: 1,
-
-                padding:
-                  "12px",
-
-                borderRadius:
-                  "10px",
-
-                border: "none",
-
-                cursor: "pointer",
-              }}
-            >
-              SIGUIENTE →
-            </button>
-
-          </div>
-
-          {/* NUMERO BARCO */}
-
-          <p
-            style={{
-              color: "white",
-
-              textAlign: "center",
-
-              marginTop: "18px",
-
-              fontWeight: "bold",
-            }}
-          >
-            Barco
-            {" "}
-            {currentBoat + 1}
-            {" "}
-            de
-            {" "}
-            {filteredBoats.length}
-          </p>
 
         </div>
 
       )}
 
-      {/* BUSCADOR */}
-
-      <input
-        type="text"
-        placeholder="Buscar barco, modelo o puerto..."
-        value={boatSearch}
-        onChange={(e) => {
-
-          setBoatSearch(
-            e.target.value
-          );
-
-          setCurrentBoat(0);
-        }}
-        style={{
-          width: "100%",
-
-          padding: "14px",
-
-          borderRadius: "12px",
-
-          border: "none",
-
-          marginBottom: "20px",
-
-          boxSizing:
-            "border-box",
-        }}
-      />
-
-      {/* FORMULARIO */}
-
       <div
         style={{
           background:
             "rgba(255,255,255,0.08)",
-
           borderRadius:
             "20px",
-
-          padding: "24px",
-
-          marginBottom: "30px",
-
-          border:
-            "1px solid rgba(255,255,255,0.15)",
+          padding: "20px",
+          marginBottom:
+            "40px",
         }}
       >
 
         <h2
           style={{
-            color: "white",
+            color:
+              "white",
           }}
         >
-          {
-            editingBoatId
-              ? "Editar barco"
-              : "Registrar barco"
-          }
+          {editingBoatId
+            ? "Editar barco"
+            : "Añadir barco"}
         </h2>
 
         <input
           type="text"
-          placeholder="Nombre barco"
+          placeholder="Nombre"
           value={boatName}
           onChange={(e) =>
             setBoatName(
               e.target.value
             )
           }
-          style={{
-            width: "100%",
-            padding: "12px",
-            marginBottom: "12px",
-            boxSizing:
-              "border-box",
-          }}
+          style={inputStyle}
         />
 
         <input
@@ -1033,31 +1358,19 @@ const navigate =
               e.target.value
             )
           }
-          style={{
-            width: "100%",
-            padding: "12px",
-            marginBottom: "12px",
-            boxSizing:
-              "border-box",
-          }}
+          style={inputStyle}
         />
 
         <input
           type="text"
-          placeholder="Puerto base"
+          placeholder="Puerto"
           value={boatPort}
           onChange={(e) =>
             setBoatPort(
               e.target.value
             )
           }
-          style={{
-            width: "100%",
-            padding: "12px",
-            marginBottom: "12px",
-            boxSizing:
-              "border-box",
-          }}
+          style={inputStyle}
         />
 
         <input
@@ -1069,13 +1382,7 @@ const navigate =
               e.target.value
             )
           }
-          style={{
-            width: "100%",
-            padding: "12px",
-            marginBottom: "12px",
-            boxSizing:
-              "border-box",
-          }}
+          style={inputStyle}
         />
 
         <input
@@ -1087,13 +1394,7 @@ const navigate =
               e.target.value
             )
           }
-          style={{
-            width: "100%",
-            padding: "12px",
-            marginBottom: "12px",
-            boxSizing:
-              "border-box",
-          }}
+          style={inputStyle}
         />
 
         <input
@@ -1105,39 +1406,118 @@ const navigate =
               e.target.value
             )
           }
-          style={{
-            width: "100%",
-            padding: "12px",
-            marginBottom: "12px",
-            boxSizing:
-              "border-box",
-          }}
+          style={inputStyle}
+        />
+
+        <input
+          type="text"
+          placeholder="Eslora"
+          value={boatEslora}
+          onChange={(e) =>
+            setBoatEslora(
+              e.target.value
+            )
+          }
+          style={inputStyle}
+        />
+
+        <input
+          type="text"
+          placeholder="Tipo navegación"
+          value={
+            boatTipoNavegacion
+          }
+          onChange={(e) =>
+            setBoatTipoNavegacion(
+              e.target.value
+            )
+          }
+          style={inputStyle}
+        />
+
+        <textarea
+          placeholder="Electrónica"
+          value={boatElectronica}
+          onChange={(e) =>
+            setBoatElectronica(
+              e.target.value
+            )
+          }
+          style={textareaStyle}
+        />
+
+        <textarea
+          placeholder="Confort"
+          value={boatConfort}
+          onChange={(e) =>
+            setBoatConfort(
+              e.target.value
+            )
+          }
+          style={textareaStyle}
+        />
+
+        <textarea
+          placeholder="Seguridad"
+          value={boatSeguridad}
+          onChange={(e) =>
+            setBoatSeguridad(
+              e.target.value
+            )
+          }
+          style={textareaStyle}
+        />
+
+        <textarea
+          placeholder="Velas"
+          value={boatVelas}
+          onChange={(e) =>
+            setBoatVelas(
+              e.target.value
+            )
+          }
+          style={textareaStyle}
+        />
+
+        <textarea
+          placeholder="Motor"
+          value={boatMotor}
+          onChange={(e) =>
+            setBoatMotor(
+              e.target.value
+            )
+          }
+          style={textareaStyle}
+        />
+
+        <textarea
+          placeholder="Mejoras"
+          value={boatMejoras}
+          onChange={(e) =>
+            setBoatMejoras(
+              e.target.value
+            )
+          }
+          style={textareaStyle}
+        />
+
+        <textarea
+          placeholder="Descripción"
+          value={boatDescripcion}
+          onChange={(e) =>
+            setBoatDescripcion(
+              e.target.value
+            )
+          }
+          style={textareaStyle}
         />
 
         <label
-          style={{
-            display:
-              "inline-block",
-
-            padding:
-              "12px 20px",
-
-            backgroundColor:
-              "#720792",
-
-            color: "white",
-
-            borderRadius:
-              "10px",
-
-            cursor: "pointer",
-
-            marginBottom:
-              "16px",
-          }}
+          style={
+            uploadButtonStyle
+          }
         >
-
-          FOTO BARCO
+          FOTO PRINCIPAL
 
           <input
             type="file"
@@ -1148,148 +1528,73 @@ const navigate =
               )
             }
             style={{
-              display: "none",
+              display:
+                "none",
             }}
           />
 
         </label>
 
-        <br />
-
-        <button
-          onClick={addBoat}
+        <label
           style={{
-            backgroundColor:
-              "#720792",
-
-            color: "white",
-
-            border: "none",
-
-            padding:
-              "14px 24px",
-
-            borderRadius:
+            ...uploadButtonStyle,
+            marginLeft:
               "10px",
-
-            cursor: "pointer",
-
-            fontWeight: "bold",
           }}
         >
-          {
-            editingBoatId
-              ? "ACTUALIZAR BARCO"
-              : "GUARDAR BARCO"
-          }
-        </button>
+          GALERÍA
 
-      </div>
-
-      {/* IMPRIMIR */}
-
-      <button
-        onClick={() =>
-          window.print()
-        }
-        style={{
-          backgroundColor:
-            "#0d7a32",
-
-          color: "white",
-
-          border: "none",
-
-          padding:
-            "12px 22px",
-
-          borderRadius: "10px",
-
-          marginBottom: "24px",
-
-          cursor: "pointer",
-
-          fontWeight: "bold",
-        }}
-      >
-        IMPRIMIR LISTADO
-      </button>
-
-      {/* TABLA */}
-
-      <div
-        style={{
-          backgroundColor:
-            "white",
-
-          borderRadius:
-            "20px",
-
-          padding: "20px",
-
-          overflowX: "auto",
-        }}
-      >
-
-        <h2>
-          LISTADO FLOTA
-        </h2>
-
-        <table
-          style={{
-            width: "100%",
-
-            borderCollapse:
-              "collapse",
-          }}
-        >
-
-          <thead>
-
-            <tr>
-
-              <th>Nombre</th>
-
-              <th>Modelo</th>
-
-              <th>Puerto</th>
-
-              <th>Tripulación</th>
-
-              
-
-            
-
-            </tr>
-
-          </thead>
-
-          <tbody>
-
-            {filteredBoats.map(
-              (boat) => (
-
-                <tr key={boat.id}>
-
-                  <td>{boat.name}</td>
-
-                  <td>{boat.model}</td>
-
-                  <td>{boat.port}</td>
-
-                  <td>
-                    {boat.tripulacion}
-                  </td>
-
-                                    
-                </tr>
-
+          <input
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={(e) =>
+              setBoatGallery(
+                Array.from(
+                  e.target.files
+                ).slice(0, 4)
               )
-            )}
+            }
+            style={{
+              display:
+                "none",
+            }}
+          />
 
-          </tbody>
+        </label>
 
-        </table>
+        <div
+          style={{
+            marginTop:
+              "20px",
+          }}
+        >
+
+          <button
+            onClick={addBoat}
+            style={{
+              padding:
+                "14px 22px",
+              border:
+                "none",
+              borderRadius:
+                "12px",
+              backgroundColor:
+                "#fe5d01",
+              color:
+                "white",
+              cursor:
+                "pointer",
+              fontWeight:
+                "bold",
+            }}
+          >
+            {editingBoatId
+              ? "GUARDAR CAMBIOS"
+              : "AÑADIR BARCO"}
+          </button>
+
+        </div>
 
       </div>
 
@@ -1298,3 +1603,33 @@ const navigate =
     </div>
   );
 }
+
+const inputStyle = {
+  width: "100%",
+  padding: "12px",
+  marginBottom: "12px",
+  borderRadius: "10px",
+  border: "none",
+  boxSizing: "border-box",
+};
+
+const textareaStyle = {
+  width: "100%",
+  height: "90px",
+  padding: "12px",
+  marginBottom: "12px",
+  borderRadius: "10px",
+  border: "none",
+  boxSizing: "border-box",
+};
+
+const uploadButtonStyle = {
+  display: "inline-block",
+  padding: "12px 20px",
+  backgroundColor:
+    "#0d7a32",
+  color: "white",
+  borderRadius: "10px",
+  cursor: "pointer",
+  marginBottom: "16px",
+};

@@ -54,6 +54,37 @@ export default function Tripulacion() {
     setProfileDescripcion,
   ] = useState("");
 
+const [
+  profileRol,
+  setProfileRol,
+] = useState("");
+
+const [
+  profileHabilidades,
+  setProfileHabilidades,
+] = useState("");
+
+const [
+  profileTitulacion,
+  setProfileTitulacion,
+] = useState("");
+
+const [
+  profileMillas,
+  setProfileMillas,
+] = useState("");
+
+const [
+  profileTipoNavegacion,
+  setProfileTipoNavegacion,
+] = useState("");
+
+const [
+  profileIdiomas,
+  setProfileIdiomas,
+] = useState("");
+
+
   useEffect(() => {
 
     fetchProfiles();
@@ -135,6 +166,31 @@ export default function Tripulacion() {
       setProfileDescripcion(
         data.descripcion || ""
       );
+
+setProfileRol(
+  data.rol || ""
+);
+
+setProfileHabilidades(
+  data.habilidades || ""
+);
+
+setProfileTitulacion(
+  data.titulacion || ""
+);
+
+setProfileMillas(
+  data.millas || ""
+);
+
+setProfileTipoNavegacion(
+  data.tipo_navegacion || ""
+);
+
+setProfileIdiomas(
+  data.idiomas || ""
+);
+
     }
   }
 
@@ -180,6 +236,24 @@ usuario:
 
               descripcion:
                 profileDescripcion,
+
+              rol:
+                profileRol,
+
+              habilidades:
+                profileHabilidades,
+
+              titulacion:
+                profileTitulacion,
+
+              millas:
+                profileMillas,
+
+              tipo_navegacion:
+                profileTipoNavegacion,
+
+              idiomas:
+                profileIdiomas,
             },
           ]);
 
@@ -360,6 +434,103 @@ usuario:
           }}
         />
 
+
+<input
+  type="text"
+  placeholder="Rol a bordo"
+  value={profileRol}
+  onChange={(e) =>
+    setProfileRol(
+      e.target.value
+    )
+  }
+  style={{
+    width: "100%",
+    padding: "10px",
+    marginBottom: "10px",
+  }}
+/>
+
+<input
+  type="text"
+  placeholder="Titulación"
+  value={profileTitulacion}
+  onChange={(e) =>
+    setProfileTitulacion(
+      e.target.value
+    )
+  }
+  style={{
+    width: "100%",
+    padding: "10px",
+    marginBottom: "10px",
+  }}
+/>
+
+<input
+  type="text"
+  placeholder="Millas navegadas"
+  value={profileMillas}
+  onChange={(e) =>
+    setProfileMillas(
+      e.target.value
+    )
+  }
+  style={{
+    width: "100%",
+    padding: "10px",
+    marginBottom: "10px",
+  }}
+/>
+
+<input
+  type="text"
+  placeholder="Tipo de navegación"
+  value={profileTipoNavegacion}
+  onChange={(e) =>
+    setProfileTipoNavegacion(
+      e.target.value
+    )
+  }
+  style={{
+    width: "100%",
+    padding: "10px",
+    marginBottom: "10px",
+  }}
+/>
+
+<input
+  type="text"
+  placeholder="Idiomas"
+  value={profileIdiomas}
+  onChange={(e) =>
+    setProfileIdiomas(
+      e.target.value
+    )
+  }
+  style={{
+    width: "100%",
+    padding: "10px",
+    marginBottom: "10px",
+  }}
+/>
+
+<textarea
+  placeholder="Habilidades"
+  value={profileHabilidades}
+  onChange={(e) =>
+    setProfileHabilidades(
+      e.target.value
+    )
+  }
+  style={{
+    width: "100%",
+    height: "90px",
+    padding: "10px",
+    marginBottom: "10px",
+  }}
+/>
+
         <textarea
           placeholder="Descripción"
           value={
@@ -469,7 +640,69 @@ usuario:
               profile.disponibilidad
             }
           </p>
+<p
+  style={{
+    color: "white",
+  }}
+>
+  🧭 Rol:
+  {" "}
+  {profile.rol}
+</p>
 
+<p
+  style={{
+    color: "white",
+  }}
+>
+  🎓 Titulación:
+  {" "}
+  {profile.titulacion}
+</p>
+
+<p
+  style={{
+    color: "white",
+  }}
+>
+  🌊 Millas:
+  {" "}
+  {profile.millas}
+</p>
+
+<p
+  style={{
+    color: "white",
+  }}
+>
+  ⛵ Navegación:
+  {" "}
+  {
+    profile.tipo_navegacion
+  }
+</p>
+
+<p
+  style={{
+    color: "white",
+  }}
+>
+  🌍 Idiomas:
+  {" "}
+  {profile.idiomas}
+</p>
+
+<p
+  style={{
+    color: "white",
+  }}
+>
+  🛠️ Habilidades:
+  {" "}
+  {
+    profile.habilidades
+  }
+</p>
           <p
             style={{
               color: "white",

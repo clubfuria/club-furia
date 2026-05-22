@@ -826,11 +826,14 @@ export default function Boats() {
     textAlign:
       "center",
 
+
+ width: "100%",
+
     marginBottom:
       "20px",
 
     marginTop:
-      "10px",
+      "-40px",
 
     fontWeight:
       "bold",

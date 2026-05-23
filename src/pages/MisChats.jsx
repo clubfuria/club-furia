@@ -31,7 +31,37 @@ export default function MisChats() {
 
     obtenerUsuario();
 
-  }, []);
+    const channel = supabase
+
+      .channel("mis-chats-realtime")
+
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "mensajes",
+        },
+
+        () => {
+
+          if (user?.id) {
+
+            cargarChats(user.id);
+          }
+        }
+      )
+
+      .subscribe();
+
+    return () => {
+
+      supabase.removeChannel(
+        channel
+      );
+    };
+
+  }, [user]);
 
   /*
   =========================================
@@ -62,12 +92,6 @@ export default function MisChats() {
   async function cargarChats(
     userId
   ) {
-
-    /*
-    =====================================
-    CONVERSACIONES USUARIO
-    =====================================
-    */
 
     const {
       data: participaciones,
@@ -137,25 +161,39 @@ export default function MisChats() {
           conversacionesIds
         );
 
-/*
-=====================================
-PERFILES
-=====================================
-*/
+    /*
+    =====================================
+    PERFILES
+    =====================================
+    */
 
-const otrosIds = todosParticipantes
-  .filter(
-    (p) => p.user_id !== userId
-  )
-  .map((p) => p.user_id);
+    const otrosIds =
+      todosParticipantes
 
-const {
-  data: perfiles,
-} =
-  await supabase
-    .from("profiles")
-    .select("*")
-    .in("id", otrosIds);
+        .filter(
+          (p) =>
+            p.user_id !==
+            userId
+        )
+
+        .map(
+          (p) =>
+            p.user_id
+        );
+
+    const {
+      data: perfiles,
+    } =
+      await supabase
+
+        .from("profiles")
+
+        .select("*")
+
+        .in(
+          "id",
+          otrosIds
+        );
 
     /*
     =====================================
@@ -218,41 +256,44 @@ const {
                 conversacionId
             );
 
-/*
-================================
-PERFIL USUARIO
-================================
-*/
+          const perfil =
+            perfiles?.find(
+              (p) =>
+                p.id ===
+                otroParticipante?.user_id
+            );
 
-const perfil =
-  perfiles?.find(
-    (p) =>
-      p.id ===
-      otroParticipante?.user_id
-  );
+          const nombre =
+            perfil?.nombre ||
+            perfil?.username ||
+            "Usuario";
 
-const nombre =
-  perfil?.nombre ||
-  perfil?.username ||
-  "Usuario";
+          const avatar =
+            perfil?.avatar_url || "";
 
-const avatar =
-  perfil?.avatar_url || "";
+          return {
 
-    return {
+            conversacionId,
 
-  conversacionId,
+            nombre,
 
-  nombre,
-
-  avatar,      
+            avatar,
 
             ultimoMensaje:
 
               ultimoMensaje
-                ?.mensaje ||
 
-              "Sin mensajes",
+                ? (
+
+                    ultimoMensaje.user_id === userId
+
+                      ? `Tú: ${ultimoMensaje.mensaje}`
+
+                      : ultimoMensaje.mensaje
+
+                  )
+
+                : "Sin mensajes",
 
             fecha:
 
@@ -287,18 +328,38 @@ const avatar =
     );
   }
 
+  /*
+  =========================================
+  FORMATEAR FECHA
+  =========================================
+  */
+
+  const formatearFecha = (
+    fecha
+  ) => {
+
+    if (!fecha) return "";
+
+    const d =
+      new Date(fecha);
+
+    return d.toLocaleTimeString(
+      [],
+      {
+        hour: "2-digit",
+        minute: "2-digit",
+      }
+    );
+  };
+
   return (
 
     <div
       style={{
         maxWidth: "800px",
-
         margin: "0 auto",
-
         padding: "20px",
-
         minHeight: "100vh",
-
         background:
           "#011135",
       }}
@@ -309,12 +370,9 @@ const avatar =
       <div
         style={{
           display: "flex",
-
           alignItems:
             "center",
-
           gap: "14px",
-
           marginBottom:
             "24px",
         }}
@@ -328,16 +386,12 @@ const avatar =
           style={{
             background:
               "transparent",
-
             border:
               "none",
-
             color:
               "white",
-
             fontSize:
               "30px",
-
             cursor:
               "pointer",
           }}
@@ -348,7 +402,6 @@ const avatar =
         <h1
           style={{
             color: "white",
-
             margin: 0,
           }}
         >
@@ -391,136 +444,137 @@ const avatar =
           style={{
             background:
               "#02235c",
-
             padding:
               "16px",
-
             borderRadius:
               "14px",
-
             marginBottom:
               "14px",
-
             cursor:
               "pointer",
-
             border:
               "1px solid rgba(255,255,255,0.08)",
-
             display:
               "flex",
-
             alignItems:
               "center",
-
             gap: "14px",
           }}
         >
 
-         {/* AVATAR */}
+          {/* AVATAR */}
 
-{chat.avatar ? (
+          {chat.avatar ? (
 
-  <img
-    src={chat.avatar}
-    alt=""
-    style={{
-      width: "52px",
-      height: "52px",
-      borderRadius: "50%",
-      objectFit: "cover",
-      flexShrink: 0,
-    }}
-  />
+            <img
+              src={chat.avatar}
+              alt=""
+              style={{
+                width: "52px",
+                height: "52px",
+                borderRadius: "50%",
+                objectFit: "cover",
+                flexShrink: 0,
+              }}
+            />
 
-) : (
+          ) : (
 
-  <div
-    style={{
-      width: "52px",
+            <div
+              style={{
+                width: "52px",
+                height: "52px",
+                borderRadius:
+                  "50%",
+                background:
+                  "#720792",
+                display:
+                  "flex",
+                alignItems:
+                  "center",
+                justifyContent:
+                  "center",
+                color:
+                  "white",
+                fontWeight:
+                  "bold",
+                fontSize:
+                  "20px",
+                flexShrink: 0,
+              }}
+            >
+              {chat.nombre
+                ?.charAt(0)
+                ?.toUpperCase()}
+            </div>
 
-      height: "52px",
-
-      borderRadius:
-        "50%",
-
-      background:
-        "#720792",
-
-      display:
-        "flex",
-
-      alignItems:
-        "center",
-
-      justifyContent:
-        "center",
-
-      color:
-        "white",
-
-      fontWeight:
-        "bold",
-
-      fontSize:
-        "20px",
-
-      flexShrink: 0,
-    }}
-  >
-    {chat.nombre
-      ?.charAt(0)
-      ?.toUpperCase()}
-  </div>
-
-)}
+          )}
 
           {/* INFO */}
 
           <div
             style={{
               flex: 1,
-
               overflow:
                 "hidden",
             }}
           >
 
-            <p
+            <div
               style={{
-                color:
-                  "#e7eb0f",
-
-                margin: 0,
-
+                display: "flex",
+                justifyContent:
+                  "space-between",
+                alignItems:
+                  "center",
                 marginBottom:
                   "6px",
-
-                fontWeight:
-                  "bold",
-
-                fontSize:
-                  "17px",
+                gap: "10px",
               }}
             >
-              {chat.nombre}
-            </p>
+
+              <p
+                style={{
+                  color:
+                    "#e7eb0f",
+                  margin: 0,
+                  fontWeight:
+                    "bold",
+                  fontSize:
+                    "17px",
+                }}
+              >
+                {chat.nombre}
+              </p>
+
+              <span
+                style={{
+                  color:
+                    "#cccccc",
+                  fontSize:
+                    "12px",
+                  flexShrink: 0,
+                }}
+              >
+                {formatearFecha(
+                  chat.fecha
+                )}
+              </span>
+
+            </div>
 
             <p
               style={{
                 color:
                   "white",
-
                 margin: 0,
-
-                opacity: 0.9,
-
+                opacity: 0.7,
+                fontSize:
+                  "14px",
                 overflow:
                   "hidden",
-
                 textOverflow:
                   "ellipsis",
-
                 whiteSpace:
                   "nowrap",
               }}

@@ -667,17 +667,14 @@ export default function Boats() {
 
                 alt=""
 
-                style={{
-                  width: "100%",
-                  maxHeight:
-                    "520px",
-                  objectFit:
-                    "cover",
-                  borderRadius:
-                    "16px",
-                  marginBottom:
-                    "20px",
-                }}
+               style={{
+  width: "100%",
+  height: "520px",
+  objectFit: "contain",
+  backgroundColor: "#000",
+  borderRadius: "16px",
+  marginBottom: "20px",
+}}
               />
 
               <div
@@ -713,7 +710,9 @@ export default function Boats() {
                     height:
                       "70px",
                     objectFit:
-                      "cover",
+  "contain",
+backgroundColor:
+  "#000",
                     borderRadius:
                       "10px",
                     cursor:
@@ -753,7 +752,9 @@ export default function Boats() {
                         height:
                           "70px",
                         objectFit:
-                          "cover",
+  "contain",
+backgroundColor:
+  "#000",
                         borderRadius:
                           "10px",
                         cursor:
@@ -775,15 +776,12 @@ export default function Boats() {
 
           )}
 
-          <div
+<div
   style={{
     display: "flex",
-    justifyContent:
-      "space-between",
+    flexDirection: "column",
     alignItems: "center",
-    marginBottom: "10px",
-    gap: "10px",
-    flexWrap: "wrap",
+    width: "100%",
   }}
 >
 
@@ -845,7 +843,56 @@ export default function Boats() {
     ]?.name
   }
 </h2>
+<div
+  style={{
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    gap: "12px",
+    marginBottom: "20px",
+    marginTop: "-5px",
+  }}
+>
 
+  <button
+    onClick={prevBoat}
+    style={{
+      padding: "12px 20px",
+      border: "none",
+      borderRadius: "10px",
+      backgroundColor: "#2e07f1",
+      color: "white",
+      cursor: "pointer",
+    }}
+  >
+    ← ANTERIOR
+  </button>
+
+  <div
+    style={{
+      color: "white",
+      fontSize: "14px",
+      opacity: 0.8,
+    }}
+  >
+    Barco {currentBoat + 1} / {filteredBoats.length}
+  </div>
+
+  <button
+    onClick={nextBoat}
+    style={{
+      padding: "12px 20px",
+      border: "none",
+      borderRadius: "10px",
+      backgroundColor: "#2e07f1",
+      color: "white",
+      cursor: "pointer",
+    }}
+  >
+    SIGUIENTE →
+  </button>
+
+</div>
 </div>
 
           <p
@@ -1017,299 +1064,132 @@ export default function Boats() {
             }
           </p>
 
-          <div
+
+
+{/* BOTONES COMUNICACION */}
+
+<div
   style={{
     display: "flex",
-    justifyContent:
-      "space-between",
-    alignItems: "center",
-    gap: "12px",
-    marginTop: "20px",
+    gap: "10px",
     flexWrap: "wrap",
+    justifyContent: "center",
+    marginTop: "20px",
   }}
 >
 
-  {/* IZQUIERDA */}
+  {user &&
+    filteredBoats[currentBoat]?.user_id !== user.id && (
 
-  <div>
-
-    <button
-      onClick={prevBoat}
-      style={{
-        padding:
-          "12px 20px",
-
-        border: "none",
-
-        borderRadius:
-          "10px",
-
-        backgroundColor:
-          "#2e07f1",
-
-        color: "white",
-
-        cursor:
-          "pointer",
-      }}
-    >
-      ← ANTERIOR
-    </button>
-
-  </div>
-
-  {/* CENTRO */}
-
-  <div
-    style={{
-      display: "flex",
-      gap: "10px",
-      flexWrap: "wrap",
-      justifyContent:
-        "center",
-    }}
-  >
-
-    {user &&
-
-      filteredBoats[
-        currentBoat
-      ]?.user_id !==
-        user.id && (
-
-        <button
-  onClick={() =>
-    openChat(
-      filteredBoats[
-        currentBoat
-      ]
-    )
-  }
-
-  style={{
-    width: "52px",
-
-    height: "52px",
-
-    borderRadius:
-      "50%",
-
-    backgroundColor:
-      "#0d7a32",
-
-    color: "white",
-
-    border: "none",
-
-    display: "flex",
-
-    alignItems:
-      "center",
-
-    justifyContent:
-      "center",
-
-    fontSize: "24px",
-
-    cursor:
-      "pointer",
-  }}
->
-  💬
-</button>
-
-      )}
-
-    {filteredBoats[
-      currentBoat
-    ]?.telefono && (
-
-      <a
-  href={`tel:${filteredBoats[currentBoat]?.telefono}`}
-
-  style={{
-    width: "52px",
-
-    height: "52px",
-
-    borderRadius:
-      "50%",
-
-    backgroundColor:
-      "#0066cc",
-
-    color: "white",
-
-    textDecoration:
-      "none",
-
-    display: "flex",
-
-    alignItems:
-      "center",
-
-    justifyContent:
-      "center",
-
-    fontSize: "24px",
-
-    fontWeight:
-      "bold",
-  }}
->
-  📞
-</a>
+      <button
+        onClick={() =>
+          openChat(
+            filteredBoats[currentBoat]
+          )
+        }
+        style={{
+          width: "52px",
+          height: "52px",
+          borderRadius: "50%",
+          backgroundColor: "#0d7a32",
+          color: "white",
+          border: "none",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontSize: "24px",
+          cursor: "pointer",
+        }}
+      >
+        💬
+      </button>
   )}
 
-    {filteredBoats[
-      currentBoat
-    ]?.email && (
+  {filteredBoats[currentBoat]?.telefono && (
 
-     <a
-  href={`mailto:${filteredBoats[currentBoat]?.email}`}
-
-  style={{
-    width: "52px",
-
-    height: "52px",
-
-    borderRadius:
-      "50%",
-
-    backgroundColor:
-      "#fe5d01",
-
-    color: "white",
-
-    textDecoration:
-      "none",
-
-    display: "flex",
-
-    alignItems:
-      "center",
-
-    justifyContent:
-      "center",
-
-    fontSize: "24px",
-
-    fontWeight:
-      "bold",
-  }}
->
-  ✉️
-</a> 
-
-    )}
-
-    {user &&
-
-      filteredBoats[
-        currentBoat
-      ]?.user_id ===
-        user.id && (
-
-        <>
-
-          <button
-            onClick={() =>
-              editBoat(
-                filteredBoats[
-                  currentBoat
-                ]
-              )
-            }
-
-            style={{
-              padding:
-                "12px 20px",
-
-              border:
-                "none",
-
-              borderRadius:
-                "10px",
-
-              backgroundColor:
-                "#0066cc",
-
-              color:
-                "white",
-
-              cursor:
-                "pointer",
-            }}
-          >
-            ✏️ EDITAR
-          </button>
-
-          <button
-            onClick={() =>
-              deleteBoat(
-                filteredBoats[
-                  currentBoat
-                ].id
-              )
-            }
-
-            style={{
-              padding:
-                "12px 20px",
-
-              border:
-                "none",
-
-              borderRadius:
-                "10px",
-
-              backgroundColor:
-                "#c70039",
-
-              color:
-                "white",
-
-              cursor:
-                "pointer",
-            }}
-          >
-            🗑️ BORRAR
-          </button>
-
-        </>
-
-      )}
-
-  </div>
-
-  {/* DERECHA */}
-
-  <div>
-
-    <button
-      onClick={nextBoat}
+    <a
+      href={`tel:${filteredBoats[currentBoat]?.telefono}`}
       style={{
-        padding:
-          "12px 20px",
-
-        border: "none",
-
-        borderRadius:
-          "10px",
-
-        backgroundColor:
-          "#2e07f1",
-
+        width: "52px",
+        height: "52px",
+        borderRadius: "50%",
+        backgroundColor: "#0066cc",
         color: "white",
-
-        cursor:
-          "pointer",
+        textDecoration: "none",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontSize: "24px",
+        fontWeight: "bold",
       }}
     >
-      SIGUIENTE →
-    </button>
+      📞
+    </a>
+  )}
 
-  </div>
+  {filteredBoats[currentBoat]?.email && (
+
+    <a
+      href={`mailto:${filteredBoats[currentBoat]?.email}`}
+      style={{
+        width: "52px",
+        height: "52px",
+        borderRadius: "50%",
+        backgroundColor: "#fe5d01",
+        color: "white",
+        textDecoration: "none",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontSize: "24px",
+        fontWeight: "bold",
+      }}
+    >
+      ✉️
+    </a>
+  )}
+
+  {user &&
+    filteredBoats[currentBoat]?.user_id === user.id && (
+
+      <>
+        <button
+          onClick={() =>
+            editBoat(
+              filteredBoats[currentBoat]
+            )
+          }
+          style={{
+            padding: "12px 20px",
+            border: "none",
+            borderRadius: "10px",
+            backgroundColor: "#f8fc05",
+            color: "white",
+            cursor: "pointer",
+          }}
+        >
+          ✏️ EDITAR
+        </button>
+
+        <button
+          onClick={() =>
+            deleteBoat(
+              filteredBoats[currentBoat].id
+            )
+          }
+          style={{
+            padding: "12px 20px",
+            border: "none",
+            borderRadius: "10px",
+            backgroundColor: "#c70039",
+            color: "white",
+            cursor: "pointer",
+          }}
+        >
+          🗑️ BORRAR
+        </button>
+      </>
+  )}
 
 </div>
 

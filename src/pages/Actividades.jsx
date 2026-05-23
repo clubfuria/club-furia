@@ -784,6 +784,40 @@ user.email
 
           )}
 
+{user &&
+  salida.user_id !== user.id && (
+
+  <button
+    onClick={async () => {
+
+      const conversacionId =
+        await obtenerOCrearConversacion(
+          user.id,
+          salida.user_id
+        );
+
+      navigate(
+        `/conversacion/${conversacionId}`
+      );
+    }}
+
+    style={{
+      marginTop: "10px",
+      marginLeft: "10px",
+      padding: "10px 18px",
+      background: "#0d7a32",
+      color: "white",
+      border: "none",
+      borderRadius: "10px",
+      cursor: "pointer",
+      fontWeight: "bold",
+    }}
+  >
+    💬 CHAT ORGANIZADOR
+  </button>
+
+)}
+
           {user?.id ===
             salida.user_id && (
 

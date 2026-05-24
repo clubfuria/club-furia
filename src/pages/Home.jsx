@@ -552,6 +552,33 @@ async function borrarNotificacion(
   const TEXT_COLOR =
     "#e0f406";
 
+/*
+==========================================
+FORMATEAR FECHA
+==========================================
+*/
+
+function formatearFecha(
+  fecha
+) {
+
+  if (!fecha)
+    return "";
+
+  return new Date(
+    fecha
+  ).toLocaleString(
+    "es-ES",
+    {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    }
+  );
+}
+
   const BACKGROUND_TOP =
     "#021224";
 
@@ -1497,6 +1524,88 @@ necesitaAceptarPrivacidad ? (
 
       </div>
 
+{/* COMUNIDAD */}
+
+<div
+  style={{
+    maxWidth: "900px",
+    margin: "0 auto 40px auto",
+    display: "flex",
+    gap: "20px",
+    flexWrap: "wrap",
+  }}
+>
+
+  {/* WHATSAPP */}
+
+  <a
+    href="https://chat.whatsapp.com/CQf8P8UpgUwCjPkLra0uei?mode=gi_t"
+
+    target="_blank"
+
+    rel="noreferrer"
+
+    style={{
+      flex: 1,
+      minWidth: "180px",
+      background:
+        "rgba(255,255,255,0.08)",
+      borderRadius: "20px",
+      padding: "14px",
+      textDecoration: "none",
+      border:
+        "1px solid rgba(255,255,255,0.12)",
+    }}
+  >
+
+    <h2
+      style={{
+        color: "#25D366",
+        marginTop: 0,
+      }}
+    >
+      💬 WHATSAPP CLUB
+    </h2>
+
+   
+  </a>
+
+  {/* TABERNA */}
+
+  <a
+  href="https://foro.latabernadelpuerto.com/showthread.php?t=52634"
+
+  target="_blank"
+
+  rel="noreferrer"
+
+  style={{
+    flex: 1,
+    minWidth: "180px",
+    background:
+      "rgba(255,255,255,0.08)",
+    borderRadius: "20px",
+    padding: "14px",
+    textDecoration: "none",
+    border:
+      "1px solid rgba(255,255,255,0.12)",
+  }}
+>
+
+  <h2
+    style={{
+      color: "#fe5d01",
+      marginTop: 0,
+    }}
+  >
+    🍺 TABERNA DEL PUERTO
+  </h2>
+
+  
+</a>
+
+</div>
+
       {/* POSTS */}
 
       <div
@@ -1618,28 +1727,44 @@ necesitaAceptarPrivacidad ? (
                 "white",
             }}
           >
+<div
+  style={{
+    position: "relative",
+    marginBottom: "12px",
+    textAlign: "center",
+  }}
+>
 
-            <div
-              style={{
-                fontWeight:
-                  "bold",
+  <div
+    style={{
+      fontWeight: "bold",
+      color: TEXT_COLOR,
+    }}
+  >
+    {
+      post.usuario
+        ?.split("@")[0]
+    }
+  </div>
 
-                marginBottom:
-                  "10px",
-
-                color:
-                  TEXT_COLOR,
-              }}
-            >
-              {
-                post.usuario
-                  ?.split("@")[0]
-              }
-            </div>
-
-            <div>
-              {post.texto}
-            </div>
+  <div
+    style={{
+      position: "absolute",
+      right: 0,
+      top: 0,
+      fontSize: "12px",
+      opacity: 0.7,
+      color: "#cccccc",
+    }}
+  >
+    {formatearFecha(
+      post.created_at
+    )}
+  </div>
+<div>
+  {post.texto}
+</div>
+</div>
 
             {session?.user
               ?.email ===

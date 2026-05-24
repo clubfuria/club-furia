@@ -268,6 +268,53 @@ usuario:
         "Perfil guardado"
       );
 
+      /*
+=====================================
+NOTIFICAR NUEVA TRIPULACION
+=====================================
+*/
+
+const {
+  data: profiles,
+} =
+  await supabase
+    .from("profiles")
+    .select("id");
+
+if (profiles) {
+
+  const notifications =
+
+    profiles
+
+      .filter(
+        (p) =>
+          p.id !== user.id
+      )
+
+      .map((p) => ({
+
+        user_id: p.id,
+
+        mensaje:
+          `👥 Nueva tripulación: ${crewName}`,
+
+      }));
+
+  if (
+    notifications.length > 0
+  ) {
+
+    await supabase
+      .from(
+        "notificaciones"
+      )
+      .insert(
+        notifications
+      );
+  }
+}
+
       fetchProfiles();
     };
 

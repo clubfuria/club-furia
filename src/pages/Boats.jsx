@@ -362,6 +362,53 @@ export default function Boats() {
         "Barco actualizado"
       );
 
+      /*
+=====================================
+NOTIFICAR BARCO ACTUALIZADO
+=====================================
+*/
+
+const {
+  data: profiles,
+} =
+  await supabase
+    .from("profiles")
+    .select("id");
+
+if (profiles) {
+
+  const notifications =
+
+    profiles
+
+      .filter(
+        (p) =>
+          p.id !== user.id
+      )
+
+      .map((p) => ({
+
+        user_id: p.id,
+
+        mensaje:
+          `🔧 ${boatName} ha sido actualizado`,
+
+      }));
+
+  if (
+    notifications.length > 0
+  ) {
+
+    await supabase
+      .from(
+        "notificaciones"
+      )
+      .insert(
+        notifications
+      );
+  }
+}
+
       setEditingBoatId(null);
 
     } else {
@@ -389,6 +436,54 @@ export default function Boats() {
       alert(
         "Barco registrado"
       );
+
+/*
+=====================================
+NOTIFICAR NUEVO BARCO
+=====================================
+*/
+
+const {
+  data: profiles,
+} =
+  await supabase
+    .from("profiles")
+    .select("id");
+
+if (profiles) {
+
+  const notifications =
+
+    profiles
+
+      .filter(
+        (p) =>
+          p.id !== user.id
+      )
+
+      .map((p) => ({
+
+        user_id: p.id,
+
+        mensaje:
+          `⛵ Nuevo barco: ${boatName} en ${boatPort}`,
+
+      }));
+
+  if (
+    notifications.length > 0
+  ) {
+
+    await supabase
+      .from(
+        "notificaciones"
+      )
+      .insert(
+        notifications
+      );
+  }
+}
+
     }
 
     /*
@@ -796,19 +891,7 @@ backgroundColor:
   }}
 >
 
-  <div
-    style={{
-      color: "white",
-      fontSize: "14px",
-      opacity: 0.8,
-    }}
-  >
-    Barco{" "}
-    {currentBoat + 1}
-    {" / "}
-    {filteredBoats.length}
-  </div>
-
+ 
 </div>
 
 <h2
@@ -818,7 +901,7 @@ backgroundColor:
 
     fontSize:
       isMobile
-        ? "38px"
+        ? "42px"
         : "54px",
 
     textAlign:
@@ -859,9 +942,9 @@ backgroundColor:
     style={{
       padding: "12px 20px",
       border: "none",
-      borderRadius: "10px",
-      backgroundColor: "#2e07f1",
-      color: "white",
+      borderRadius: "12px",
+      backgroundColor: "#2e05d1",
+      color: "yellow",
       cursor: "pointer",
     }}
   >
@@ -883,9 +966,9 @@ backgroundColor:
     style={{
       padding: "12px 20px",
       border: "none",
-      borderRadius: "10px",
-      backgroundColor: "#2e07f1",
-      color: "white",
+      borderRadius: "12px",
+      backgroundColor: "#2e05d1",
+      color: "yellow",
       cursor: "pointer",
     }}
   >

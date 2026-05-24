@@ -732,6 +732,27 @@ async function borrarNotificacion(
           }}
         >
           CLUB FURIA
+
+          {" "}
+
+{notifications.length > 0 && (
+
+  <span
+    style={{
+      background: "red",
+      color: "white",
+      borderRadius: "50%",
+      padding: "6px 12px",
+      fontSize: "18px",
+      marginLeft: "12px",
+      verticalAlign: "middle",
+    }}
+  >
+    {notifications.length}
+  </span>
+
+)}
+
         </h1>
 
       </div>

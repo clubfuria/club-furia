@@ -47,6 +47,8 @@ const navigate =
 
     cargarMensajes();
 
+marcarMensajesLeidos();
+
     const channel =
       supabase
         .channel(
@@ -162,6 +164,40 @@ const navigate =
       setMensajes(data);
     }
   }
+
+/*
+=========================================
+MARCAR LEIDOS
+=========================================
+*/
+
+async function marcarMensajesLeidos() {
+
+  const {
+    data: { user },
+  } =
+    await supabase.auth.getUser();
+
+  if (!user) return;
+
+  await supabase
+
+    .from("mensajes")
+
+    .update({
+      leido: true,
+    })
+
+    .eq(
+      "conversacion_id",
+      conversacionId
+    )
+
+    .neq(
+      "user_id",
+      user.id
+    );
+}
 
   /*
   =========================================

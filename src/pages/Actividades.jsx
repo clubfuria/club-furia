@@ -188,6 +188,54 @@ export default function Actividades() {
       alert(
         "Actividad creada"
       );
+
+/*
+=====================================
+NOTIFICAR NUEVA ACTIVIDAD
+=====================================
+*/
+
+const {
+  data: profiles,
+} =
+  await supabase
+    .from("profiles")
+    .select("id");
+
+if (profiles) {
+
+  const notifications =
+
+    profiles
+
+      .filter(
+        (p) =>
+          p.id !== user.id
+      )
+
+      .map((p) => ({
+
+        user_id: p.id,
+
+        mensaje:
+          `📅 Nueva actividad: ${salidaTitulo}`,
+
+      }));
+
+  if (
+    notifications.length > 0
+  ) {
+
+    await supabase
+      .from(
+        "notificaciones"
+      )
+      .insert(
+        notifications
+      );
+  }
+}
+
     }
 
     setSalidaTitulo("");

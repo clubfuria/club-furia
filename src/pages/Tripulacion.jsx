@@ -298,7 +298,7 @@ if (profiles) {
 
         mensaje:
           `👥 Nueva tripulación: ${crewName}`,
-
+ruta: "/tripulacion",
       }));
 
   if (

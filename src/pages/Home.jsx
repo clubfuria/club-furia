@@ -762,23 +762,7 @@ function formatearFecha(
 
           {" "}
 
-{notifications.length > 0 && (
 
-  <span
-    style={{
-      background: "red",
-      color: "white",
-      borderRadius: "50%",
-      padding: "6px 12px",
-      fontSize: "18px",
-      marginLeft: "12px",
-      verticalAlign: "middle",
-    }}
-  >
-    {notifications.length}
-  </span>
-
-)}
 
         </h1>
 
@@ -1212,186 +1196,206 @@ necesitaAceptarPrivacidad ? (
 
       {/* NOTIFICACIONES */}
 
-      {session &&
-        notifications.length > 0 && (
+     {/* NOTIFICACIONES */}
+
+{session && (
+
+  <div
+    style={{
+      maxWidth:
+        "900px",
+
+      margin:
+        "0 auto 30px auto",
+
+      background:
+        "rgba(255,255,255,0.08)",
+
+      borderRadius:
+        "15px",
+
+      padding:
+        "20px",
+    }}
+  >
+
+    <h2
+      style={{
+        color:
+          "#fe5d01",
+
+        marginBottom:
+          "16px",
+      }}
+    >
+      🔔 NOTIFICACIONES
+    </h2>
+
+    {notifications.length === 0 && (
+
+      <div
+        style={{
+          color: "white",
+          opacity: 0.7,
+        }}
+      >
+        🔔 No tienes notificaciones
+      </div>
+
+    )}
+
+    {notifications.map(
+      (n) => (
 
         <div
+          key={n.id}
+
+         onClick={async () => {
+
+  if (!n.ruta)
+    return;
+
+  navigate(n.ruta);
+
+  setTimeout(async () => {
+
+    await supabase
+      .from("notificaciones")
+      .delete()
+      .eq("id", n.id);
+
+    setNotifications(
+      notifications.filter(
+        (item) =>
+          item.id !== n.id
+      )
+    );
+
+  }, 300);
+
+}}
+
           style={{
-            maxWidth:
-              "900px",
-
-            margin:
-              "0 auto 30px auto",
-
             background:
-              "rgba(255,255,255,0.08)",
+              "rgba(255,255,255,0.06)",
 
-            borderRadius:
-              "20px",
+            cursor:
+  (
+    n.conversacion_id ||
+    (
+      n.actividad_id &&
+      n.from_user
+    )
+  )
+    ? "pointer"
+    : "default",
 
             padding:
-              "20px",
+              "12px 16px",
+
+            borderRadius:
+              "12px",
+
+            marginBottom:
+              "10px",
+
+            color:
+              "white",
           }}
         >
 
-          <h2
+          <div
             style={{
-              color:
-                "#fe5d01",
+              display:
+                "flex",
 
-              marginBottom:
-                "16px",
+              flexDirection:
+                isMobile
+                  ? "column"
+                  : "row",
+
+              justifyContent:
+                "space-between",
+
+              alignItems:
+                isMobile
+                  ? "flex-start"
+                  : "center",
+
+              gap: "12px",
             }}
           >
-            🔔 NOTIFICACIONES
-          </h2>
 
-          {notifications.map(
-            (n) => (
+            <span>
+              {n.mensaje}
+            </span>
 
-              <div
-                key={n.id}
+            <div
+              style={{
+                display:
+                  "flex",
 
-                style={{
-                  background:
-                    "rgba(255,255,255,0.06)",
+                gap:
+                  "8px",
 
-                  padding:
-                    "12px 16px",
+                flexWrap:
+                  "wrap",
+              }}
+            >
 
-                  borderRadius:
-                    "12px",
+              {n.from_user &&
+                n.actividad_id && (
 
-                  marginBottom:
-                    "10px",
+                <button
+                  onClick={(e) => {
 
-                  color:
-                    "white",
-                }}
-              >
+                    e.stopPropagation();
 
-                <div
+                   navigate(
+  `/mis-chats`
+);
+                  }}
+
                   style={{
-                    display:
-                      "flex",
+                    background:
+                      "#720792",
 
-                    flexDirection:
-                      isMobile
-                        ? "column"
-                        : "row",
+                    color:
+                      "white",
 
-                    justifyContent:
-                      "space-between",
+                    border:
+                      "none",
 
-                    alignItems:
-                      isMobile
-                        ? "flex-start"
-                        : "center",
+                    borderRadius:
+                      "8px",
 
-                    gap: "12px",
+                    padding:
+                      "8px 14px",
+
+                    cursor:
+                      "pointer",
+
+                    fontWeight:
+                      "bold",
                   }}
                 >
+                  💬 RESPONDER
+                </button>
 
-                  <span>
-                    {n.mensaje}
-                  </span>
+              )}
 
-                  <div
-                    style={{
-                      display:
-                        "flex",
+            </div>
 
-                      gap:
-                        "8px",
-
-                      flexWrap:
-                        "wrap",
-                    }}
-                  >
-
-                    {n.from_user &&
-                      n.actividad_id && (
-
-                      <button
-                        onClick={() =>
-                          navigate(
-                            `/chat/${n.actividad_id}/${n.from_user}`
-                          )
-                        }
-
-                        style={{
-                          background:
-                            "#720792",
-
-                          color:
-                            "white",
-
-                          border:
-                            "none",
-
-                          borderRadius:
-                            "8px",
-
-                          padding:
-                            "8px 14px",
-
-                          cursor:
-                            "pointer",
-
-                          fontWeight:
-                            "bold",
-                        }}
-                      >
-                        💬 RESPONDER
-                      </button>
-
-                    )}
-
-                    <button
-                      onClick={() =>
-                        borrarNotificacion(
-                          n.id
-                        )
-                      }
-
-                      style={{
-                        background:
-                          "#aa2222",
-
-                        color:
-                          "white",
-
-                        border:
-                          "none",
-
-                        borderRadius:
-                          "8px",
-
-                        padding:
-                          "8px 14px",
-
-                        cursor:
-                          "pointer",
-
-                        fontWeight:
-                          "bold",
-                      }}
-                    >
-                      ✖ BORRAR
-                    </button>
-
-                  </div>
-
-                </div>
-
-              </div>
-
-            )
-          )}
+          </div>
 
         </div>
 
-      )}
+      )
+    )}
+
+  </div>
+
+)}
 
       {/* BOTONES */}
 

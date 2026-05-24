@@ -391,8 +391,8 @@ if (profiles) {
         user_id: p.id,
 
         mensaje:
-          `🔧 ${boatName} ha sido actualizado`,
-
+          `🔧 ${boatName} se ha actualizado`,
+ruta: "/barcos",
       }));
 
   if (
@@ -467,7 +467,7 @@ if (profiles) {
 
         mensaje:
           `⛵ Nuevo barco: ${boatName} en ${boatPort}`,
-
+ruta: "/barcos",
       }));
 
   if (

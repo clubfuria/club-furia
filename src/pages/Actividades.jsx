@@ -219,6 +219,7 @@ if (profiles) {
 
         mensaje:
           `📅 Nueva actividad: ${salidaTitulo}`,
+          ruta: "/actividades",
 
       }));
 
@@ -338,6 +339,7 @@ user.email
 
             mensaje:
               `${user.email} se ha apuntado a ${salida.titulo}`,
+              ruta: "/actividades",
           },
         ]);
     }

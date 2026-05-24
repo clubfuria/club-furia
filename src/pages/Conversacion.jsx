@@ -240,6 +240,56 @@ async function marcarMensajesLeidos() {
 
       return;
     }
+    /*
+=========================================
+NOTIFICACION NUEVO MENSAJE
+=========================================
+*/
+
+const {
+  data: participantes,
+} =
+  await supabase
+
+    .from(
+      "conversacion_participantes"
+    )
+
+    .select("*")
+
+    .eq(
+      "conversacion_id",
+      conversacionId
+    );
+
+const destinatario =
+
+  participantes?.find(
+    (p) =>
+      p.user_id !==
+      user.id
+  );
+
+if (destinatario) {
+
+  await supabase
+
+    .from(
+      "notificaciones"
+    )
+
+    .insert([
+      {
+        user_id:
+          destinatario.user_id,
+
+        mensaje:
+          `💬 Nuevo mensaje de ${user.email?.split("@")[0]}`,
+ruta: `/conversacion/${conversacionId}`,
+
+      },
+    ]);
+}
   }
 
   return (

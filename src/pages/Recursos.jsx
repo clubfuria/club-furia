@@ -22,6 +22,15 @@ export default function Recursos() {
   const [posts, setPosts] =
     useState([]);
 
+const [enlaces, setEnlaces] =
+  useState([]);
+
+const [vista, setVista] =
+  useState("RECURSOS");
+
+const [url, setUrl] =
+  useState("");
+
   const [titulo, setTitulo] =
     useState("");
 
@@ -56,11 +65,13 @@ export default function Recursos() {
 
   useEffect(() => {
 
-    cargarPosts();
+  cargarPosts();
 
-    cargarUsuario();
+  cargarEnlaces();
 
-  }, []);
+  cargarUsuario();
+
+}, []);
 
   /*
     ==========================================
@@ -104,6 +115,23 @@ export default function Recursos() {
       setPosts(data);
     }
   }
+
+async function cargarEnlaces() {
+
+  const { data, error } =
+    await supabase
+      .from("enlaces_interes")
+      .select("*")
+      .order("created_at", {
+        ascending: false,
+      });
+
+  if (!error && data) {
+
+    setEnlaces(data);
+  }
+}
+
 
   /*
     ==========================================
@@ -230,6 +258,65 @@ export default function Recursos() {
     cargarPosts();
   }
 
+async function publicarEnlace() {
+
+  if (
+    !titulo ||
+    !descripcion ||
+    !url
+  ) {
+
+    alert(
+      "Completa todos los campos"
+    );
+
+    return;
+  }
+
+  const {
+    data: { user },
+  } =
+    await supabase.auth.getUser();
+
+  const { error } =
+    await supabase
+      .from("enlaces_interes")
+      .insert([
+        {
+          titulo,
+          descripcion,
+          url,
+          categoria,
+          usuario:
+            user?.email ||
+            "usuario",
+        },
+      ]);
+
+  if (error) {
+
+    alert(
+      "Error guardando enlace"
+    );
+
+    console.log(error);
+
+    return;
+  }
+
+  setTitulo("");
+
+  setDescripcion("");
+
+  setUrl("");
+
+  setCategoria(
+    "OTROS"
+  );
+
+  cargarEnlaces();
+}
+  
   /*
     ==========================================
     ELIMINAR
@@ -267,6 +354,37 @@ export default function Recursos() {
     cargarPosts();
   }
 
+async function eliminarEnlace(
+  id
+) {
+
+  const confirmar =
+    window.confirm(
+      "¿Eliminar enlace?"
+    );
+
+  if (!confirmar) return;
+
+  const { error } =
+    await supabase
+      .from("enlaces_interes")
+      .delete()
+      .eq("id", id);
+
+  if (error) {
+
+    alert(
+      "Error eliminando enlace"
+    );
+
+    console.log(error);
+
+    return;
+  }
+
+  cargarEnlaces();
+}
+
   /*
     ==========================================
     FILTRO
@@ -274,6 +392,8 @@ export default function Recursos() {
   */
 
   const filteredPosts =
+
+  
     filtroCategoria === "TODOS"
 
       ? posts
@@ -283,6 +403,18 @@ export default function Recursos() {
             post.categoria ===
             filtroCategoria
         );
+
+        const filteredEnlaces =
+
+  filtroCategoria === "TODOS"
+
+    ? enlaces
+
+    : enlaces.filter(
+        (enlace) =>
+          enlace.categoria ===
+          filtroCategoria
+      );
 
   return (
 
@@ -340,6 +472,57 @@ export default function Recursos() {
         >
           Biblioteca técnica Furia
         </p>
+
+        <div
+  style={{
+    display: "flex",
+    justifyContent: "center",
+    gap: "12px",
+    marginTop: "20px",
+  }}
+>
+
+  <button
+    onClick={() =>
+      setVista("RECURSOS")
+    }
+    style={{
+      background:
+        vista === "RECURSOS"
+          ? "#fe5d01"
+          : "rgba(255,255,255,0.08)",
+      color: "white",
+      border: "none",
+      padding: "12px 18px",
+      borderRadius: "14px",
+      cursor: "pointer",
+      fontWeight: "bold",
+    }}
+  >
+    📚 RECURSOS
+  </button>
+
+  <button
+    onClick={() =>
+      setVista("ENLACES")
+    }
+    style={{
+      background:
+        vista === "ENLACES"
+          ? "#fe5d01"
+          : "rgba(255,255,255,0.08)",
+      color: "white",
+      border: "none",
+      padding: "12px 18px",
+      borderRadius: "14px",
+      cursor: "pointer",
+      fontWeight: "bold",
+    }}
+  >
+    🔗 ENLACES
+  </button>
+
+</div>
 
       </div>
 
@@ -461,55 +644,73 @@ export default function Recursos() {
 
         </select>
 
-        {/* ARCHIVO */}
 
-        <div
-          style={{
-            marginBottom: "20px",
-          }}
-        >
+ {vista === "RECURSOS" ? (
 
-          <input
-            type="file"
-            onChange={(e) =>
-              setArchivo(
-                e.target.files[0]
-              )
-            }
-            style={{
-              color: "white",
-            }}
-          />
+  <div
+    style={{
+      marginBottom: "20px",
+    }}
+  >
+    <input
+      type="file"
+      onChange={(e) =>
+        setArchivo(
+          e.target.files[0]
+        )
+      }
+      style={{
+        color: "white",
+      }}
+    />
+  </div>
 
-        </div>
+) : (
+
+  <input
+    placeholder="https://..."
+    value={url}
+    onChange={(e) =>
+      setUrl(
+        e.target.value
+      )
+    }
+    style={{
+      width: "100%",
+      padding: "14px",
+      marginBottom: "20px",
+      borderRadius: "14px",
+      border: "none",
+      boxSizing: "border-box",
+    }}
+  />
+
+)}
 
         {/* BOTÓN */}
 
-        <button
-          onClick={publicar}
-          style={{
-            width: "100%",
-
-            background:
-              "#fe5d01",
-
-            color: "white",
-
-            border: "none",
-
-            padding: "16px",
-
-            borderRadius: "16px",
-
-            fontSize: "18px",
-
-            fontWeight: "bold",
-
-            cursor: "pointer",
-          }}
-        >
-          SUBIR RECURSO
-        </button>
+       <button
+  onClick={() =>
+    vista === "RECURSOS"
+      ? publicar()
+      : publicarEnlace()
+  }
+  style={{
+    width: "100%",
+    background: "#fe5d01",
+    color: "white",
+    border: "none",
+    padding: "16px",
+    borderRadius: "16px",
+    fontSize: "18px",
+    fontWeight: "bold",
+    cursor: "pointer",
+  }}
+>
+  {vista === "RECURSOS"
+    ? "SUBIR RECURSO"
+    : "GUARDAR ENLACE"}
+</button>
 
       </div>
 
@@ -578,246 +779,161 @@ export default function Recursos() {
 
       {/* LISTA */}
 
+<div
+  style={{
+    maxWidth: "1000px",
+    margin: "0 auto",
+    display: "flex",
+    flexDirection: "column",
+    gap: "8px",
+  }}
+>
+
+  {vista === "RECURSOS" ? (
+
+    filteredPosts.map((post) => (
+
       <div
+        key={post.id}
         style={{
-          maxWidth: "1000px",
-
-          margin: "0 auto",
-
+          background: "rgba(255,255,255,0.08)",
+          border: "1px solid rgba(255,255,255,0.12)",
+          borderRadius: "12px",
+          padding: "12px 16px",
           display: "flex",
-
-          flexDirection: "column",
-
-          gap: "20px",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: "12px",
         }}
       >
 
-        {filteredPosts.map(
-          (post) => (
+        <div
+          style={{
+            flex: 1,
+            minWidth: 0,
+          }}
+        >
 
-            <div
-              key={post.id}
-              style={{
-                background:
-                  "rgba(255,255,255,0.08)",
+          <div
+            style={{
+              color: "#fe5d01",
+              fontSize:
+                isMobile
+                  ? "15px"
+                  : "18px",
+              fontWeight: "bold",
+            }}
+          >
+            📄 {post.titulo}
+          </div>
 
-                borderRadius:
-                  "22px",
+          <div
+            style={{
+              fontSize: "12px",
+              opacity: 0.8,
+              marginTop: "4px",
+            }}
+          >
+            {post.categoria}
+          </div>
 
-                padding:
-                  isMobile
-                    ? "18px"
-                    : "24px",
+        </div>
 
-                border:
-                  "1px solid rgba(255,255,255,0.12)",
-              }}
-            >
-
-              {/* TITULO */}
-
-              <h2
-                style={{
-                  color:
-                    "#fe5d01",
-
-                  marginBottom:
-                    "12px",
-
-                  fontSize:
-                    isMobile
-                      ? "28px"
-                      : "34px",
-                }}
-              >
-                {post.titulo}
-              </h2>
-
-              {/* CATEGORÍA */}
-
-              <div
-                style={{
-                  display:
-                    "inline-block",
-
-                  background:
-                    "#720792",
-
-                  padding:
-                    "8px 14px",
-
-                  borderRadius:
-                    "12px",
-
-                  marginBottom:
-                    "16px",
-
-                  fontWeight:
-                    "bold",
-                }}
-              >
-                {post.categoria}
-              </div>
-
-              {/* DESCRIPCIÓN */}
-
-              <p
-                style={{
-                  lineHeight: 1.7,
-
-                  opacity: 0.95,
-
-                  marginBottom:
-                    "22px",
-                }}
-              >
-                {post.descripcion}
-              </p>
-
-              {/* BOTONES */}
-
-              <div
-                style={{
-                  display: "flex",
-
-                  flexWrap: "wrap",
-
-                  gap: "12px",
-                }}
-              >
-
-                {/* VER */}
-
-                <a
-                  href={
-                    post.archivo
-                  }
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    textDecoration:
-                      "none",
-                  }}
-                >
-
-                  <button
-                    style={{
-                      background:
-                        "#0d7a32",
-
-                      color:
-                        "white",
-
-                      border:
-                        "none",
-
-                      padding:
-                        "12px 18px",
-
-                      borderRadius:
-                        "14px",
-
-                      cursor:
-                        "pointer",
-
-                      fontWeight:
-                        "bold",
-                    }}
-                  >
-                    VER
-                  </button>
-
-                </a>
-
-                {/* DESCARGAR */}
-
-                <a
-                  href={
-                    post.archivo
-                  }
-                  download
-                  style={{
-                    textDecoration:
-                      "none",
-                  }}
-                >
-
-                  <button
-                    style={{
-                      background:
-                        "#1565c0",
-
-                      color:
-                        "white",
-
-                      border:
-                        "none",
-
-                      padding:
-                        "12px 18px",
-
-                      borderRadius:
-                        "14px",
-
-                      cursor:
-                        "pointer",
-
-                      fontWeight:
-                        "bold",
-                    }}
-                  >
-                    DESCARGAR
-                  </button>
-
-                </a>
-
-                {/* ELIMINAR */}
-
-                {userEmail ===
-                  post.usuario && (
-
-                  <button
-                    onClick={() =>
-                      eliminarPost(
-                        post.id
-                      )
-                    }
-                    style={{
-                      background:
-                        "#c62828",
-
-                      color:
-                        "white",
-
-                      border:
-                        "none",
-
-                      padding:
-                        "12px 18px",
-
-                      borderRadius:
-                        "14px",
-
-                      cursor:
-                        "pointer",
-
-                      fontWeight:
-                        "bold",
-                    }}
-                  >
-                    ELIMINAR
-                  </button>
-
-                )}
-
-              </div>
-
-            </div>
-
-          )
-        )}
+        <a
+          href={post.archivo}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <button
+            style={{
+              background: "#0d7a32",
+              color: "white",
+              border: "none",
+              padding: "8px 12px",
+              borderRadius: "8px",
+            }}
+          >
+            VER
+          </button>
+        </a>
 
       </div>
+
+    ))
+
+  ) : (
+
+    filteredEnlaces.map((enlace) => (
+
+      <div
+        key={enlace.id}
+        style={{
+          background: "rgba(255,255,255,0.08)",
+          border: "1px solid rgba(255,255,255,0.12)",
+          borderRadius: "12px",
+          padding: "12px 16px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: "12px",
+        }}
+      >
+
+        <div
+          style={{
+            flex: 1,
+          }}
+        >
+
+          <div
+            style={{
+              color: "#fe5d01",
+              fontSize:
+                isMobile
+                  ? "15px"
+                  : "18px",
+              fontWeight: "bold",
+            }}
+          >
+            🔗 {enlace.titulo}
+          </div>
+
+          <div
+            style={{
+              fontSize: "12px",
+              opacity: 0.8,
+            }}
+          >
+            {enlace.categoria}
+          </div>
+
+        </div>
+
+        <a
+          href={enlace.url}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <button
+            style={{
+              background: "#1565c0",
+              color: "white",
+              border: "none",
+              padding: "8px 12px",
+              borderRadius: "8px",
+            }}
+          >
+            VISITAR
+          </button>
+        </a>
+
+      </div>
+
+    ))
+
+  )}
+
+</div>
 
       <BottomNav />
 

@@ -110,6 +110,22 @@ export default function MisChats() {
           "user_id",
           userId
         );
+const {
+  data: salidasUsuario,
+} =
+  await supabase
+
+    .from(
+      "salida_tripulantes"
+    )
+
+    .select("*")
+
+    .eq(
+      "user_id",
+      userId
+    );
+
 
     if (
       participacionesError
@@ -122,6 +138,24 @@ export default function MisChats() {
       return;
     }
 
+const salidasIds =
+  salidasUsuario?.map(
+    (s) => s.salida_id
+  ) || [];
+
+const {
+  data: salidasChats,
+} =
+  await supabase
+
+    .from("salidas")
+
+    .select("*")
+
+    .in(
+      "id",
+      salidasIds
+    );
     const conversacionesIds =
 
       participaciones.map(
@@ -256,6 +290,21 @@ export default function MisChats() {
                 conversacionId
             );
 
+            const noLeidos =
+
+  mensajes?.filter(
+    (m) =>
+
+      m.conversacion_id ===
+        conversacionId &&
+
+      m.user_id !==
+        userId &&
+
+      !m.leido
+  ).length || 0;
+
+
           const perfil =
             perfiles?.find(
               (p) =>
@@ -278,6 +327,8 @@ export default function MisChats() {
             nombre,
 
             avatar,
+
+noLeidos,
 
             ultimoMensaje:
 
@@ -304,6 +355,53 @@ export default function MisChats() {
           };
         }
       );
+
+
+const chatsGrupo =
+
+  (salidasChats || []).map(
+    (salida) => ({
+
+      conversacionId:
+        `grupo-${salida.id}`,
+
+      salidaId:
+        salida.id,
+
+      esGrupo:
+        true,
+
+      nombre:
+        `👥 ${salida.titulo}`,
+
+      avatar: "",
+
+noLeidos:
+
+  mensajes?.filter(
+    (m) =>
+
+      m.actividad_id ===
+        salida.id &&
+
+      m.to_user ===
+        userId &&
+
+      !m.leido
+
+  ).length || 0,
+
+      ultimoMensaje:
+        "Chat grupal",
+
+      fecha:
+        salida.created_at,
+    })
+  );
+
+chatsFinales.push(
+  ...chatsGrupo
+);
 
     /*
     =====================================
@@ -435,11 +533,17 @@ export default function MisChats() {
 
           onClick={() =>
 
-            navigate(
-              `/conversacion/${chat.conversacionId}`
-            )
+  chat.esGrupo
 
-          }
+    ? navigate(
+        `/chat-grupo/${chat.salidaId}`
+      )
+
+    : navigate(
+        `/conversacion/${chat.conversacionId}`
+      )
+
+}
 
           style={{
             background:
@@ -533,19 +637,44 @@ export default function MisChats() {
               }}
             >
 
-              <p
-                style={{
-                  color:
-                    "#e7eb0f",
-                  margin: 0,
-                  fontWeight:
-                    "bold",
-                  fontSize:
-                    "17px",
-                }}
-              >
-                {chat.nombre}
-              </p>
+              <div
+  style={{
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+  }}
+>
+  <p
+    style={{
+      color: "#e7eb0f",
+      margin: 0,
+      fontWeight: "bold",
+      fontSize: "17px",
+    }}
+  >
+    {chat.nombre}
+  </p>
+
+  {chat.noLeidos > 0 && (
+    <div
+      style={{
+        background: "#ff0000",
+        color: "white",
+        minWidth: "22px",
+        height: "22px",
+        borderRadius: "50%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontSize: "12px",
+        fontWeight: "bold",
+        padding: "0 6px",
+      }}
+    >
+      {chat.noLeidos}
+    </div>
+  )}
+</div>
 
               <span
                 style={{

@@ -27,6 +27,9 @@ export default function ChatActividad() {
   const [nuevoMensaje, setNuevoMensaje] =
     useState("");
 
+    const [perfiles, setPerfiles] =
+  useState({});
+
   const mensajesEndRef =
     useRef(null);
 

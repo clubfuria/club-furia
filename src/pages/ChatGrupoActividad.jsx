@@ -6,6 +6,7 @@ import {
 
 import {
   useParams,
+  useNavigate,
 } from "react-router-dom";
 
 import { supabase }
@@ -16,6 +17,10 @@ export default function ChatGrupoActividad() {
   const {
     actividadId,
   } = useParams();
+
+const navigate =
+  useNavigate();
+
 
   const [user, setUser] =
     useState(null);
@@ -251,17 +256,41 @@ const [perfiles, setPerfiles] =
       }}
     >
 
-      <h1
-        style={{
-          color:
-            "#fe5d01",
+      <div
+  style={{
+    display: "flex",
+    alignItems: "center",
+    gap: "14px",
+    marginBottom: "20px",
+  }}
+>
 
-          marginBottom:
-            "20px",
-        }}
-      >
-        💬 CHAT GRUPAL
-      </h1>
+  <button
+    onClick={() =>
+      navigate("/mis-chats")
+    }
+    style={{
+      background:
+        "transparent",
+      border: "none",
+      color: "white",
+      fontSize: "28px",
+      cursor: "pointer",
+    }}
+  >
+    ←
+  </button>
+
+  <h1
+    style={{
+      color: "#fe5d01",
+      margin: 0,
+    }}
+  >
+    💬 CHAT GRUPAL
+  </h1>
+
+</div>
 
       {/* MENSAJES */}
 

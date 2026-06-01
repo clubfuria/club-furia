@@ -26,6 +26,10 @@ export default function ChatGrupoActividad() {
   const [nuevoMensaje, setNuevoMensaje] =
     useState("");
 
+const [perfiles, setPerfiles] =
+  useState({});
+
+
   const mensajesEndRef =
     useRef(null);
 
@@ -127,8 +131,38 @@ export default function ChatGrupoActividad() {
 
     if (data) {
 
-      setMensajes(data);
+  setMensajes(data);
+
+  const ids = [
+    ...new Set(
+      data.map(
+        (m) => m.from_user
+      )
+    ),
+  ];
+
+  const {
+    data: perfilesData,
+  } = await supabase
+    .from("profiles")
+.select("*")
+    .in("id", ids);
+
+  const mapa = {};
+
+  perfilesData?.forEach(
+    (p) => {
+
+      mapa[p.id] =
+        p.nombre ||
+        p.username ||
+        "Usuario";
     }
+  );
+
+  setPerfiles(mapa);
+  console.log(perfilesData);
+}
   }
 
   /*
@@ -319,7 +353,8 @@ export default function ChatGrupoActividad() {
                     }}
                   >
 
-                    {m.from_user}
+                    {perfiles[m.from_user] ||
+  "Usuario"}
 
                   </div>
 

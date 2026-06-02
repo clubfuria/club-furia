@@ -69,6 +69,9 @@ const [
   const [nuevoPost, setNuevoPost] =
     useState("");
 
+const [imagenPost, setImagenPost] =
+  useState(null);
+
   /*
   ==========================================
   NOTIFICACIONES
@@ -366,45 +369,104 @@ async function asegurarProfile(
 
   async function publicarPost() {
 
-    if (!session) {
+  if (!session) {
+
+    alert(
+      "Debes iniciar sesión"
+    );
+
+    return;
+  }
+
+  if (
+    !nuevoPost.trim() &&
+    !imagenPost
+  ) {
+    return;
+  }
+
+  let imageUrl = null;
+
+  /*
+  ==========================
+  SUBIR IMAGEN
+  ==========================
+  */
+
+  if (imagenPost) {
+
+    const extension =
+      imagenPost.name
+        .split(".")
+        .pop();
+
+    const fileName =
+      `${Date.now()}.${extension}`;
+
+    const { error: uploadError } =
+      await supabase.storage
+        .from("posts")
+        .upload(
+          fileName,
+          imagenPost
+        );
+
+    if (uploadError) {
 
       alert(
-        "Debes iniciar sesión"
+        uploadError.message
       );
 
       return;
     }
 
-    if (
-      !nuevoPost.trim()
-    ) {
-
-      return;
-    }
-
-    const { error } =
-      await supabase
+    const {
+      data: publicUrlData,
+    } =
+      supabase.storage
         .from("posts")
-        .insert([
-          {
-            texto: nuevoPost,
+        .getPublicUrl(
+          fileName
+        );
 
-            usuario:
-              session.user.email,
-          },
-        ]);
-
-    if (error) {
-
-      alert(error.message);
-
-      return;
-    }
-
-    setNuevoPost("");
-
-    cargarPosts();
+    imageUrl =
+      publicUrlData.publicUrl;
   }
+
+  /*
+  ==========================
+  GUARDAR POST
+  ==========================
+  */
+
+  const { error } =
+    await supabase
+      .from("posts")
+      .insert([
+        {
+          texto: nuevoPost,
+
+          usuario:
+            session.user.email,
+
+          image_url:
+            imageUrl,
+        },
+      ]);
+
+  if (error) {
+
+    alert(error.message);
+
+    return;
+  }
+
+  setNuevoPost("");
+
+  setImagenPost(null);
+
+  cargarPosts();
+}
 
   async function borrarPost(
     id
@@ -1644,6 +1706,8 @@ necesitaAceptarPrivacidad ? (
           >
 
             <textarea
+
+            
               value={
                 nuevoPost
               }
@@ -1676,6 +1740,21 @@ necesitaAceptarPrivacidad ? (
                   "10px",
               }}
             />
+
+<input
+  type="file"
+  accept="image/*"
+  onChange={(e) =>
+    setImagenPost(
+      e.target.files[0]
+    )
+  }
+
+  style={{
+    marginBottom: "12px",
+    color: "white",
+  }}
+/>
 
             <button
               onClick={
@@ -1768,6 +1847,24 @@ necesitaAceptarPrivacidad ? (
 <div>
   {post.texto}
 </div>
+
+{post.image_url && (
+
+  <img
+    src={post.image_url}
+
+    alt="Post"
+
+    style={{
+      width: "100%",
+      maxHeight: "500px",
+      objectFit: "cover",
+      borderRadius: "12px",
+      marginTop: "12px",
+    }}
+  />
+
+)}
 </div>
 
             {session?.user

@@ -9,6 +9,10 @@ import {
 import { supabase }
 from "../supabase";
 
+import { registrarPush }
+from "../utils/pushNotifications";
+
+
 export default function Home() {
 
   const navigate =
@@ -206,6 +210,10 @@ if (
 
   return;
 }
+
+await registrarPush(
+  authData.user.id
+);
 
 alert(
   "Sesión iniciada"

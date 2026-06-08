@@ -9,9 +9,14 @@ import {
 import { supabase }
 from "../supabase";
 
+import { registrarPush }
+from "../utils/pushNotifications";
+
 export default function ProtectedRoute({
   children,
 }) {
+
+alert("ProtectedRoute cargado");
 
   const [loading, setLoading] =
     useState(true);
@@ -23,14 +28,34 @@ export default function ProtectedRoute({
 
     supabase.auth
       .getSession()
-      .then(({ data }) => {
+    .then(async ({ data }) => {
 
-        setSession(
-          data.session
-        );
+console.log(
+  "SESSION:",
+  data.session
+);
 
-        setLoading(false);
-      });
+  setSession(
+    data.session
+  );
+
+  if (
+    data.session?.user?.id
+  ) {
+
+console.log(
+  "LLAMANDO registrarPush"
+);
+
+
+    await registrarPush(
+      data.session.user.id
+    );
+
+  }
+
+  setLoading(false);
+});  
 
   }, []);
 

@@ -16,7 +16,7 @@ export default function ProtectedRoute({
   children,
 }) {
 
-alert("ProtectedRoute cargado");
+
 
   const [loading, setLoading] =
     useState(true);
